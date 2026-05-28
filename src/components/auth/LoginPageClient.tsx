@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
+import type { CredentialResponse } from "@react-oauth/google";
 import { toast } from "sonner";
 
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import {
   LoginForm,
   type BusinessLoginValues,
@@ -26,7 +27,6 @@ export function LoginPageClient() {
   const dispatch = useAppDispatch();
   const { translations } = useAppSelector((s) => s.user);
   const [loading, setLoading] = useState(false);
-  const googleButtonRef = useRef<HTMLDivElement>(null);
 
   const handleAuthSuccess = useCallback(
     async (response: RepositoryResult) => {
@@ -128,39 +128,33 @@ export function LoginPageClient() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    if (!isGoogleAuthConfigured) {
-      toast.error("Google girişi yapılandırılmamış. NEXT_PUBLIC_GOOGLE_CLIENT_ID değerini ayarlayın.");
-      return;
-    }
-
-    const googleBtn = googleButtonRef.current?.querySelector('[role="button"]') as
-      | HTMLElement
-      | null;
-    googleBtn?.click();
-  };
-
   return (
-    <>
-      {isGoogleAuthConfigured && (
-        <div ref={googleButtonRef} className="absolute h-0 w-0 overflow-hidden" aria-hidden>
-          <GoogleLogin
+    <LoginForm
+      loading={loading}
+      onBusinessSubmit={handleBusinessSubmit}
+      onEmployeeSubmit={handleEmployeeSubmit}
+      googleSignIn={
+        isGoogleAuthConfigured ? (
+          <GoogleSignInButton
+            label={translations.loginWithGoogle}
+            disabled={loading}
             onSuccess={handleGoogleCredential}
             onError={() => toast.error(translations.loginFailed)}
-            useOneTap={false}
-            type="standard"
-            theme="outline"
-            size="large"
           />
-        </div>
-      )}
-
-      <LoginForm
-        loading={loading}
-        onBusinessSubmit={handleBusinessSubmit}
-        onEmployeeSubmit={handleEmployeeSubmit}
-        onGoogleLogin={handleGoogleLogin}
-      />
-    </>
+        ) : (
+          <button
+            type="button"
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-sm text-muted-foreground"
+            onClick={() =>
+              toast.error(
+                "Google girişi yapılandırılmamış. Vercel'de NEXT_PUBLIC_GOOGLE_CLIENT_ID değerini ayarlayın."
+              )
+            }
+          >
+            {translations.loginWithGoogle}
+          </button>
+        )
+      }
+    />
   );
 }

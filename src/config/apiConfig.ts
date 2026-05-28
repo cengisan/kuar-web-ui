@@ -5,7 +5,7 @@ import type { Translations } from "@/types";
 
 export const API_CONFIG = {
   BASE_URL:
-    process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8088/api/v1",
+    process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://kuar-test.up.railway.app/api/v1",
   TIMEOUT: 30000,
   HEADERS: {
     "Content-Type": "application/json",

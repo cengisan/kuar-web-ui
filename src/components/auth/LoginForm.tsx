@@ -27,7 +27,7 @@ export type EmployeeLoginValues = {
 export interface LoginFormProps {
   onBusinessSubmit?: (values: BusinessLoginValues) => Promise<void> | void;
   onEmployeeSubmit?: (values: EmployeeLoginValues) => Promise<void> | void;
-  onGoogleLogin?: () => void;
+  googleSignIn?: React.ReactNode;
   onForgotPassword?: () => void;
   loading?: boolean;
   className?: string;
@@ -43,7 +43,7 @@ function formatAccessCode(raw: string): string {
 export function LoginForm({
   onBusinessSubmit,
   onEmployeeSubmit,
-  onGoogleLogin,
+  googleSignIn,
   onForgotPassword,
   loading,
   className,
@@ -208,24 +208,7 @@ export function LoginForm({
             </div>
           </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            className="w-full"
-            onClick={onGoogleLogin}
-            disabled={!onGoogleLogin}
-          >
-            <Image
-              src={assets.google}
-              alt=""
-              width={assets.google.width}
-              height={assets.google.height}
-              className="size-4"
-              aria-hidden
-            />
-            {t("loginWithGoogle")}
-          </Button>
+          {googleSignIn}
         </>
       )}
     </div>
