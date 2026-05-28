@@ -46,6 +46,37 @@ class AuthRepositoryImpl {
     }
   }
 
+  async loginWithGoogleCode(
+    code: string,
+    redirectUri: string,
+    device?: Record<string, unknown>
+  ): Promise<RepositoryResult> {
+    try {
+      const requestBody: Record<string, unknown> = {
+        code,
+        redirect_uri: redirectUri,
+      };
+      if (device) requestBody.device = device;
+
+      const response = await apiClient.post<GenericResponse>("/auth/google/code", requestBody);
+      const businessCode =
+        response.data.meta?.business_code ?? response.data.business_code;
+
+      if (businessCode === 0) {
+        return {
+          success: true,
+          token: response.data.access_token,
+          userData: (response.data.data as Record<string, unknown>) || {},
+          message: this.translations.loginSuccessful,
+        };
+      }
+
+      return { success: false, message: this.translations.loginFailed };
+    } catch (error) {
+      return this.handleAuthError(error);
+    }
+  }
+
   async loginWithApple(
     identityToken: string,
     device?: Record<string, unknown>
