@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
+import type { CredentialResponse } from "@react-oauth/google";
 import { toast } from "sonner";
 
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
@@ -104,11 +105,16 @@ export function LoginPageClient() {
     }
   };
 
-  const handleGoogleCode = async (code: string, redirectUri: string) => {
+  const handleGoogleCredential = async (credentialResponse: CredentialResponse) => {
+    if (!credentialResponse.credential) {
+      toast.error(translations.loginFailed);
+      return;
+    }
+
     setLoading(true);
     try {
       const repo = new AuthRepositoryImpl(translations);
-      const result = await repo.loginWithGoogleCode(code, redirectUri);
+      const result = await repo.loginWithGoogle(credentialResponse.credential);
 
       if (result.success) {
         await handleAuthSuccess(result);
@@ -132,7 +138,7 @@ export function LoginPageClient() {
           <GoogleSignInButton
             label={translations.loginWithGoogle}
             disabled={loading}
-            onCode={handleGoogleCode}
+            onSuccess={handleGoogleCredential}
             onError={() => toast.error(translations.loginFailed)}
           />
         ) : (
