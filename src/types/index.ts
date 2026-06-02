@@ -190,9 +190,42 @@ export interface Material {
   id: number;
   name: string;
   unit?: string;
-  quantity?: number;
-  threshold?: number;
+  current_stock?: number;
+  initial_stock?: number;
+  stock_percentage?: number;
+  created_date?: string;
+  last_modified_date?: string;
   business_id?: number;
+}
+
+export interface StockMovement {
+  id: number;
+  movement_type?: string;
+  quantity?: number;
+  unit?: string;
+  note?: string;
+  created_date?: string;
+}
+
+export interface ProductStockItem {
+  product_id: number;
+  product_name: string;
+  stock_quantity?: number;
+  track_stock?: boolean;
+  stock_percentage?: number;
+  materials?: Array<{
+    material_id: number;
+    material_name: string;
+    quantity: number;
+    unit: string;
+  }>;
+}
+
+export interface StockSummary {
+  total_materials: number;
+  low_stock_materials: number;
+  total_tracked_products: number;
+  low_stock_products: number;
 }
 
 export interface Feedback {

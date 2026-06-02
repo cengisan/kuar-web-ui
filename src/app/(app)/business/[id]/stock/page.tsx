@@ -4,46 +4,53 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { PageLayout } from "@/components/layout/PageLayout";
-import { Bell, Boxes, Pencil, Plus, Trash2 } from "lucide-react";
+import { Settings, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { StockPercentageBar } from "@/components/business/StockPercentageBar";
 import StockRepositoryImpl from "@/data/repositories/StockRepositoryImpl";
 import { useAppSelector } from "@/presentation/state/hooks";
-import type { Material } from "@/types";
+import { getUnitLabel } from "@/utils/measurementUnits";
+import type { Material, ProductStockItem, StockSummary } from "@/types";
+import { cn } from "@/lib/cn";
+
+type StockTab = "materials" | "products";
 
 export default function StockPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const businessId = Number(params.id);
-  const { translations, accessToken } = useAppSelector((s) => s.user);
+  const { translations, accessToken, language } = useAppSelector((s) => s.user);
 
+  const [activeTab, setActiveTab] = useState<StockTab>("materials");
   const [materials, setMaterials] = useState<Material[]>([]);
+  const [products, setProducts] = useState<ProductStockItem[]>([]);
+  const [summary, setSummary] = useState<StockSummary | null>(null);
   const [loading, setLoading] = useState(true);
-  const [deleteTarget, setDeleteTarget] = useState<Material | null>(null);
 
   const load = useCallback(async () => {
     if (!accessToken) return;
+    setLoading(true);
     try {
       const repo = new StockRepositoryImpl(translations, accessToken);
-      const response = await repo.getMaterials(businessId);
-      if (Array.isArray(response.data)) {
-        setMaterials(response.data as Material[]);
-      } else {
-        setMaterials([]);
+      const [materialRes, productRes, summaryRes] = await Promise.all([
+        repo.getMaterials(businessId),
+        repo.getProductStock(businessId),
+        repo.getStockSummary(businessId),
+      ]);
+      setMaterials((materialRes.data as Material[]) || []);
+      setProducts((productRes.data as ProductStockItem[]) || []);
+      setSummary((summaryRes.data as StockSummary) || null);
+    } catch (e) {
+      if (!(e as { sessionExpired?: boolean }).sessionExpired) {
+        toast.error((e as Error).message);
       }
-    } catch {
       setMaterials([]);
+      setProducts([]);
+      setSummary(null);
     } finally {
       setLoading(false);
     }
@@ -53,127 +60,154 @@ export default function StockPage() {
     load();
   }, [load]);
 
-  const handleDelete = async () => {
-    if (!accessToken || !deleteTarget) return;
-    const repo = new StockRepositoryImpl(translations, accessToken);
-    try {
-      await repo.deleteMaterial(deleteTarget.id);
-      toast.success(translations.materialDeleted);
-      setDeleteTarget(null);
-      load();
-    } catch (e) {
-      toast.error((e as Error).message);
-    }
+  const formatMaterialDate = (item: Material) => {
+    const dateValue = item.last_modified_date || item.created_date;
+    return dateValue ? new Date(dateValue).toLocaleString() : "-";
   };
+
+  const lang = language === "en" ? "en" : "tr";
 
   return (
     <PageLayout
       back={{ label: translations.back, onClick: () => router.back() }}
-      contentClassName="space-y-6"
-    ><div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">
-          {translations.stockManagement}
-        </h1>
+      contentClassName="space-y-4"
+    >
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold">{translations.stockManagement}</h1>
         <div className="flex gap-2">
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" size="icon" aria-label={translations.stockAlertSettings}>
             <Link href={`/business/${businessId}/stock/alerts`}>
-              <Bell />
-              {translations.alertSettings}
+              <Settings className="size-4" />
             </Link>
           </Button>
-          <Button asChild>
-            <Link href={`/business/${businessId}/stock/create`}>
-              <Plus />
-              {translations.createMaterial}
-            </Link>
-          </Button>
+          {activeTab === "materials" && (
+            <Button asChild>
+              <Link href={`/business/${businessId}/stock/create`}>
+                <Plus className="size-4" />
+                {translations.addMaterial}
+              </Link>
+            </Button>
+          )}
         </div>
+      </div>
+
+      {summary && (
+        <Card>
+          <CardContent className="space-y-2 p-4">
+            <p className="font-semibold">{translations.stockSummary}</p>
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>
+                {translations.materials}: {summary.total_materials}
+              </span>
+              <span className="text-destructive">
+                {translations.lowStock}: {summary.low_stock_materials}
+              </span>
+            </div>
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>
+                {translations.products}: {summary.total_tracked_products}
+              </span>
+              <span className="text-destructive">
+                {translations.lowStock}: {summary.low_stock_products}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="flex border-b border-border">
+        {(["materials", "products"] as StockTab[]).map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => setActiveTab(tab)}
+            className={cn(
+              "flex-1 border-b-2 py-3 text-sm font-semibold transition-colors",
+              activeTab === tab
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {tab === "materials"
+              ? translations.materialStock
+              : translations.productStock}
+          </button>
+        ))}
       </div>
 
       {loading ? (
         <div className="flex min-h-[40vh] items-center justify-center">
           <Spinner size="lg" />
         </div>
-      ) : materials.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border p-12 text-center">
-          <Boxes className="mx-auto h-12 w-12 text-muted-foreground" />
-          <p className="mt-4 text-lg font-semibold">
-            {translations.noMaterials}
+      ) : activeTab === "materials" ? (
+        materials.length === 0 ? (
+          <p className="py-16 text-center text-muted-foreground">
+            {translations.noMaterialsFound}
           </p>
-        </div>
-      ) : (
-        <div className="grid gap-3">
-          {materials.map((material) => {
-            const low =
-              typeof material.quantity === "number" &&
-              typeof material.threshold === "number" &&
-              material.quantity <= material.threshold;
-            return (
-              <Card key={material.id}>
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                      low ? "bg-destructive/15" : "bg-orange-500/15"
-                    }`}
-                  >
-                    <Boxes
-                      className={`h-5 w-5 ${
-                        low ? "text-destructive" : "text-orange-500"
-                      }`}
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="truncate font-semibold">{material.name}</p>
+        ) : (
+          <div className="grid gap-3 pb-20">
+            {materials.map((material) => (
+              <Link
+                key={material.id}
+                href={`/business/${businessId}/stock/${material.id}/edit`}
+                className="block"
+              >
+                <Card className="transition-colors hover:bg-muted/30">
+                  <CardContent className="space-y-3 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="flex-1 truncate font-semibold">{material.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {material.current_stock ?? 0}{" "}
+                        {getUnitLabel(material.unit || "", lang)}
+                      </p>
+                    </div>
+                    <StockPercentageBar percentage={material.stock_percentage} />
                     <p className="text-xs text-muted-foreground">
-                      {material.quantity ?? 0} {material.unit || ""}
-                      {material.threshold != null && (
-                        <span className="ml-2">
-                          / {translations.threshold}: {material.threshold}
-                        </span>
-                      )}
+                      {translations.lastUpdated}: {formatMaterialDate(material)}
                     </p>
-                  </div>
-                  {low && (
-                    <Badge variant="destructive">
-                      {translations.lowStock}
-                    </Badge>
-                  )}
-                  <Button asChild size="icon" variant="ghost">
-                    <Link href={`/business/${businessId}/stock/${material.id}/edit`}>
-                      <Pencil />
-                    </Link>
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => setDeleteTarget(material)}
-                  >
-                    <Trash2 />
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )
+      ) : products.length === 0 ? (
+        <p className="py-16 text-center text-muted-foreground">
+          {translations.noProductStockFound}
+        </p>
+      ) : (
+        <div className="grid gap-3 pb-8">
+          {products.map((product) => (
+            <Card key={product.product_id}>
+              <CardContent className="space-y-3 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <p className="flex-1 truncate font-semibold">
+                    {product.product_name}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {product.stock_quantity != null
+                      ? `${product.stock_quantity} ${translations.pieces}`
+                      : translations.notSpecified}
+                  </p>
+                </div>
+                {product.track_stock && product.stock_percentage != null && (
+                  <StockPercentageBar percentage={product.stock_percentage} />
+                )}
+                {product.materials && product.materials.length > 0 && (
+                  <ul className="space-y-1 text-xs text-muted-foreground">
+                    {product.materials.map((material) => (
+                      <li key={`${product.product_id}-${material.material_id}`}>
+                        • {material.material_name}: {material.quantity}{" "}
+                        {getUnitLabel(material.unit, lang)}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+          ))}
         </div>
       )}
-
-      <Dialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {translations.confirmDeleteMaterial}
-            </DialogTitle>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteTarget(null)}>
-              {translations.cancel}
-            </Button>
-            <Button variant="destructive" onClick={handleDelete}>
-              {translations.delete}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </PageLayout>
   );
 }

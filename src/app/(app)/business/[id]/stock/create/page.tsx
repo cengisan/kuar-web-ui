@@ -33,9 +33,8 @@ export default function CreateMaterialPage() {
       const repo = new StockRepositoryImpl(translations, accessToken);
       await repo.createMaterial(subscriberId, businessId, {
         name: name.trim(),
-        unit: unit.trim() || null,
-        quantity: parseFloat(quantity.replace(",", ".")) || 0,
-        threshold: threshold ? parseFloat(threshold.replace(",", ".")) : null,
+        unit: unit.trim().toUpperCase() || "KILOGRAM",
+        current_stock: parseFloat(quantity.replace(",", ".")) || 0,
       });
       toast.success(translations.materialCreated);
       router.push(`/business/${businessId}/stock`);
