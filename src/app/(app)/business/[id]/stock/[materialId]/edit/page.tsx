@@ -219,7 +219,6 @@ export default function EditMaterialPage() {
             </div>
             <Button
               type="button"
-              variant="secondary"
               onClick={handleAddStock}
               loading={isLoading}
               disabled={!addQuantity}
