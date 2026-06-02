@@ -97,6 +97,7 @@ export function LoginForm({
           <TabsTrigger value="employee">{t("employeeLogin")}</TabsTrigger>
         </TabsList>
 
+        <div className="min-h-[17.5rem]">
         <TabsContent value="business" className="mt-6 space-y-4">
           <form
             onSubmit={businessForm.handleSubmit(async (values) => {
@@ -195,22 +196,27 @@ export function LoginForm({
             </Button>
           </form>
         </TabsContent>
+        </div>
       </Tabs>
 
-      {activeTab === "business" && (
-        <>
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">{t("orContinueWith")}</span>
-            </div>
+      <div
+        className={cn(
+          "space-y-6",
+          activeTab !== "business" && "invisible pointer-events-none select-none"
+        )}
+        aria-hidden={activeTab !== "business"}
+      >
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center" aria-hidden="true">
+            <div className="w-full border-t border-border" />
           </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-card px-2 text-muted-foreground">{t("orContinueWith")}</span>
+          </div>
+        </div>
 
-          {googleSignIn}
-        </>
-      )}
+        {googleSignIn}
+      </div>
     </div>
   );
 }

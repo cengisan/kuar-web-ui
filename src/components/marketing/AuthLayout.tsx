@@ -47,7 +47,7 @@ export function AuthLayout({
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-12">
+      <div className="flex flex-1 flex-col items-center justify-start px-6 pb-12 pt-10 lg:px-12 lg:pt-16">
         <div className="mb-8 w-full max-w-md text-center lg:text-left">
           <div className="mb-6 flex justify-center lg:hidden">
             <Logo href="/" size="md" />
