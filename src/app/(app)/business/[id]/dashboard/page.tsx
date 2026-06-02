@@ -522,7 +522,6 @@ export default function BusinessDashboardPage() {
             </Button>
             <Button
               type="button"
-              variant="outline"
               onClick={() => handleExportReport("6months")}
               loading={exportLoading === "6months"}
               disabled={exportLoading !== null && exportLoading !== "6months"}

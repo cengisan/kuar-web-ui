@@ -151,6 +151,8 @@ export interface TableArea {
   id: number;
   name: string;
   business_id?: number;
+  table_count?: number;
+  tableCount?: number;
 }
 
 export interface CafeTable {
