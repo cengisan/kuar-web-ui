@@ -49,7 +49,8 @@ export default function CreateMaterialPage() {
     <PageLayout
       back={{ label: translations.back, onClick: () => router.back() }}
       contentClassName="space-y-6"
-    ><Card>
+    >
+      <Card className="border-border/80 shadow-card">
         <CardHeader>
           <CardTitle>{translations.createMaterial}</CardTitle>
         </CardHeader>

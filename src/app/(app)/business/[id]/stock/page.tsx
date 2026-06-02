@@ -70,7 +70,7 @@ export default function StockPage() {
   return (
     <PageLayout
       back={{ label: translations.back, onClick: () => router.back() }}
-      contentClassName="space-y-4"
+      contentClassName="space-y-6"
     >
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">{translations.stockManagement}</h1>

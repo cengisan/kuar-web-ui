@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import {
   Dialog,
@@ -77,13 +77,7 @@ export default function EditMaterialPage() {
     } finally {
       setLoading(false);
     }
-  }, [
-    accessToken,
-    businessId,
-    materialId,
-    router,
-    translations,
-  ]);
+  }, [accessToken, businessId, materialId, router, translations]);
 
   useEffect(() => {
     loadMaterial();
@@ -167,74 +161,93 @@ export default function EditMaterialPage() {
   return (
     <PageLayout
       back={{ label: translations.back, onClick: () => router.back() }}
-      contentClassName="space-y-4 pb-24"
+      contentClassName="space-y-6"
     >
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold">{translations.editMaterial}</h1>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="text-destructive hover:text-destructive"
-          onClick={() => setDeleteOpen(true)}
-          aria-label={translations.delete}
-        >
-          <Trash2 className="size-5" />
-        </Button>
-      </div>
-
-      <Card>
-        <CardContent className="space-y-4 p-4">
-          <div className="space-y-2">
-            <Label htmlFor="m-name">{translations.materialName}</Label>
-            <Input
-              id="m-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={translations.enterMaterialName}
-              maxLength={100}
-            />
-          </div>
-
-          <div>
-            <p className="font-semibold">
-              {translations.currentStock}: {currentMaterial.current_stock ?? 0}{" "}
-              {getUnitLabel(currentMaterial.unit || "", lang)}
-            </p>
-            <StockPercentageBar
-              percentage={currentMaterial.stock_percentage}
-              className="mt-2"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="add-qty">{translations.addStock}</Label>
-            <Input
-              id="add-qty"
-              type="number"
-              inputMode="decimal"
-              step="0.01"
-              min="0"
-              value={addQuantity}
-              onChange={(e) => setAddQuantity(e.target.value)}
-              placeholder={translations.enterStockAmount}
-            />
-          </div>
+      <Card className="border-border/80 shadow-card">
+        <CardHeader className="flex flex-row items-center justify-between gap-4">
+          <CardTitle>{translations.editMaterial}</CardTitle>
           <Button
             type="button"
-            className="w-full"
-            onClick={handleAddStock}
-            loading={isLoading}
-            disabled={!addQuantity}
+            variant="ghost"
+            size="icon"
+            className="text-destructive hover:text-destructive"
+            onClick={() => setDeleteOpen(true)}
+            aria-label={translations.delete}
           >
-            {translations.addStock}
+            <Trash2 className="size-5" />
           </Button>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="m-name">{translations.materialName}</Label>
+              <Input
+                id="m-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={translations.enterMaterialName}
+                maxLength={100}
+              />
+            </div>
+
+            <div className="rounded-lg bg-muted/40 p-4">
+              <p className="text-sm text-muted-foreground">
+                {translations.currentStock}
+              </p>
+              <p className="text-lg font-semibold">
+                {currentMaterial.current_stock ?? 0}{" "}
+                {getUnitLabel(currentMaterial.unit || "", lang)}
+              </p>
+              <StockPercentageBar
+                percentage={currentMaterial.stock_percentage}
+                className="mt-3"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="add-qty">{translations.addStock}</Label>
+              <Input
+                id="add-qty"
+                type="number"
+                inputMode="decimal"
+                step="0.01"
+                min="0"
+                value={addQuantity}
+                onChange={(e) => setAddQuantity(e.target.value)}
+                placeholder={translations.enterStockAmount}
+              />
+            </div>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleAddStock}
+              loading={isLoading}
+              disabled={!addQuantity}
+            >
+              {translations.addStock}
+            </Button>
+
+            <div className="flex justify-end gap-3 border-t border-border/60 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.back()}
+              >
+                {translations.cancel}
+              </Button>
+              <Button type="button" onClick={handleSave} loading={isLoading}>
+                {translations.save}
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardContent className="p-4">
-          <h2 className="mb-3 font-semibold">{translations.stockMovements}</h2>
+      <Card className="border-border/80 shadow-card">
+        <CardHeader>
+          <CardTitle>{translations.stockMovements}</CardTitle>
+        </CardHeader>
+        <CardContent>
           {movements.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted-foreground">
               {translations.noMovementsFound}
@@ -242,7 +255,10 @@ export default function EditMaterialPage() {
           ) : (
             <ul className="divide-y divide-border">
               {movements.map((item) => (
-                <li key={item.id} className="space-y-1 py-3 first:pt-0 last:pb-0">
+                <li
+                  key={item.id}
+                  className="space-y-1 py-4 first:pt-0 last:pb-0"
+                >
                   <p className="font-medium">
                     {formatMovementLine(item, translations, lang)}
                   </p>
@@ -263,17 +279,6 @@ export default function EditMaterialPage() {
         </CardContent>
       </Card>
 
-      <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-background p-4 md:left-[var(--sidebar-width,0px)]">
-        <Button
-          type="button"
-          className="w-full"
-          onClick={handleSave}
-          loading={isLoading}
-        >
-          {translations.save}
-        </Button>
-      </div>
-
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>
           <DialogHeader>
@@ -285,7 +290,11 @@ export default function EditMaterialPage() {
             <Button variant="outline" onClick={() => setDeleteOpen(false)}>
               {translations.cancel}
             </Button>
-            <Button variant="destructive" onClick={handleDelete} loading={isLoading}>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              loading={isLoading}
+            >
               {translations.delete}
             </Button>
           </DialogFooter>
