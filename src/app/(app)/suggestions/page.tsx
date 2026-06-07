@@ -8,7 +8,6 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import SuggestionRepositoryImpl from "@/data/repositories/SuggestionRepositoryImpl";
 import { useAppSelector } from "@/presentation/state/hooks";
@@ -45,22 +44,17 @@ export default function SuggestionsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Lightbulb className="h-5 w-5" />
-            {translations.suggestion}
+            {translations.suggestions}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="suggestion">
-                {translations.submitYourSuggestion}
-              </Label>
               <Textarea
                 id="suggestion"
                 value={suggestion}
                 onChange={(e) => setSuggestion(e.target.value)}
-                placeholder={
-                  translations.suggestionPlaceholder
-                }
+                placeholder={translations.suggestionsPlaceholder}
                 rows={8}
                 maxLength={1000}
                 required
@@ -75,7 +69,7 @@ export default function SuggestionsPage() {
               loading={loading}
               disabled={!suggestion.trim()}
             >
-              {translations.submit}
+              {translations.submitSuggestion}
             </Button>
           </form>
         </CardContent>
