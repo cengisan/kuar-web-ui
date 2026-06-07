@@ -57,10 +57,17 @@ export function AppleSignInButton({
   useEffect(() => {
     if (!sdkReady || !window.AppleID) return;
 
+    const redirectURI = getAppleRedirectUri();
+    console.log("Apple Sign-In Config:", {
+      clientId: appleClientId,
+      redirectURI,
+      usePopup: true,
+    });
+
     window.AppleID.auth.init({
       clientId: appleClientId,
       scope: "name email",
-      redirectURI: getAppleRedirectUri(),
+      redirectURI: redirectURI,
       usePopup: true,
     });
   }, [sdkReady]);
