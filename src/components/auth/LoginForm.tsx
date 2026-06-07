@@ -28,6 +28,7 @@ export interface LoginFormProps {
   onBusinessSubmit?: (values: BusinessLoginValues) => Promise<void> | void;
   onEmployeeSubmit?: (values: EmployeeLoginValues) => Promise<void> | void;
   googleSignIn?: React.ReactNode;
+  appleSignIn?: React.ReactNode;
   onForgotPassword?: () => void;
   loading?: boolean;
   className?: string;
@@ -44,6 +45,7 @@ export function LoginForm({
   onBusinessSubmit,
   onEmployeeSubmit,
   googleSignIn,
+  appleSignIn,
   onForgotPassword,
   loading,
   className,
@@ -215,7 +217,10 @@ export function LoginForm({
           </div>
         </div>
 
-        {googleSignIn}
+        <div className="space-y-3">
+          {googleSignIn}
+          {appleSignIn}
+        </div>
       </div>
     </div>
   );

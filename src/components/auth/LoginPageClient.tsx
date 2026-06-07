@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { CredentialResponse } from "@react-oauth/google";
 import { toast } from "sonner";
 
+import { AppleSignInButton } from "@/components/auth/AppleSignInButton";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import {
   LoginForm,
@@ -13,6 +14,7 @@ import {
 } from "@/components/auth/LoginForm";
 import AuthRepositoryImpl from "@/data/repositories/AuthRepositoryImpl";
 import EmployeeRepositoryImpl from "@/data/repositories/EmployeeRepositoryImpl";
+import { isAppleAuthConfigured } from "@/config/appleAuth";
 import { googleClientId, isGoogleAuthConfigured } from "@/config/googleAuth";
 import { useAppDispatch, useAppSelector } from "@/presentation/state/hooks";
 import {
@@ -128,6 +130,24 @@ export function LoginPageClient() {
     }
   };
 
+  const handleAppleCredential = async (idToken: string) => {
+    setLoading(true);
+    try {
+      const repo = new AuthRepositoryImpl(translations);
+      const result = await repo.loginWithApple(idToken);
+
+      if (result.success) {
+        await handleAuthSuccess(result);
+      } else {
+        toast.error(result.message || translations.loginFailed);
+      }
+    } catch (error) {
+      toast.error((error as Error).message || translations.loginFailed);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <LoginForm
       loading={loading}
@@ -154,6 +174,16 @@ export function LoginPageClient() {
             {translations.loginWithGoogle}
           </button>
         )
+      }
+      appleSignIn={
+        isAppleAuthConfigured ? (
+          <AppleSignInButton
+            label={translations.loginWithApple}
+            disabled={loading}
+            onSuccess={handleAppleCredential}
+            onError={() => toast.error(translations.loginFailed)}
+          />
+        ) : undefined
       }
     />
   );
