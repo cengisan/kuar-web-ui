@@ -17,6 +17,7 @@ import {
 
 const features = [
   {
+    id: "digital-menu",
     icon: UtensilsCrossed,
     title: "Dijital Menü",
     description: "QR kod ile müşterilerinize dijital menü sunun, anında güncelleyin.",
@@ -24,6 +25,7 @@ const features = [
     iconColor: "text-amber-400",
   },
   {
+    id: "table-management",
     icon: LayoutGrid,
     title: "Masa Yönetimi",
     description: "Masalarınızı takip edin, siparişleri anında alın.",
@@ -31,6 +33,7 @@ const features = [
     iconColor: "text-cyan-400",
   },
   {
+    id: "kitchen-display",
     icon: ChefHat,
     title: "Mutfak Ekranı",
     description: "Siparişleri canlı olarak mutfağa iletin, hazırlık sürecini yönetin.",
@@ -38,6 +41,7 @@ const features = [
     iconColor: "text-red-400",
   },
   {
+    id: "cash-register",
     icon: CreditCard,
     title: "Kasa",
     description: "Ödeme alın, adisyon kapatın, günlük ciroyu takip edin.",
@@ -45,6 +49,7 @@ const features = [
     iconColor: "text-violet-400",
   },
   {
+    id: "stock-management",
     icon: Package,
     title: "Stok Takibi",
     description: "Malzeme stoklarınızı yönetin, düşük stok uyarıları alın.",
@@ -52,6 +57,7 @@ const features = [
     iconColor: "text-orange-400",
   },
   {
+    id: "dashboard",
     icon: BarChart3,
     title: "Dashboard",
     description: "Satış raporları ve işletme performansını analiz edin.",
@@ -164,8 +170,9 @@ export default function LandingPage() {
             </div>
             <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {features.map((feature) => (
-                <div
+                <Link
                   key={feature.title}
+                  href={`/features#${feature.id}`}
                   className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-card"
                 >
                   <div
@@ -182,8 +189,16 @@ export default function LandingPage() {
                       {feature.description}
                     </p>
                   </div>
-                </div>
+                </Link>
               ))}
+            </div>
+            <div className="mt-10 text-center">
+              <Button asChild variant="outline" size="lg">
+                <Link href="/features">
+                  Tüm modülleri incele
+                  <ArrowRight className="size-4" />
+                </Link>
+              </Button>
             </div>
           </div>
         </section>

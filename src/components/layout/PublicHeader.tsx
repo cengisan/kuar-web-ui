@@ -19,6 +19,9 @@ export function PublicHeader() {
         <Logo href="/" size="lg" />
 
         <div className="flex items-center gap-2">
+          <Button asChild variant="ghost" size="sm" className="hidden text-muted-foreground sm:inline-flex">
+            <Link href="/features">{t("footerFeaturesNav")}</Link>
+          </Button>
           <Button
             variant="ghost"
             size="sm"

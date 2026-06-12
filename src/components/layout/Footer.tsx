@@ -30,7 +30,7 @@ export function Footer({ className }: FooterProps) {
             <h4 className="text-sm font-semibold">{t("footerProduct")}</h4>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="/#features" className="transition-colors hover:text-foreground">
+                <Link href="/features" className="transition-colors hover:text-foreground">
                   {t("footerFeatures")}
                 </Link>
               </li>
