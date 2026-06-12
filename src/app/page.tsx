@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { Footer } from "@/components/layout/Footer";
 import { HomeHashCleanup } from "@/components/marketing/HomeHashCleanup";
+import { HeroSlideCarousel } from "@/components/marketing/HeroSlideCarousel";
 import { Button } from "@/components/ui/button";
 import {
   UtensilsCrossed,
@@ -11,7 +12,6 @@ import {
   Package,
   BarChart3,
   ArrowRight,
-  Sparkles,
   Zap,
   Shield,
 } from "lucide-react";
@@ -91,15 +91,11 @@ export default function LandingPage() {
           <div className="absolute inset-0 grid-pattern" />
           <div className="relative mx-auto max-w-7xl px-6 pb-24 pt-16 md:pb-32 md:pt-24">
             <div className="mx-auto max-w-4xl text-center">
-              <div className="animate-fade-up mb-6 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary-muted px-4 py-1.5 text-sm font-medium text-primary">
-                <Sparkles className="size-4" />
-                Restoran & kafe işletmeleri için
-              </div>
-              <h1 className="animate-fade-up-delay-1 text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
+              <h1 className="animate-fade-up text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
                 Restoranınızı{" "}
                 <span className="gradient-text">Kuar</span> ile yönetin
               </h1>
-              <p className="animate-fade-up-delay-2 mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
+              <p className="animate-fade-up-delay-1 mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
                 Dijital menüden mutfak ekranına, kasadan stok takibine kadar tüm operasyonlarınızı
                 tek platformda yönetin. Mobil uygulama ile aynı güçlü özellikler, artık web&apos;de.
               </p>
@@ -116,34 +112,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Dashboard preview */}
-            <div className="animate-fade-up-delay-2 relative mx-auto mt-16 max-w-4xl">
-              <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-primary/20 via-accent/10 to-primary/20 blur-2xl" />
-              <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-                <div className="flex items-center gap-2 border-b border-border bg-muted/50 px-4 py-3">
-                  <div className="size-3 rounded-full bg-red-500/80" />
-                  <div className="size-3 rounded-full bg-amber-500/80" />
-                  <div className="size-3 rounded-full bg-emerald-500/80" />
-                  <span className="ml-2 text-xs text-muted-foreground">app.kuar.com/dashboard</span>
-                </div>
-                <div className="grid gap-4 p-6 sm:grid-cols-3">
-                  {[
-                    { label: "Günlük ciro", value: "₺12.450", trend: "+12%" },
-                    { label: "Aktif sipariş", value: "8", trend: "Canlı" },
-                    { label: "Dolu masa", value: "14/22", trend: "64%" },
-                  ].map((item) => (
-                    <div
-                      key={item.label}
-                      className="rounded-xl border border-border bg-muted/30 p-4"
-                    >
-                      <p className="text-xs text-muted-foreground">{item.label}</p>
-                      <p className="mt-1 text-2xl font-bold">{item.value}</p>
-                      <p className="mt-1 text-xs font-medium text-primary">{item.trend}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <HeroSlideCarousel />
           </div>
         </section>
 
