@@ -3,81 +3,22 @@ import { PublicHeader } from "@/components/layout/PublicHeader";
 import { Footer } from "@/components/layout/Footer";
 import { HomeHashCleanup } from "@/components/marketing/HomeHashCleanup";
 import { HeroSlideCarousel } from "@/components/marketing/HeroSlideCarousel";
+import { LandingCapabilities } from "@/components/marketing/landing/LandingCapabilities";
+import { LandingOperationsStack } from "@/components/marketing/landing/LandingOperationsStack";
+import { RotatingHighlight } from "@/components/marketing/landing/RotatingHighlight";
 import { Button } from "@/components/ui/button";
 import {
-  UtensilsCrossed,
-  LayoutGrid,
-  ChefHat,
-  CreditCard,
-  Package,
-  BarChart3,
   ArrowRight,
   Zap,
   Shield,
+  Users,
+  Store,
 } from "lucide-react";
-
-const features = [
-  {
-    id: "digital-menu",
-    icon: UtensilsCrossed,
-    title: "Dijital Menü",
-    description: "QR kod ile müşterilerinize dijital menü sunun, anında güncelleyin.",
-    accent: "from-amber-500/20 to-orange-500/5",
-    iconColor: "text-amber-400",
-  },
-  {
-    id: "table-management",
-    icon: LayoutGrid,
-    title: "Masa Yönetimi",
-    description: "Masalarınızı takip edin, siparişleri anında alın.",
-    accent: "from-cyan-500/20 to-blue-500/5",
-    iconColor: "text-cyan-400",
-  },
-  {
-    id: "kitchen-display",
-    icon: ChefHat,
-    title: "Mutfak Ekranı",
-    description: "Siparişleri canlı olarak mutfağa iletin, hazırlık sürecini yönetin.",
-    accent: "from-red-500/20 to-rose-500/5",
-    iconColor: "text-red-400",
-  },
-  {
-    id: "cash-register",
-    icon: CreditCard,
-    title: "Kasa",
-    description: "Ödeme alın, adisyon kapatın, günlük ciroyu takip edin.",
-    accent: "from-violet-500/20 to-purple-500/5",
-    iconColor: "text-violet-400",
-  },
-  {
-    id: "stock-management",
-    icon: Package,
-    title: "Stok Takibi",
-    description: "Malzeme stoklarınızı yönetin, düşük stok uyarıları alın.",
-    accent: "from-orange-500/20 to-amber-500/5",
-    iconColor: "text-orange-400",
-  },
-  {
-    id: "dashboard",
-    icon: BarChart3,
-    title: "Dashboard",
-    description: "Satış raporları ve işletme performansını analiz edin.",
-    accent: "from-emerald-500/20 to-green-500/5",
-    iconColor: "text-emerald-400",
-  },
-];
-
-const stats = [
-  { value: "7/24", label: "Canlı operasyon" },
-  { value: "1", label: "Platform, tüm modüller" },
-  { value: "∞", label: "Ürün & menü kapasitesi" },
-];
-
-const steps = [
-  { step: "01", title: "Kayıt ol", desc: "Dakikalar içinde hesabınızı oluşturun." },
-  { step: "02", title: "İşletmenizi ekleyin", desc: "Menü, ürün ve masalarınızı tanımlayın." },
-  { step: "03", title: "Yönetmeye başlayın", desc: "Sipariş, mutfak ve kasa akışını tek yerden yönetin." },
-];
+import {
+  heroRotatingWords,
+  landingStats,
+  landingSteps,
+} from "@/config/landingContent";
 
 export default function LandingPage() {
   return (
@@ -85,139 +26,158 @@ export default function LandingPage() {
       <HomeHashCleanup />
       <PublicHeader />
       <main className="flex-1">
-        {/* Hero */}
+        {/* Hero — Mode-style split headline + product preview */}
         <section className="relative overflow-hidden">
-          <div className="absolute inset-0 hero-mesh" />
-          <div className="absolute inset-0 grid-pattern" />
-          <div className="relative mx-auto max-w-7xl px-6 pb-24 pt-16 md:pb-32 md:pt-24">
-            <div className="mx-auto max-w-4xl text-center">
-              <h1 className="animate-fade-up text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-                Restoranınızı{" "}
-                <span className="gradient-text">Kuar</span> ile yönetin
+          <div className="absolute inset-0 landing-hero-bg" />
+          <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-6 pb-24 pt-20 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16 lg:pb-32 lg:pt-24 xl:gap-24">
+            <div className="text-center lg:text-left">
+              <p className="landing-eyebrow animate-fade-up">Modern restoran yönetimi</p>
+              <h1 className="animate-fade-up mt-5 text-[2.75rem] font-semibold leading-[1.02] tracking-tight md:text-6xl xl:text-[4.25rem]">
+                Restoran yönetimi
+                <br />
+                tek platformda
+                <br />
+                <RotatingHighlight words={heroRotatingWords} className="mt-1" />
               </h1>
-              <p className="animate-fade-up-delay-1 mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
-                Dijital menüden mutfak ekranına, kasadan stok takibine kadar tüm operasyonlarınızı
-                tek platformda yönetin. Mobil uygulama ile aynı güçlü özellikler, artık web&apos;de.
+              <p className="animate-fade-up-delay-1 mx-auto mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground lg:mx-0 md:text-xl">
+                Kuar; dijital menüden mutfak ekranına, kasadan stok takibine kadar tüm operasyonları
+                tek merkezde birleştirir. Mobil uygulama ile aynı güç, artık web&apos;de.
               </p>
-              <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-                <Button asChild size="lg" className="shadow-glow">
+              <div className="animate-fade-up-delay-2 mt-9 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
+                <Button asChild size="lg" className="h-12 rounded-full px-8 shadow-glow">
                   <Link href="/register">
                     Ücretsiz Başla
                     <ArrowRight className="size-4" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="glass-panel">
-                  <Link href="/login">Giriş Yap</Link>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="h-12 rounded-full px-8 glass-panel"
+                >
+                  <Link href="/features">Platformu keşfet</Link>
                 </Button>
               </div>
             </div>
 
-            <HeroSlideCarousel />
+            <HeroSlideCarousel
+              variant="minimal"
+              className="animate-fade-up-delay-2 mx-auto w-full max-w-md lg:max-w-none"
+            />
           </div>
         </section>
 
-        {/* Stats */}
-        <section className="border-y border-border bg-muted/30 py-12">
-          <div className="mx-auto grid max-w-4xl grid-cols-3 gap-8 px-6 text-center">
-            {stats.map((s) => (
-              <div key={s.label}>
-                <p className="text-3xl font-bold gradient-text md:text-4xl">{s.value}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{s.label}</p>
+        {/* Stats band */}
+        <section className="border-y border-border/60 bg-muted/15">
+          <div className="mx-auto grid max-w-7xl grid-cols-3 gap-6 px-6 py-14 md:gap-10">
+            {landingStats.map((stat) => (
+              <div key={stat.label} className="text-center md:text-left">
+                <p className="text-3xl font-semibold tracking-tight gradient-text md:text-4xl">
+                  {stat.value}
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">{stat.label}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Features */}
-        <section className="py-24">
+        <LandingCapabilities />
+
+        {/* Split narrative — Mode "Made for..." pattern */}
+        <section className="landing-section">
           <div className="mx-auto max-w-7xl px-6">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-                İşletmeniz için ihtiyacınız olan her şey
-              </h2>
-              <p className="mt-4 text-muted-foreground">
-                Modüler yapı sayesinde ihtiyacınız olan özellikleri seçin, büyüdükçe genişletin.
-              </p>
-            </div>
-            <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {features.map((feature) => (
-                <Link
-                  key={feature.title}
-                  href={`/features#${feature.id}`}
-                  className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-card"
-                >
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${feature.accent} opacity-0 transition-opacity group-hover:opacity-100`}
-                  />
-                  <div className="relative">
-                    <div
-                      className={`mb-4 flex size-12 items-center justify-center rounded-xl bg-muted ${feature.iconColor}`}
-                    >
-                      <feature.icon className="size-6" />
-                    </div>
-                    <h3 className="text-lg font-semibold">{feature.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                      {feature.description}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-            <div className="mt-10 text-center">
-              <Button asChild variant="outline" size="lg">
-                <Link href="/features">
-                  Tüm modülleri incele
-                  <ArrowRight className="size-4" />
-                </Link>
-              </Button>
+            <p className="landing-eyebrow">Operasyondan içgörüye</p>
+            <h2 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight md:text-4xl lg:text-[2.75rem] lg:leading-[1.1]">
+              Veriyi toplamaktan öte, ekibinizin hızına göre tasarlandı
+            </h2>
+
+            <div className="mt-16 grid gap-8 lg:grid-cols-2">
+              <article className="landing-narrative-card rounded-[1.75rem] border border-border/70 bg-card/60 p-8 md:p-10">
+                <div className="mb-6 flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Store className="size-6" />
+                </div>
+                <h3 className="text-2xl font-semibold tracking-tight">İşletme sahipleri için</h3>
+                <p className="mt-4 text-base leading-relaxed text-muted-foreground">
+                  Günlük operasyonu tek ekrandan yönetin. Menü güncellemeleri, masa durumu, kasa kapanışı
+                  ve satış raporları arasında geçiş yapmadan karar alın.
+                </p>
+              </article>
+
+              <article className="landing-narrative-card rounded-[1.75rem] border border-border/70 bg-card/60 p-8 md:p-10">
+                <div className="mb-6 flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Users className="size-6" />
+                </div>
+                <h3 className="text-2xl font-semibold tracking-tight">Ekibiniz için</h3>
+                <p className="mt-4 text-base leading-relaxed text-muted-foreground">
+                  Servis, mutfak ve kasa ekipleri kendi akışlarında çalışsın. Her rol doğru ekranı
+                  görsün; veri tek kaynaktan güncellensin, iletişim maliyeti düşsün.
+                </p>
+              </article>
             </div>
           </div>
         </section>
+
+        <LandingOperationsStack />
 
         {/* How it works */}
-        <section className="border-t border-border bg-muted/20 py-24">
+        <section className="landing-section border-t border-border/60">
           <div className="mx-auto max-w-7xl px-6">
-            <h2 className="text-center text-3xl font-bold md:text-4xl">Nasıl çalışır?</h2>
-            <div className="mt-16 grid gap-8 md:grid-cols-3">
-              {steps.map((item) => (
-                <div key={item.step} className="relative text-center md:text-left">
-                  <span className="text-5xl font-bold text-primary/20">{item.step}</span>
-                  <h3 className="mt-2 text-xl font-semibold">{item.title}</h3>
-                  <p className="mt-2 text-muted-foreground">{item.desc}</p>
+            <p className="landing-eyebrow">Başlangıç</p>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
+              Dakikalar içinde kurulum
+            </h2>
+            <div className="mt-14 grid gap-6 md:grid-cols-3">
+              {landingSteps.map((item) => (
+                <div
+                  key={item.step}
+                  className="rounded-2xl border border-border/60 bg-card/50 p-6 md:p-8"
+                >
+                  <span className="text-sm font-medium uppercase tracking-[0.18em] text-primary">
+                    Adım {item.step}
+                  </span>
+                  <h3 className="mt-4 text-xl font-semibold">{item.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Trust + CTA */}
-        <section className="py-24">
+        {/* Final CTA — Mode closing band */}
+        <section className="landing-section pb-28">
           <div className="mx-auto max-w-7xl px-6">
-            <div className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/10 via-card to-card p-10 md:p-16">
-              <div className="absolute -right-20 -top-20 size-64 rounded-full bg-primary/10 blur-3xl" />
-              <div className="relative mx-auto max-w-2xl text-center">
-                <div className="mb-6 flex justify-center gap-6 text-muted-foreground">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Zap className="size-4 text-primary" />
-                    Hızlı kurulum
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Shield className="size-4 text-primary" />
-                    Güvenli altyapı
-                  </div>
-                </div>
-                <h2 className="text-3xl font-bold md:text-4xl">
-                  Restoranınızı bugün dijitalleştirin
+            <div className="relative overflow-hidden rounded-[2rem] border border-primary/20 bg-gradient-to-br from-primary/10 via-card to-card px-8 py-14 md:px-16 md:py-20">
+              <div className="absolute -right-16 -top-16 size-56 rounded-full bg-primary/10 blur-3xl" />
+              <div className="relative mx-auto max-w-3xl text-center">
+                <p className="landing-eyebrow justify-center">Kuar ile tanışın</p>
+                <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-5xl md:leading-[1.1]">
+                  Bildiğiniz restoran yazılımının ötesinde
                 </h2>
-                <p className="mt-4 text-muted-foreground">
+                <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground">
                   Ücretsiz kayıt olun, işletmenizi oluşturun ve dakikalar içinde yönetmeye başlayın.
                 </p>
-                <Button asChild size="lg" className="mt-8 shadow-glow">
-                  <Link href="/register">
-                    Hemen Başla
-                    <ArrowRight className="size-4" />
-                  </Link>
-                </Button>
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+                  <span className="inline-flex items-center gap-2">
+                    <Zap className="size-4 text-primary" />
+                    Hızlı kurulum
+                  </span>
+                  <span className="inline-flex items-center gap-2">
+                    <Shield className="size-4 text-primary" />
+                    Güvenli altyapı
+                  </span>
+                </div>
+                <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+                  <Button asChild size="lg" className="h-12 rounded-full px-8 shadow-glow">
+                    <Link href="/register">
+                      Ücretsiz Başla
+                      <ArrowRight className="size-4" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" size="lg" className="h-12 rounded-full px-8">
+                    <Link href="/login">Giriş Yap</Link>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

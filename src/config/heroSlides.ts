@@ -1,0 +1,18 @@
+export const heroSlides = [
+  { src: "/slides/homepage.jpeg", alt: "Kuar ana sayfa" },
+  { src: "/slides/digital-menu.jpeg", alt: "Dijital menü" },
+  { src: "/slides/create-menu.jpeg", alt: "Menü oluşturma" },
+  { src: "/slides/table-area.jpeg", alt: "Masa alanları" },
+  { src: "/slides/tables.jpeg", alt: "Masa yönetimi" },
+  { src: "/slides/table-order.jpeg", alt: "Masa siparişi" },
+  { src: "/slides/kitchen.jpeg", alt: "Mutfak ekranı" },
+  { src: "/slides/cashier.jpeg", alt: "Kasa" },
+  { src: "/slides/dashboard-1.jpeg", alt: "Dashboard" },
+  { src: "/slides/dashboard-2.jpeg", alt: "Dashboard raporları" },
+  { src: "/slides/products.jpeg", alt: "Ürün yönetimi" },
+  { src: "/slides/stock-1.jpeg", alt: "Stok takibi" },
+  { src: "/slides/stock-2.jpeg", alt: "Stok hareketleri" },
+  { src: "/slides/employees.jpeg", alt: "Çalışan yönetimi" },
+  { src: "/slides/feedback.jpeg", alt: "Geri bildirim" },
+  { src: "/slides/reservation.jpeg", alt: "Rezervasyon" },
+] as const;
