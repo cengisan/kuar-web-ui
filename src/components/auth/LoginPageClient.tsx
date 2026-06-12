@@ -22,6 +22,7 @@ import {
   startEmployeeSession,
   startSession,
 } from "@/presentation/state/userSlice";
+import { getWebDeviceInfo } from "@/utils/deviceInfo";
 import type { RepositoryResult } from "@/types";
 
 export function LoginPageClient() {
@@ -52,7 +53,7 @@ export function LoginPageClient() {
     setLoading(true);
     try {
       const repo = new AuthRepositoryImpl(translations);
-      const result = await repo.loginWithEmail(values.email, values.password);
+      const result = await repo.loginWithEmail(values.email, values.password, getWebDeviceInfo());
 
       if (result.success) {
         await handleAuthSuccess(result);
@@ -116,7 +117,7 @@ export function LoginPageClient() {
     setLoading(true);
     try {
       const repo = new AuthRepositoryImpl(translations);
-      const result = await repo.loginWithGoogle(credentialResponse.credential);
+      const result = await repo.loginWithGoogle(credentialResponse.credential, getWebDeviceInfo());
 
       if (result.success) {
         await handleAuthSuccess(result);
@@ -134,7 +135,7 @@ export function LoginPageClient() {
     setLoading(true);
     try {
       const repo = new AuthRepositoryImpl(translations);
-      const result = await repo.loginWithApple(idToken);
+      const result = await repo.loginWithApple(idToken, getWebDeviceInfo());
 
       if (result.success) {
         await handleAuthSuccess(result);
