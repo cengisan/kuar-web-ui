@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { Footer } from "@/components/layout/Footer";
+import { HomeHashCleanup } from "@/components/marketing/HomeHashCleanup";
 import { Button } from "@/components/ui/button";
 import {
   UtensilsCrossed,
@@ -81,6 +82,7 @@ const steps = [
 export default function LandingPage() {
   return (
     <>
+      <HomeHashCleanup />
       <PublicHeader />
       <main className="flex-1">
         {/* Hero */}
@@ -158,7 +160,7 @@ export default function LandingPage() {
         </section>
 
         {/* Features */}
-        <section id="features" className="py-24">
+        <section className="py-24">
           <div className="mx-auto max-w-7xl px-6">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-3xl font-bold tracking-tight md:text-4xl">

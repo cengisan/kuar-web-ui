@@ -42,8 +42,23 @@ export function Logo({
   );
 
   if (href) {
+    const handleHomeClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+      if (
+        href === "/" &&
+        window.location.pathname === "/" &&
+        window.location.hash.length > 0
+      ) {
+        event.preventDefault();
+        window.history.replaceState(null, "", "/");
+      }
+    };
+
     return (
-      <Link href={href} className="inline-flex transition-opacity hover:opacity-90">
+      <Link
+        href={href}
+        onClick={handleHomeClick}
+        className="inline-flex transition-opacity hover:opacity-90"
+      >
         {content}
       </Link>
     );
