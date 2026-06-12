@@ -31,7 +31,7 @@ export function LandingCapabilities() {
 
         <div
           className={cn(
-            "mt-14 grid gap-8",
+            "mt-14 grid gap-8 lg:items-stretch",
             active.slide && "lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-12",
           )}
         >
@@ -79,15 +79,15 @@ export function LandingCapabilities() {
           </div>
 
           {active.slide && (
-            <div className="relative">
-              <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-primary/10 via-transparent to-accent/10 blur-2xl" />
-              <div className="relative overflow-hidden rounded-[1.5rem] border border-border/80 bg-card shadow-card">
-                <div className="border-b border-border/60 px-5 py-3">
+            <div className="relative flex h-full min-h-0 flex-col">
+              <div className="pointer-events-none absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-primary/10 via-transparent to-accent/10 blur-2xl" />
+              <div className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-[1.5rem] border border-border/80 bg-card shadow-card">
+                <div className="shrink-0 border-b border-border/60 px-5 py-3">
                   <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
                     {active.title}
                   </p>
                 </div>
-                <div className="relative aspect-[4/5] w-full bg-muted/20 sm:aspect-[5/4]">
+                <div className="relative min-h-[280px] flex-1 bg-muted/20 sm:min-h-[320px] lg:min-h-0">
                   <Image
                     key={active.slide}
                     src={active.slide}

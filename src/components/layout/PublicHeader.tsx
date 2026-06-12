@@ -18,12 +18,6 @@ export function PublicHeader() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Logo href="/" size="lg" />
 
-        <nav className="hidden items-center gap-1 md:flex">
-          <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-            <Link href="/features">{t("footerFeaturesNav")}</Link>
-          </Button>
-        </nav>
-
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
