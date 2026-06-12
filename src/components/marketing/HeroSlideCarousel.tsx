@@ -62,7 +62,7 @@ export function HeroSlideCarousel({
           style={
             reduceMotion
               ? undefined
-              : { animationDuration: `${SLIDE_INTERVAL_MS}ms` }
+              : ({ "--slide-duration": `${SLIDE_INTERVAL_MS}ms` } as React.CSSProperties)
           }
         />
       </div>

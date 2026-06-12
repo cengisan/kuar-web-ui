@@ -167,9 +167,7 @@ body {
 
   .hero-slide-progress {
     width: 0;
-    animation-name: hero-slide-progress;
-    animation-timing-function: linear;
-    animation-fill-mode: forwards;
+    animation: hero-slide-progress var(--slide-duration, 10000ms) linear forwards;
   }
 
   .landing-hero-bg {
