@@ -14,7 +14,7 @@ export function PublicHeader() {
   const { t } = useTranslation();
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/75 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-[#111111]/75 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Logo href="/" size="lg" />
 
