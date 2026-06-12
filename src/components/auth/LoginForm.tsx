@@ -99,7 +99,7 @@ export function LoginForm({
           <TabsTrigger value="employee">{t("employeeLogin")}</TabsTrigger>
         </TabsList>
 
-        <div className="min-h-[17.5rem]">
+        <div className="min-h-[10.5rem]">
         <TabsContent value="business" className="mt-6 space-y-4">
           <form
             onSubmit={businessForm.handleSubmit(async (values) => {
