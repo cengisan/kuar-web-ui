@@ -44,8 +44,8 @@ export const gettingStartedSteps: GuideStep[] = [
   {
     title: { tr: "İşletmenizi ekleyin", en: "Add your business" },
     description: {
-      tr: "Dashboard'dan yeni işletme oluşturun. İlk işletmeniz ücretsizdir.",
-      en: "Create a new business from the dashboard. Your first business is free.",
+      tr: "Ana sayfadan yeni işletme oluşturun. İlk işletmeniz ücretsizdir.",
+      en: "Create a new business from the home page. Your first business is free.",
     },
   },
   {
@@ -77,36 +77,43 @@ export const moduleGuides: ModuleGuide[] = [
       {
         title: { tr: "Giriş yapın", en: "Sign in" },
         description: {
-          tr: "İşletme sahibi hesabınızla /login sayfasından giriş yapın.",
-          en: "Sign in with your owner account from the /login page.",
+          tr: "İşletme sahibi hesabınızla giriş yapın.",
+          en: "Sign in with your owner account.",
         },
       },
       {
-        title: { tr: "Dashboard'a gidin", en: "Go to dashboard" },
+        title: { tr: "Ana sayfaya gidin", en: "Go to the home page" },
         description: {
-          tr: "Giriş sonrası otomatik olarak /dashboard sayfasına yönlendirilirsiniz.",
-          en: "After login you are redirected to /dashboard automatically.",
+          tr: "Giriş sonrası ana sayfaya yönlendirilirsiniz; işletmeleriniz burada listelenir.",
+          en: "After sign-in you land on the home page where your businesses are listed.",
+        },
+      },
+      {
+        title: { tr: "Modülü satın alın", en: "Purchase the module" },
+        description: {
+          tr: "Ek işletme açmak için Abonelik sayfasından İşletme Oluştur modülünü satın alın. İlk işletme ücretsizdir.",
+          en: "To add more businesses, purchase the Create Business module from Subscription. Your first business is free.",
         },
       },
       {
         title: { tr: "İşletme oluşturun", en: "Create a business" },
         description: {
-          tr: "Yeni işletme butonuna tıklayın, işletme adı ve açıklamasını girin, kaydedin.",
-          en: "Click create business, enter name and description, then save.",
+          tr: "Ana sayfadaki yeni işletme butonuna tıklayın, işletme adı ve açıklamasını girin, kaydedin.",
+          en: "On the home page, tap create business, enter name and description, then save.",
         },
       },
       {
-        title: { tr: "İşletme hub'ını açın", en: "Open the business hub" },
+        title: { tr: "İşletme sayfasını açın", en: "Open your business page" },
         description: {
-          tr: "Oluşturduğunuz işletmeye tıklayarak /business/{id} sayfasındaki modül merkezine ulaşın.",
-          en: "Click your business to reach the module hub at /business/{id}.",
+          tr: "Oluşturduğunuz işletmeye tıklayarak modül kartlarının bulunduğu işletme sayfasına ulaşın.",
+          en: "Click your business to open its page with all module cards.",
         },
       },
       {
         title: { tr: "Profili düzenleyin", en: "Edit your profile" },
         description: {
-          tr: "İşletme detayında düzenle ikonu ile ad ve açıklamayı güncelleyebilirsiniz.",
-          en: "Use the edit icon on the business detail page to update name and description.",
+          tr: "İşletme sayfasındaki düzenle ikonu ile ad ve açıklamayı güncelleyebilirsiniz.",
+          en: "Use the edit icon on the business page to update name and description.",
         },
       },
     ],
@@ -131,10 +138,10 @@ export const moduleGuides: ModuleGuide[] = [
     },
     steps: [
       {
-        title: { tr: "Menüler sayfasına gidin", en: "Go to menus" },
+        title: { tr: "Menüler bölümüne gidin", en: "Open menus" },
         description: {
-          tr: "İşletme hub'ından Dijital Menü kartına tıklayın → /business/{id}/menus",
-          en: "Click Digital Menu on the business hub → /business/{id}/menus",
+          tr: "İşletme sayfasından Dijital Menü kartına tıklayın.",
+          en: "Click Digital Menu on your business page.",
         },
       },
       {
@@ -183,10 +190,10 @@ export const moduleGuides: ModuleGuide[] = [
     iconColor: "text-emerald-400",
     steps: [
       {
-        title: { tr: "Ürünler sayfasına gidin", en: "Go to products" },
+        title: { tr: "Ürünler bölümüne gidin", en: "Open products" },
         description: {
-          tr: "İşletme hub'ından Ürünler kartına tıklayın → /business/{id}/products",
-          en: "Click Products on the business hub → /business/{id}/products",
+          tr: "İşletme sayfasından Ürünler kartına tıklayın.",
+          en: "Click Products on your business page.",
         },
       },
       {
@@ -206,8 +213,8 @@ export const moduleGuides: ModuleGuide[] = [
       {
         title: { tr: "Ürünü düzenleyin", en: "Edit products" },
         description: {
-          tr: "Listeden bir ürüne tıklayarak /business/{id}/products/{productId}/edit sayfasında güncelleyin.",
-          en: "Click a product to update it at /business/{id}/products/{productId}/edit.",
+          tr: "Listeden bir ürüne tıklayarak düzenleme ekranında bilgileri güncelleyin.",
+          en: "Click a product in the list to update it on the edit screen.",
         },
       },
       {
@@ -229,10 +236,10 @@ export const moduleGuides: ModuleGuide[] = [
     iconColor: "text-indigo-400",
     steps: [
       {
-        title: { tr: "Çalışanlar sayfasına gidin", en: "Go to employees" },
+        title: { tr: "Çalışanlar bölümüne gidin", en: "Open employees" },
         description: {
-          tr: "İşletme hub'ından Çalışanlarım kartına tıklayın → /business/{id}/employees",
-          en: "Click My Employees on the business hub → /business/{id}/employees",
+          tr: "İşletme sayfasından Çalışanlarım kartına tıklayın.",
+          en: "Click My Employees on your business page.",
         },
       },
       {
@@ -252,15 +259,15 @@ export const moduleGuides: ModuleGuide[] = [
       {
         title: { tr: "Erişim kodunu paylaşın", en: "Share access code" },
         description: {
-          tr: "Oluşturulan erişim kodunu çalışanıza verin; çalışan /login üzerinden çalışan girişi yapar.",
-          en: "Give the generated access code to your employee; they sign in via employee login at /login.",
+          tr: "Oluşturulan erişim kodunu çalışanıza verin; çalışan giriş ekranından hesabına erişir.",
+          en: "Give the generated access code to your employee; they sign in via the employee login screen.",
         },
       },
       {
         title: { tr: "Çalışanı düzenleyin", en: "Edit employees" },
         description: {
-          tr: "Yetki değişiklikleri için /business/{id}/employees/{employeeId}/edit sayfasını kullanın.",
-          en: "Use /business/{id}/employees/{employeeId}/edit to change permissions.",
+          tr: "Yetki değişiklikleri için çalışan düzenleme ekranını kullanın.",
+          en: "Use the employee edit screen to change roles and permissions.",
         },
       },
     ],
@@ -285,10 +292,10 @@ export const moduleGuides: ModuleGuide[] = [
     },
     steps: [
       {
-        title: { tr: "Alanlar sayfasına gidin", en: "Go to areas" },
+        title: { tr: "Masa yönetimine gidin", en: "Open table management" },
         description: {
-          tr: "Masa Yönetimi kartına tıklayın → /business/{id}/areas",
-          en: "Click Table Management → /business/{id}/areas",
+          tr: "İşletme sayfasından Masa Yönetimi kartına tıklayın.",
+          en: "Click Table Management on your business page.",
         },
       },
       {
@@ -308,8 +315,8 @@ export const moduleGuides: ModuleGuide[] = [
       {
         title: { tr: "Sipariş alın", en: "Take orders" },
         description: {
-          tr: "Boş masaya tıklayın → /business/{id}/tables/{tableId}/order — ürün ekleyin.",
-          en: "Click an empty table → /business/{id}/tables/{tableId}/order — add items.",
+          tr: "Boş bir masaya tıklayın, sipariş ekranından ürün ekleyin.",
+          en: "Tap an empty table and add items from the order screen.",
         },
       },
       {
@@ -337,15 +344,15 @@ export const moduleGuides: ModuleGuide[] = [
       {
         title: { tr: "Kasa ekranını açın", en: "Open cashier" },
         description: {
-          tr: "İşletme hub'ından Kasa kartına tıklayın veya dolu masadan kasa moduna geçin.",
-          en: "Click Cashier on the business hub or switch to cashier mode from an occupied table.",
+          tr: "İşletme sayfasından Kasa kartına tıklayın veya dolu masadan kasa moduna geçin.",
+          en: "Click Cashier on your business page or switch to cashier mode from an occupied table.",
         },
       },
       {
         title: { tr: "Masayı seçin", en: "Select a table" },
         description: {
-          tr: "Ödeme alınacak dolu masayı listeden seçin → /business/{id}/tables/{tableId}/cashier",
-          en: "Select the occupied table to bill → /business/{id}/tables/{tableId}/cashier",
+          tr: "Ödeme alınacak dolu masayı listeden seçin.",
+          en: "Select the occupied table you want to bill from the list.",
         },
       },
       {
@@ -383,8 +390,8 @@ export const moduleGuides: ModuleGuide[] = [
       {
         title: { tr: "Mutfak ekranını açın", en: "Open kitchen display" },
         description: {
-          tr: "İşletme hub'ından Mutfak Ekranı kartına tıklayın → /business/{id}/kitchen",
-          en: "Click Kitchen Display on the business hub → /business/{id}/kitchen",
+          tr: "İşletme sayfasından Mutfak Ekranı kartına tıklayın.",
+          en: "Click Kitchen Display on your business page.",
         },
       },
       {
@@ -418,8 +425,8 @@ export const moduleGuides: ModuleGuide[] = [
     ],
     tips: [
       {
-        tr: "Mutfak ekranı WebSocket ile canlı güncellenir; internet bağlantısını kontrol edin.",
-        en: "Kitchen display updates live via WebSocket; ensure a stable internet connection.",
+        tr: "Mutfak ekranı canlı güncellenir; kesintisiz internet bağlantısı önerilir.",
+        en: "The kitchen display updates live; a stable internet connection is recommended.",
       },
     ],
   },
@@ -437,10 +444,10 @@ export const moduleGuides: ModuleGuide[] = [
     },
     steps: [
       {
-        title: { tr: "Masalar sayfasına gidin", en: "Go to tables" },
+        title: { tr: "Masalar ekranına gidin", en: "Open tables" },
         description: {
-          tr: "Alan seçerek /business/{id}/areas/{areaId}/tables sayfasına gidin.",
-          en: "Select an area to open /business/{id}/areas/{areaId}/tables.",
+          tr: "Masa Yönetimi bölümünden bir alan seçerek masalar listesine gidin.",
+          en: "From Table Management, select an area to open the tables list.",
         },
       },
       {
@@ -483,10 +490,10 @@ export const moduleGuides: ModuleGuide[] = [
     iconColor: "text-pink-400",
     steps: [
       {
-        title: { tr: "Geri bildirim sayfasına gidin", en: "Go to feedback" },
+        title: { tr: "Geri bildirim bölümüne gidin", en: "Open feedback" },
         description: {
-          tr: "İşletme hub'ından Müşteri Geri Bildirimleri kartına tıklayın → /business/{id}/feedback",
-          en: "Click Customer Feedback on the business hub → /business/{id}/feedback",
+          tr: "İşletme sayfasından Müşteri Geri Bildirimleri kartına tıklayın.",
+          en: "Click Customer Feedback on your business page.",
         },
       },
       {
@@ -522,10 +529,10 @@ export const moduleGuides: ModuleGuide[] = [
     iconColor: "text-emerald-400",
     steps: [
       {
-        title: { tr: "Dashboard'u açın", en: "Open dashboard" },
+        title: { tr: "Dashboard modülünü açın", en: "Open the Dashboard module" },
         description: {
-          tr: "İşletme hub'ından Dashboard kartına tıklayın → /business/{id}/dashboard",
-          en: "Click Dashboard on the business hub → /business/{id}/dashboard",
+          tr: "İşletme sayfasından Dashboard kartına tıklayın.",
+          en: "Click Dashboard on your business page.",
         },
       },
       {
@@ -568,10 +575,10 @@ export const moduleGuides: ModuleGuide[] = [
     iconColor: "text-orange-400",
     steps: [
       {
-        title: { tr: "Stok sayfasına gidin", en: "Go to stock" },
+        title: { tr: "Stok bölümüne gidin", en: "Open stock management" },
         description: {
-          tr: "İşletme hub'ından Stok Yönetimi kartına tıklayın → /business/{id}/stock",
-          en: "Click Stock Management on the business hub → /business/{id}/stock",
+          tr: "İşletme sayfasından Stok Yönetimi kartına tıklayın.",
+          en: "Click Stock Management on your business page.",
         },
       },
       {
@@ -591,15 +598,15 @@ export const moduleGuides: ModuleGuide[] = [
       {
         title: { tr: "Düşük stok uyarılarını ayarlayın", en: "Configure low stock alerts" },
         description: {
-          tr: "/business/{id}/stock/alerts sayfasından uyarı eşiklerini yapılandırın.",
-          en: "Configure alert thresholds at /business/{id}/stock/alerts.",
+          tr: "Stok uyarıları ekranından eşik değerlerini yapılandırın.",
+          en: "Configure threshold values from the stock alerts screen.",
         },
       },
       {
         title: { tr: "Malzemeyi düzenleyin", en: "Edit materials" },
         description: {
-          tr: "Malzeme detayında /business/{id}/stock/{materialId}/edit ile bilgileri güncelleyin.",
-          en: "Update details at /business/{id}/stock/{materialId}/edit from material detail.",
+          tr: "Malzeme detayından düzenleme ekranı ile bilgileri güncelleyin.",
+          en: "Update material details from the edit screen on the material detail page.",
         },
       },
     ],
