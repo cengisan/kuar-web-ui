@@ -1,12 +1,14 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/cn";
@@ -17,6 +19,7 @@ export type RegisterFormValues = {
   email: string;
   password: string;
   confirmPassword: string;
+  acceptTerms: boolean;
 };
 
 export interface RegisterFormProps {
@@ -26,7 +29,7 @@ export interface RegisterFormProps {
 }
 
 export function RegisterForm({ onSubmit, loading, className }: RegisterFormProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirm, setShowConfirm] = React.useState(false);
 
@@ -38,10 +41,15 @@ export function RegisterForm({ onSubmit, loading, className }: RegisterFormProps
           email: z.email({ message: t("invalidEmailFormat") }),
           password: z.string().min(8, t("passwordTooShort")),
           confirmPassword: z.string(),
+          acceptTerms: z.boolean(),
         })
         .refine((data) => data.password === data.confirmPassword, {
           message: t("passwordsDoNotMatch"),
           path: ["confirmPassword"],
+        })
+        .refine((data) => data.acceptTerms, {
+          message: t("acceptTermsRequired"),
+          path: ["acceptTerms"],
         }),
     [t],
   );
@@ -53,6 +61,7 @@ export function RegisterForm({ onSubmit, loading, className }: RegisterFormProps
       email: "",
       password: "",
       confirmPassword: "",
+      acceptTerms: false,
     },
   });
 
@@ -165,6 +174,33 @@ export function RegisterForm({ onSubmit, loading, className }: RegisterFormProps
             <p className="text-xs text-destructive">
               {form.formState.errors.confirmPassword.message}
             </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-start gap-3">
+            <Checkbox
+              id="register-accept-terms"
+              checked={form.watch("acceptTerms")}
+              onCheckedChange={(checked) =>
+                form.setValue("acceptTerms", checked === true, { shouldValidate: true })
+              }
+              aria-invalid={!!form.formState.errors.acceptTerms}
+            />
+            <Label htmlFor="register-accept-terms" className="text-sm font-normal leading-relaxed text-muted-foreground">
+              <Link href="/terms" className="text-foreground underline-offset-4 hover:underline">
+                {t("registerTermsLink")}
+              </Link>
+              {" "}
+              {language === "en" ? "and" : "ve"}{" "}
+              <Link href="/privacy" className="text-foreground underline-offset-4 hover:underline">
+                {t("registerPrivacyLink")}
+              </Link>
+              {language === "en" ? " — I have read and accept them." : "'nı okudum, kabul ediyorum."}
+            </Label>
+          </div>
+          {form.formState.errors.acceptTerms && (
+            <p className="text-xs text-destructive">{form.formState.errors.acceptTerms.message}</p>
           )}
         </div>
 
