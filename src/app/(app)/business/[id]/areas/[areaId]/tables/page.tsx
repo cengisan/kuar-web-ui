@@ -172,9 +172,9 @@ export default function TablesPage() {
     if (!wsOwnerId) return;
 
     webSocketService.connect(wsOwnerId, {
-      onTableUpdate: handleRealtimeEvent,
-      onOrderUpdate: handleRealtimeEvent,
-      onKitchenUpdate: handleRealtimeEvent,
+      onTableUpdate: [handleRealtimeEvent],
+      onOrderUpdate: [handleRealtimeEvent],
+      onKitchenUpdate: [handleRealtimeEvent],
     });
 
     return () => {
