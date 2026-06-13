@@ -100,7 +100,7 @@ export function LandingCapabilities() {
                   />
 
                   {activeSlide.mobile && (
-                    <div className="absolute right-0 bottom-[5%] z-10 w-[58%] min-w-[170px] max-w-[360px] sm:min-w-[210px] sm:max-w-[440px] lg:-right-8 lg:bottom-[3%] lg:w-[52%] lg:min-w-[280px] lg:max-w-[560px] xl:max-w-[620px] slide-float-delayed">
+                    <div className="absolute right-0 bottom-[4%] z-10 w-[66%] min-w-[190px] max-w-[420px] sm:min-w-[240px] sm:max-w-[520px] lg:-right-10 lg:bottom-[2%] lg:w-[60%] lg:min-w-[320px] lg:max-w-[680px] xl:-right-14 xl:max-w-[740px] slide-float-delayed">
                       <SlideImage
                         src={pickSlideImage(activeSlide, "mobile")}
                         alt={`${active.title} — mobil uygulama`}

@@ -87,7 +87,7 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
           />
 
           {!isFullLayout && (
-            <div className="absolute right-0 bottom-[5%] z-20 w-[62%] min-w-[200px] max-w-[400px] sm:min-w-[240px] sm:max-w-[480px] md:max-w-[540px] lg:-right-10 lg:bottom-[3%] lg:w-[56%] lg:min-w-[300px] lg:max-w-[620px] xl:-right-12 xl:max-w-[700px] slide-float">
+            <div className="absolute right-0 bottom-[4%] z-20 w-[72%] min-w-[230px] max-w-[480px] sm:min-w-[270px] sm:max-w-[560px] md:max-w-[620px] lg:-right-14 lg:bottom-[2%] lg:w-[66%] lg:min-w-[360px] lg:max-w-[760px] xl:-right-16 xl:min-w-[400px] xl:max-w-[820px] 2xl:-right-20 2xl:max-w-[880px] slide-float">
               <SlideCrossfade
                 slides={mobileSlides}
                 activeIndex={activeIndex}
