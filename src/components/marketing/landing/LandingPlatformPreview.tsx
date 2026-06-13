@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Monitor, Smartphone } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { platformGallerySlides, pickSlideImage } from "@/config/slideAssets";
+import { SLIDE_SIZES } from "@/config/slideImageConfig";
 import { SlideImage } from "@/components/marketing/mockups/SlideImage";
 
 type Platform = "web" | "mobile";
@@ -111,7 +112,7 @@ export function LandingPlatformPreview() {
             <div
               key={`${platform}-${activeSlide.id}`}
               className={cn(
-                "relative slide-preview-enter lg:scale-[1.08] lg:origin-center",
+                "relative slide-preview-enter",
                 !isFullLayout &&
                   platform === "mobile" &&
                   "mx-auto max-w-[380px] sm:max-w-[420px] lg:max-w-[460px]",
@@ -122,9 +123,11 @@ export function LandingPlatformPreview() {
                 alt={activeSlide.title}
                 priority
                 sizes={
-                  platform === "mobile"
-                    ? "(max-width: 1024px) 85vw, 460px"
-                    : "(max-width: 1024px) 100vw, 820px"
+                  isFullLayout
+                    ? SLIDE_SIZES.operations
+                    : platform === "mobile"
+                      ? SLIDE_SIZES.galleryMobile
+                      : SLIDE_SIZES.galleryWeb
                 }
               />
             </div>

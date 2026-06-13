@@ -3,19 +3,22 @@
 import Image from "next/image";
 import type { StaticImageData } from "next/image";
 import { cn } from "@/lib/cn";
+import { SLIDE_IMAGE_QUALITY } from "@/config/slideImageConfig";
 
 export function SlideImage({
   src,
   alt,
   priority,
   className,
-  sizes = "(max-width: 768px) 90vw, 560px",
+  sizes = "(max-width: 1280px) 100vw, 1920px",
+  quality = SLIDE_IMAGE_QUALITY,
 }: {
   src: StaticImageData;
   alt: string;
   priority?: boolean;
   className?: string;
   sizes?: string;
+  quality?: number;
 }) {
   return (
     <div
@@ -27,6 +30,7 @@ export function SlideImage({
         alt={alt}
         fill
         sizes={sizes}
+        quality={quality}
         priority={priority}
         className="object-contain"
       />
@@ -40,12 +44,14 @@ export function SlideCrossfade({
   priorityFirst = false,
   className,
   sizes,
+  quality,
 }: {
   slides: { src: StaticImageData; alt: string }[];
   activeIndex: number;
   priorityFirst?: boolean;
   className?: string;
   sizes?: string;
+  quality?: number;
 }) {
   const active = slides[activeIndex]?.src ?? slides[0]?.src;
 
@@ -70,6 +76,7 @@ export function SlideCrossfade({
             alt={slide.alt}
             priority={priorityFirst && index === 0}
             sizes={sizes}
+            quality={quality}
           />
         </div>
       ))}

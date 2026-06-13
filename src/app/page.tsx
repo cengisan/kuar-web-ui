@@ -62,7 +62,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <HeroDeviceShowcase className="animate-fade-up-delay-2 mx-auto w-full max-w-lg sm:max-w-xl lg:max-w-none" />
+            <HeroDeviceShowcase className="animate-fade-up-delay-2 mx-auto w-full max-w-xl sm:max-w-2xl lg:max-w-none" />
           </div>
         </section>
 

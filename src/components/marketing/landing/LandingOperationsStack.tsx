@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { operationsStack } from "@/config/landingContent";
 import { slideAssets } from "@/config/slideAssets";
+import { SLIDE_SIZES } from "@/config/slideImageConfig";
 import { SlideImage } from "@/components/marketing/mockups/SlideImage";
 
 const flowHighlights = [
@@ -76,12 +77,12 @@ export function LandingOperationsStack() {
               className="pointer-events-none absolute -inset-8 rounded-[2rem] bg-gradient-to-br from-primary/15 via-transparent to-accent/10 blur-3xl slide-glow-pulse"
               aria-hidden
             />
-            <div className="relative slide-preview-enter lg:scale-[1.04] lg:origin-center">
+            <div className="relative slide-preview-enter">
               <SlideImage
                 src={slideAssets.mobile.orderKitchenCashier}
                 alt="Sipariş, mutfak ve kasa ekranları — tek akışta"
                 priority
-                sizes="(max-width: 1024px) 95vw, 820px"
+                sizes={SLIDE_SIZES.operations}
               />
             </div>
           </div>

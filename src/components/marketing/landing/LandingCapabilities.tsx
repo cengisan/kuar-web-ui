@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { landingCapabilities } from "@/config/landingContent";
 import { capabilitySlideMap, pickSlideImage } from "@/config/slideAssets";
+import { SLIDE_SIZES } from "@/config/slideImageConfig";
 import { SlideImage } from "@/components/marketing/mockups/SlideImage";
 
 export function LandingCapabilities() {
@@ -90,12 +91,12 @@ export function LandingCapabilities() {
                   <p className="text-xs text-muted-foreground">Web & mobil</p>
                 </div>
 
-                <div className="relative w-full lg:scale-[1.06] lg:origin-center">
+                <div className="relative w-full">
                   <SlideImage
                     src={pickSlideImage(activeSlide, "web")}
                     alt={`${active.title} — web paneli`}
                     priority
-                    sizes="(max-width: 1024px) 100vw, 720px"
+                    sizes={SLIDE_SIZES.capabilityMain}
                   />
 
                   {activeSlide.mobile && (
@@ -103,7 +104,7 @@ export function LandingCapabilities() {
                       <SlideImage
                         src={pickSlideImage(activeSlide, "mobile")}
                         alt={`${active.title} — mobil uygulama`}
-                        sizes="(max-width: 1024px) 38vw, 230px"
+                        sizes={SLIDE_SIZES.capabilityMobile}
                       />
                     </div>
                   )}

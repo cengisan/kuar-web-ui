@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { heroShowcaseSlides, pickSlideImage } from "@/config/slideAssets";
+import { SLIDE_SIZES } from "@/config/slideImageConfig";
 import { SlideCrossfade } from "./SlideImage";
 
 const SLIDE_INTERVAL_MS = 8000;
@@ -76,13 +77,13 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
         aria-hidden
       />
 
-      <div className="relative mx-auto max-w-[820px] lg:max-w-none xl:max-w-[900px]">
-        <div className="relative w-full scale-[1.02] sm:scale-105 lg:scale-100 lg:origin-center">
+      <div className="relative mx-auto w-full max-w-3xl lg:max-w-none xl:max-w-4xl">
+        <div className="relative w-full">
           <SlideCrossfade
             slides={mainSlides}
             activeIndex={activeIndex}
             priorityFirst
-            sizes="(max-width: 1024px) 95vw, 900px"
+            sizes={SLIDE_SIZES.heroMain}
           />
 
           {!isFullLayout && (
@@ -90,7 +91,7 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
               <SlideCrossfade
                 slides={mobileSlides}
                 activeIndex={activeIndex}
-                sizes="(max-width: 1024px) 38vw, 270px"
+                sizes={SLIDE_SIZES.heroMobile}
               />
             </div>
           )}
