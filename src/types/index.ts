@@ -134,6 +134,8 @@ export interface Order {
   table_id?: number;
   tableNumber?: string;
   table_number?: string;
+  areaName?: string;
+  waitTimeSeconds?: number;
   business_id?: number;
   status: string;
   totalAmount?: number;
