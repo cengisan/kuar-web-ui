@@ -13,7 +13,6 @@ export type LandingCapability = {
   icon: LucideIcon;
   title: string;
   description: string;
-  slide?: string;
 };
 
 export const landingCapabilities: LandingCapability[] = [
@@ -23,7 +22,6 @@ export const landingCapabilities: LandingCapability[] = [
     title: "Dijital Menü",
     description:
       "QR kod ile menünüzü anında güncelleyin. Temalar, kategoriler ve ürün görselleri tek ekrandan yönetilsin.",
-    slide: "/slides/digital-menu.jpeg",
   },
   {
     id: "table-management",
@@ -31,7 +29,6 @@ export const landingCapabilities: LandingCapability[] = [
     title: "Masa Yönetimi",
     description:
       "Alanlar, masalar ve sipariş durumlarını canlı takip edin. Servis ekibi her masayı tek bakışta görsün.",
-    slide: "/slides/tables.jpeg",
   },
   {
     id: "kitchen-display",
@@ -39,7 +36,6 @@ export const landingCapabilities: LandingCapability[] = [
     title: "Mutfak Ekranı",
     description:
       "Siparişler mutfağa anında düşsün. Hazırlık sürecini ekrandan yönetin, gecikmeleri azaltın.",
-    slide: "/slides/kitchen.jpeg",
   },
   {
     id: "cash-register",
@@ -47,7 +43,6 @@ export const landingCapabilities: LandingCapability[] = [
     title: "Kasa",
     description:
       "Ödeme alın, adisyon kapatın ve günlük ciroyu gerçek zamanlı izleyin. Tüm kasa akışı tek yerde.",
-    slide: "/slides/cashier.jpeg",
   },
   {
     id: "stock-management",
@@ -55,7 +50,6 @@ export const landingCapabilities: LandingCapability[] = [
     title: "Stok Takibi",
     description:
       "Malzeme stoklarını yönetin, hareketleri kaydedin ve düşük stok uyarılarıyla sürprizleri önleyin.",
-    slide: "/slides/stock-1.jpeg",
   },
   {
     id: "dashboard",
@@ -63,7 +57,6 @@ export const landingCapabilities: LandingCapability[] = [
     title: "Dashboard",
     description:
       "Satış raporları, ürün performansı ve ödeme dağılımını analiz ederek işletmenizi büyütün.",
-    slide: "/slides/dashboard-1.jpeg",
   },
 ];
 

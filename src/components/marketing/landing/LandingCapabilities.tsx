@@ -1,16 +1,18 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { landingCapabilities } from "@/config/landingContent";
+import { capabilitySlideMap, pickSlideImage } from "@/config/slideAssets";
+import { BrowserFrame, PhoneFrame } from "@/components/marketing/mockups/DeviceFrame";
 
 export function LandingCapabilities() {
   const [activeId, setActiveId] = useState(landingCapabilities[0].id);
   const active =
     landingCapabilities.find((item) => item.id === activeId) ?? landingCapabilities[0];
+  const activeSlide = capabilitySlideMap[active.id];
 
   return (
     <section className="landing-section border-t border-border/60">
@@ -29,12 +31,7 @@ export function LandingCapabilities() {
           </Link>
         </div>
 
-        <div
-          className={cn(
-            "mt-14 grid gap-8 lg:items-stretch",
-            active.slide && "lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-12",
-          )}
-        >
+        <div className="mt-14 grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-stretch lg:gap-12">
           <div className="space-y-2">
             {landingCapabilities.map((capability) => {
               const isActive = capability.id === activeId;
@@ -78,25 +75,41 @@ export function LandingCapabilities() {
             })}
           </div>
 
-          {active.slide && (
-            <div className="relative flex h-full min-h-0 flex-col">
-              <div className="pointer-events-none absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-primary/10 via-transparent to-accent/10 blur-2xl" />
-              <div className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-[1.5rem] border border-border/80 bg-card shadow-card">
-                <div className="shrink-0 border-b border-border/60 px-5 py-3">
+          {activeSlide && (
+            <div className="relative flex min-h-[360px] flex-col lg:min-h-[480px]">
+              <div
+                className="pointer-events-none absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-primary/10 via-transparent to-accent/10 blur-2xl mockup-glow-pulse"
+                aria-hidden
+              />
+
+              <div
+                key={active.id}
+                className="relative flex h-full flex-1 flex-col mockup-preview-enter"
+              >
+                <div className="mb-3 flex items-center justify-between px-1">
                   <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
                     {active.title}
                   </p>
+                  <p className="text-xs text-muted-foreground">Web & mobil</p>
                 </div>
-                <div className="relative min-h-[280px] flex-1 bg-muted/20 sm:min-h-[320px] lg:min-h-0">
-                  <Image
-                    key={active.slide}
-                    src={active.slide}
-                    alt={active.title}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 560px"
-                    className="object-contain p-4 landing-capability-image"
-                    priority
-                  />
+
+                <div className="relative flex-1">
+                  <div className="relative z-10 w-full">
+                    <BrowserFrame
+                      src={pickSlideImage(activeSlide, "web")}
+                      alt={`${active.title} — web paneli`}
+                      priority
+                    />
+                  </div>
+
+                  {activeSlide.mobile && (
+                    <div className="absolute -bottom-3 right-0 z-20 w-[32%] min-w-[96px] max-w-[140px] sm:-bottom-4 sm:right-2 sm:max-w-[160px] mockup-float-delayed">
+                      <PhoneFrame
+                        src={pickSlideImage(activeSlide, "mobile")}
+                        alt={`${active.title} — mobil uygulama`}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

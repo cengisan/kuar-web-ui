@@ -2,9 +2,10 @@ import Link from "next/link";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { Footer } from "@/components/layout/Footer";
 import { HomeHashCleanup } from "@/components/marketing/HomeHashCleanup";
-import { HeroSlideCarousel } from "@/components/marketing/HeroSlideCarousel";
+import { HeroDeviceShowcase } from "@/components/marketing/mockups/HeroDeviceShowcase";
 import { LandingCapabilities } from "@/components/marketing/landing/LandingCapabilities";
 import { LandingOperationsStack } from "@/components/marketing/landing/LandingOperationsStack";
+import { LandingPlatformPreview } from "@/components/marketing/landing/LandingPlatformPreview";
 import { RotatingHighlight } from "@/components/marketing/landing/RotatingHighlight";
 import { Button } from "@/components/ui/button";
 import {
@@ -61,10 +62,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <HeroSlideCarousel
-              variant="minimal"
-              className="animate-fade-up-delay-2 mx-auto w-full max-w-md lg:max-w-none"
-            />
+            <HeroDeviceShowcase className="animate-fade-up-delay-2 mx-auto w-full max-w-md lg:max-w-none" />
           </div>
         </section>
 
@@ -83,6 +81,8 @@ export default function LandingPage() {
         </section>
 
         <LandingCapabilities />
+
+        <LandingPlatformPreview />
 
         {/* Split narrative — Mode "Made for..." pattern */}
         <section className="landing-section">
