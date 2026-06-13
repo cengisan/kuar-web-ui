@@ -206,25 +206,20 @@ body {
     animation: landing-image-in 0.45s ease-out both;
   }
 
-  .mockup-float {
-    animation: mockup-float 5s ease-in-out infinite;
+  .slide-float {
+    animation: slide-float 5s ease-in-out infinite;
   }
 
-  .mockup-float-delayed {
-    animation: mockup-float 5.5s ease-in-out 0.6s infinite;
+  .slide-float-delayed {
+    animation: slide-float 5.5s ease-in-out 0.6s infinite;
   }
 
-  .mockup-glow-pulse {
-    animation: mockup-glow-pulse 4s ease-in-out infinite;
+  .slide-glow-pulse {
+    animation: slide-glow-pulse 4s ease-in-out infinite;
   }
 
-  .mockup-preview-enter {
-    animation: mockup-preview-enter 0.55s ease-out both;
-  }
-
-  .mockup-browser,
-  .mockup-phone {
-    transform: translateZ(0);
+  .slide-preview-enter {
+    animation: slide-preview-enter 0.55s ease-out both;
   }
 }
 
@@ -259,7 +254,7 @@ body {
   }
 }
 
-@keyframes mockup-float {
+@keyframes slide-float {
   0%,
   100% {
     transform: translateY(0);
@@ -269,7 +264,7 @@ body {
   }
 }
 
-@keyframes mockup-glow-pulse {
+@keyframes slide-glow-pulse {
   0%,
   100% {
     opacity: 0.55;
@@ -281,7 +276,7 @@ body {
   }
 }
 
-@keyframes mockup-preview-enter {
+@keyframes slide-preview-enter {
   from {
     opacity: 0;
     transform: translateY(12px) scale(0.98);
@@ -308,10 +303,10 @@ body {
     animation: none;
   }
 
-  .mockup-float,
-  .mockup-float-delayed,
-  .mockup-glow-pulse,
-  .mockup-preview-enter {
+  .slide-float,
+  .slide-float-delayed,
+  .slide-glow-pulse,
+  .slide-preview-enter {
     animation: none;
   }
 }

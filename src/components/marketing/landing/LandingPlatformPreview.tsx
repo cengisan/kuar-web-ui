@@ -3,11 +3,8 @@
 import { useEffect, useState } from "react";
 import { Monitor, Smartphone } from "lucide-react";
 import { cn } from "@/lib/cn";
-import {
-  platformGallerySlides,
-  pickSlideImage,
-} from "@/config/slideAssets";
-import { BrowserFrame, PhoneFrame } from "@/components/marketing/mockups/DeviceFrame";
+import { platformGallerySlides, pickSlideImage } from "@/config/slideAssets";
+import { SlideImage } from "@/components/marketing/mockups/SlideImage";
 
 type Platform = "web" | "mobile";
 
@@ -113,15 +110,20 @@ export function LandingPlatformPreview() {
             <div
               key={`${platform}-${activeSlide.id}`}
               className={cn(
-                "relative mockup-preview-enter",
-                platform === "mobile" ? "mx-auto max-w-[280px] sm:max-w-[320px]" : "w-full",
+                "relative slide-preview-enter",
+                platform === "mobile" && "mx-auto max-w-[320px] sm:max-w-[360px]",
               )}
             >
-              {platform === "web" ? (
-                <BrowserFrame src={image} alt={activeSlide.title} priority />
-              ) : (
-                <PhoneFrame src={image} alt={activeSlide.title} priority />
-              )}
+              <SlideImage
+                src={image}
+                alt={activeSlide.title}
+                priority
+                sizes={
+                  platform === "mobile"
+                    ? "(max-width: 1024px) 80vw, 360px"
+                    : "(max-width: 1024px) 100vw, 640px"
+                }
+              />
             </div>
           </div>
         </div>

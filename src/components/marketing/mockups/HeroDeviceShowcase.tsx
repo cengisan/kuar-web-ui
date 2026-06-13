@@ -3,11 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/cn";
-import {
-  heroShowcaseSlides,
-  pickSlideImage,
-} from "@/config/slideAssets";
-import { MockupCrossfade } from "./DeviceFrame";
+import { heroShowcaseSlides, pickSlideImage } from "@/config/slideAssets";
+import { SlideCrossfade } from "./SlideImage";
 
 const SLIDE_INTERVAL_MS = 8000;
 
@@ -67,7 +64,7 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
   return (
     <div className={cn("group relative w-full", className)}>
       <div
-        className="pointer-events-none absolute -right-10 top-1/4 size-64 rounded-full bg-primary/15 blur-3xl mockup-glow-pulse"
+        className="pointer-events-none absolute -right-10 top-1/4 size-64 rounded-full bg-primary/15 blur-3xl slide-glow-pulse"
         aria-hidden
       />
       <div
@@ -76,22 +73,19 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
       />
 
       <div className="relative mx-auto max-w-[640px] lg:max-w-none">
-        <div className="relative aspect-[4/3] w-full sm:aspect-[16/11]">
-          <div className="absolute inset-x-0 top-0 z-10 px-1 sm:px-0">
-            <MockupCrossfade
-              slides={webSlides}
-              activeIndex={activeIndex}
-              platform="web"
-              priorityFirst
-            />
-          </div>
+        <div className="relative w-full">
+          <SlideCrossfade
+            slides={webSlides}
+            activeIndex={activeIndex}
+            priorityFirst
+            sizes="(max-width: 1024px) 90vw, 640px"
+          />
 
-          <div className="absolute -bottom-2 right-0 z-20 w-[34%] min-w-[108px] max-w-[168px] sm:-bottom-4 sm:right-2 sm:w-[30%] sm:max-w-[190px] lg:-right-6 lg:max-w-[210px] mockup-float">
-            <MockupCrossfade
+          <div className="absolute -bottom-2 right-0 z-20 w-[34%] min-w-[108px] max-w-[168px] sm:-bottom-4 sm:right-2 sm:w-[30%] sm:max-w-[190px] lg:-right-4 lg:max-w-[210px] slide-float">
+            <SlideCrossfade
               slides={mobileSlides}
               activeIndex={activeIndex}
-              platform="mobile"
-              priorityFirst
+              sizes="(max-width: 1024px) 30vw, 210px"
             />
           </div>
         </div>
@@ -100,7 +94,7 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
           type="button"
           onClick={goPrev}
           aria-label="Önceki ekran"
-          className="absolute left-0 top-[38%] z-30 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-background/75 text-foreground opacity-0 backdrop-blur-md transition-all hover:border-primary/40 hover:bg-background/90 group-hover:opacity-100 sm:-left-3"
+          className="absolute left-0 top-1/2 z-30 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-background/75 text-foreground opacity-0 backdrop-blur-md transition-all hover:border-primary/40 hover:bg-background/90 group-hover:opacity-100 sm:-left-3"
         >
           <ChevronLeft className="size-4" />
         </button>
@@ -108,7 +102,7 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
           type="button"
           onClick={goNext}
           aria-label="Sonraki ekran"
-          className="absolute right-0 top-[38%] z-30 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-background/75 text-foreground opacity-0 backdrop-blur-md transition-all hover:border-primary/40 hover:bg-background/90 group-hover:opacity-100 sm:-right-3"
+          className="absolute right-0 top-1/2 z-30 flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-background/75 text-foreground opacity-0 backdrop-blur-md transition-all hover:border-primary/40 hover:bg-background/90 group-hover:opacity-100 sm:-right-3"
         >
           <ChevronRight className="size-4" />
         </button>

@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { landingCapabilities } from "@/config/landingContent";
 import { capabilitySlideMap, pickSlideImage } from "@/config/slideAssets";
-import { BrowserFrame, PhoneFrame } from "@/components/marketing/mockups/DeviceFrame";
+import { SlideImage } from "@/components/marketing/mockups/SlideImage";
 
 export function LandingCapabilities() {
   const [activeId, setActiveId] = useState(landingCapabilities[0].id);
@@ -76,16 +76,13 @@ export function LandingCapabilities() {
           </div>
 
           {activeSlide && (
-            <div className="relative flex min-h-[360px] flex-col lg:min-h-[480px]">
+            <div className="relative flex flex-col">
               <div
-                className="pointer-events-none absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-primary/10 via-transparent to-accent/10 blur-2xl mockup-glow-pulse"
+                className="pointer-events-none absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-primary/10 via-transparent to-accent/10 blur-2xl slide-glow-pulse"
                 aria-hidden
               />
 
-              <div
-                key={active.id}
-                className="relative flex h-full flex-1 flex-col mockup-preview-enter"
-              >
+              <div key={active.id} className="relative slide-preview-enter">
                 <div className="mb-3 flex items-center justify-between px-1">
                   <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
                     {active.title}
@@ -93,20 +90,20 @@ export function LandingCapabilities() {
                   <p className="text-xs text-muted-foreground">Web & mobil</p>
                 </div>
 
-                <div className="relative flex-1">
-                  <div className="relative z-10 w-full">
-                    <BrowserFrame
-                      src={pickSlideImage(activeSlide, "web")}
-                      alt={`${active.title} — web paneli`}
-                      priority
-                    />
-                  </div>
+                <div className="relative w-full">
+                  <SlideImage
+                    src={pickSlideImage(activeSlide, "web")}
+                    alt={`${active.title} — web paneli`}
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 560px"
+                  />
 
                   {activeSlide.mobile && (
-                    <div className="absolute -bottom-3 right-0 z-20 w-[32%] min-w-[96px] max-w-[140px] sm:-bottom-4 sm:right-2 sm:max-w-[160px] mockup-float-delayed">
-                      <PhoneFrame
+                    <div className="absolute -bottom-3 right-0 z-10 w-[32%] min-w-[96px] max-w-[140px] sm:-bottom-4 sm:right-2 sm:max-w-[160px] slide-float-delayed">
+                      <SlideImage
                         src={pickSlideImage(activeSlide, "mobile")}
                         alt={`${active.title} — mobil uygulama`}
+                        sizes="(max-width: 1024px) 32vw, 160px"
                       />
                     </div>
                   )}
