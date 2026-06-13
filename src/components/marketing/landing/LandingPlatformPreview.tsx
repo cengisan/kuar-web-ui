@@ -112,9 +112,7 @@ export function LandingPlatformPreview() {
               key={`${platform}-${activeSlide.id}`}
               className={cn(
                 "relative w-full slide-preview-enter",
-                !isFullLayout &&
-                  platform === "mobile" &&
-                  "mx-auto max-w-[520px] lg:mx-0 lg:max-w-none",
+                platform === "mobile" && !isFullLayout && "mx-auto max-w-[680px] lg:mx-0 lg:max-w-[760px] xl:max-w-[820px]",
               )}
             >
               <SlideImage

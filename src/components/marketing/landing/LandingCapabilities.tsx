@@ -91,7 +91,7 @@ export function LandingCapabilities() {
                   <p className="text-xs text-muted-foreground">Web & mobil</p>
                 </div>
 
-                <div className="relative w-full">
+                <div className="relative w-full pb-[36%] sm:pb-[40%] lg:pb-[44%]">
                   <SlideImage
                     src={pickSlideImage(activeSlide, "web")}
                     alt={`${active.title} — web paneli`}
@@ -100,7 +100,7 @@ export function LandingCapabilities() {
                   />
 
                   {activeSlide.mobile && (
-                    <div className="absolute -bottom-5 right-0 z-10 w-[42%] min-w-[120px] max-w-[220px] sm:-bottom-6 sm:right-0 sm:max-w-[260px] lg:max-w-[300px] slide-float-delayed">
+                    <div className="absolute bottom-0 right-0 z-10 w-[52%] min-w-[150px] max-w-[280px] sm:w-[50%] sm:max-w-[360px] lg:-right-4 lg:max-w-[420px] xl:max-w-[460px] slide-float-delayed">
                       <SlideImage
                         src={pickSlideImage(activeSlide, "mobile")}
                         alt={`${active.title} — mobil uygulama`}
