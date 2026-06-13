@@ -45,32 +45,36 @@ export const KitchenOrderCard = memo(function KitchenOrderCard({
       style={{ borderColor: waitColor }}
     >
       <div
-        className="flex items-center justify-between px-4 py-3"
+        className="flex items-start justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3"
         style={{ backgroundColor: `${waitColor}20` }}
       >
-        <div>
-          <p className="text-lg font-bold">
+        <div className="min-w-0">
+          <p className="truncate text-base font-bold sm:text-lg">
             {translations.table} {order.tableNumber || order.table_number}
           </p>
           {order.areaName && (
-            <p className="text-xs text-muted-foreground">{order.areaName}</p>
+            <p className="truncate text-xs text-muted-foreground">
+              {order.areaName}
+            </p>
           )}
         </div>
-        <div className="text-right">
+        <div className="shrink-0 text-right">
           <div
-            className="flex items-center justify-end gap-1 text-lg font-bold"
+            className="flex items-center justify-end gap-1 text-base font-bold sm:text-lg"
             style={{ color: waitColor }}
           >
             <Clock className="h-4 w-4" />
             {formatWaitTime(elapsedSeconds)}
           </div>
           {order.orderNumber && (
-            <p className="text-xs text-muted-foreground">#{order.orderNumber}</p>
+            <p className="truncate text-xs text-muted-foreground">
+              #{order.orderNumber}
+            </p>
           )}
         </div>
       </div>
 
-      <div className="divide-y divide-border px-4 py-2">
+      <div className="divide-y divide-border px-3 py-2 sm:px-4">
         {items.map((item) => {
           const itemId = getOrderItemId(item);
           const itemKey =
@@ -81,10 +85,10 @@ export const KitchenOrderCard = memo(function KitchenOrderCard({
           return (
             <div
               key={itemKey}
-              className="flex items-center gap-3 py-2 first:pt-0 last:pb-0"
+              className="flex flex-col gap-2 py-2 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:gap-3"
             >
               <div className="min-w-0 flex-1">
-                <p className="text-base font-bold">
+                <p className="text-sm font-bold sm:text-base">
                   {item.quantity}× {getItemProductName(item)}
                 </p>
                 {item.note && (
@@ -96,7 +100,7 @@ export const KitchenOrderCard = memo(function KitchenOrderCard({
               <Button
                 size="sm"
                 disabled={isUpdating}
-                className="shrink-0 font-bold text-white"
+                className="w-full shrink-0 font-bold text-white sm:w-auto"
                 style={{
                   backgroundColor: isPending ? "#FFB020" : "#22c55e",
                 }}

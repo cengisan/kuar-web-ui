@@ -153,7 +153,7 @@ export default function KitchenPage() {
           </p>
         </div>
       ) : (
-        <div className="mx-auto flex w-full max-w-2xl flex-col gap-3 pb-8">
+        <div className="grid w-full grid-cols-1 gap-3 pb-8 sm:grid-cols-2 lg:grid-cols-3">
           {orders.map((order) => (
             <KitchenOrderCard
               key={order.id}
