@@ -4,6 +4,7 @@ import { memo, useEffect, useState } from "react";
 import { Clock, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/cn";
 import type { Order, OrderItem, Translations } from "@/types";
 import { getItemProductName, getOrderItemId } from "@/utils/order";
 import { formatWaitTime, getWaitTimeColor } from "@/utils/kitchen";
@@ -98,12 +99,15 @@ export const KitchenOrderCard = memo(function KitchenOrderCard({
                 )}
               </div>
               <Button
+                variant="ghost"
                 size="sm"
                 disabled={isUpdating}
-                className="w-full shrink-0 font-bold text-white sm:w-auto"
-                style={{
-                  backgroundColor: isPending ? "#FFB020" : "#22c55e",
-                }}
+                className={cn(
+                  "w-full shrink-0 border-0 font-bold text-white shadow-none hover:brightness-95 sm:w-auto",
+                  isPending
+                    ? "bg-[#FFB020] hover:bg-[#FFB020]"
+                    : "bg-[#4CAF50] hover:bg-[#4CAF50]"
+                )}
                 onClick={() => onUpdateItemStatus(item)}
               >
                 {isUpdating ? (
