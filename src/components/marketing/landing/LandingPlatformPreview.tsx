@@ -38,19 +38,18 @@ export function LandingPlatformPreview() {
 
   return (
     <section className="landing-section overflow-hidden border-t border-border/60">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:gap-12">
-          <div>
+      <div className="mx-auto max-w-[1400px] px-6">
+        <div className="grid items-start gap-10 lg:grid-cols-[minmax(260px,340px)_minmax(0,1fr)] lg:gap-10 xl:gap-14">
+          <div className="min-w-0">
             <p className="landing-eyebrow">Her cihazda aynı deneyim</p>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl lg:text-[2.75rem] lg:leading-[1.1]">
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl lg:text-[2.35rem] lg:leading-[1.1]">
               Web paneli ve mobil uygulama birlikte çalışır
             </h2>
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
+            <p className="mt-4 text-base leading-relaxed text-muted-foreground lg:text-lg">
               Sahada mobil uygulama ile sipariş alın, ofiste web panelinden raporları inceleyin.
-              Tüm ekranlar gerçek ürün arayüzlerinden alınmıştır.
             </p>
 
-            <div className="mt-8 inline-flex rounded-full border border-border/70 bg-muted/20 p-1">
+            <div className="mt-6 inline-flex rounded-full border border-border/70 bg-muted/20 p-1">
               <button
                 type="button"
                 onClick={() => setPlatform("web")}
@@ -79,14 +78,14 @@ export function LandingPlatformPreview() {
               </button>
             </div>
 
-            <div className="mt-8 space-y-2">
+            <div className="mt-6 space-y-1.5">
               {platformGallerySlides.map((slide, index) => (
                 <button
                   key={slide.id}
                   type="button"
                   onClick={() => setActiveIndex(index)}
                   className={cn(
-                    "flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all duration-300",
+                    "flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all duration-300",
                     index === activeIndex
                       ? "border-primary/30 bg-primary/5"
                       : "border-transparent hover:border-border hover:bg-muted/25",
@@ -104,18 +103,18 @@ export function LandingPlatformPreview() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-2xl lg:max-w-none">
+          <div className="relative min-w-0 w-full lg:sticky lg:top-24">
             <div
-              className="pointer-events-none absolute inset-0 rounded-[2rem] bg-gradient-to-br from-primary/10 via-transparent to-accent/10 blur-2xl"
+              className="pointer-events-none absolute -inset-10 rounded-[2rem] bg-gradient-to-br from-primary/12 via-transparent to-accent/10 blur-3xl"
               aria-hidden
             />
             <div
               key={`${platform}-${activeSlide.id}`}
               className={cn(
-                "relative slide-preview-enter",
+                "relative w-full slide-preview-enter",
                 !isFullLayout &&
                   platform === "mobile" &&
-                  "mx-auto max-w-[380px] sm:max-w-[420px] lg:max-w-[460px]",
+                  "mx-auto max-w-[520px] lg:mx-0 lg:max-w-none",
               )}
             >
               <SlideImage

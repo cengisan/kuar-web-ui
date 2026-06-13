@@ -21,20 +21,16 @@ export function SlideImage({
   quality?: number;
 }) {
   return (
-    <div
-      className={cn("relative w-full", className)}
-      style={{ aspectRatio: `${src.width} / ${src.height}` }}
-    >
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        sizes={sizes}
-        quality={quality}
-        priority={priority}
-        className="object-contain"
-      />
-    </div>
+    <Image
+      src={src}
+      alt={alt}
+      width={src.width}
+      height={src.height}
+      sizes={sizes}
+      quality={quality}
+      priority={priority}
+      className={cn("h-auto w-full max-w-none", className)}
+    />
   );
 }
 

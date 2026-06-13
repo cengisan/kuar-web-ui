@@ -17,7 +17,7 @@ export function LandingCapabilities() {
 
   return (
     <section className="landing-section border-t border-border/60">
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="mx-auto max-w-[1400px] px-6">
         <p className="landing-eyebrow">Güvenebileceğiniz modüller</p>
         <div className="mt-4 flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
           <h2 className="max-w-2xl text-3xl font-semibold tracking-tight md:text-4xl lg:text-[2.75rem] lg:leading-[1.1]">
@@ -32,7 +32,7 @@ export function LandingCapabilities() {
           </Link>
         </div>
 
-        <div className="mt-14 grid gap-8 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-stretch lg:gap-10">
+        <div className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:items-start lg:gap-8 xl:gap-10">
           <div className="space-y-2">
             {landingCapabilities.map((capability) => {
               const isActive = capability.id === activeId;
@@ -77,7 +77,7 @@ export function LandingCapabilities() {
           </div>
 
           {activeSlide && (
-            <div className="relative flex flex-col">
+            <div className="relative flex min-w-0 flex-col lg:sticky lg:top-24">
               <div
                 className="pointer-events-none absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-primary/10 via-transparent to-accent/10 blur-2xl slide-glow-pulse"
                 aria-hidden
@@ -100,7 +100,7 @@ export function LandingCapabilities() {
                   />
 
                   {activeSlide.mobile && (
-                    <div className="absolute -bottom-4 right-0 z-10 w-[38%] min-w-[112px] max-w-[180px] sm:-bottom-5 sm:right-2 sm:max-w-[210px] lg:max-w-[230px] slide-float-delayed">
+                    <div className="absolute -bottom-5 right-0 z-10 w-[42%] min-w-[120px] max-w-[220px] sm:-bottom-6 sm:right-0 sm:max-w-[260px] lg:max-w-[300px] slide-float-delayed">
                       <SlideImage
                         src={pickSlideImage(activeSlide, "mobile")}
                         alt={`${active.title} — mobil uygulama`}

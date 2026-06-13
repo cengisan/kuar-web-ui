@@ -16,8 +16,8 @@ const flowHighlights = [
 export function LandingOperationsStack() {
   return (
     <section className="landing-section overflow-hidden bg-muted/20">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:gap-14 xl:gap-16">
+      <div className="mx-auto max-w-[1400px] px-6">
+        <div className="grid items-start gap-10 lg:grid-cols-[minmax(260px,360px)_minmax(0,1fr)] lg:gap-10 xl:gap-14">
           <div>
             <p className="landing-eyebrow">Operasyon katmanı</p>
             <h2 className="mt-4 max-w-xl text-3xl font-semibold tracking-tight md:text-4xl lg:text-[2.75rem] lg:leading-[1.1]">
@@ -72,7 +72,7 @@ export function LandingOperationsStack() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-2xl lg:max-w-none">
+          <div className="relative min-w-0 w-full lg:sticky lg:top-24">
             <div
               className="pointer-events-none absolute -inset-8 rounded-[2rem] bg-gradient-to-br from-primary/15 via-transparent to-accent/10 blur-3xl slide-glow-pulse"
               aria-hidden
