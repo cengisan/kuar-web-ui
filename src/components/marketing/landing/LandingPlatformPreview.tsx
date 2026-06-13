@@ -14,7 +14,8 @@ export function LandingPlatformPreview() {
   const [reduceMotion, setReduceMotion] = useState(false);
 
   const activeSlide = platformGallerySlides[activeIndex];
-  const image = pickSlideImage(activeSlide, platform);
+  const isFullLayout = activeSlide.layout === "full";
+  const image = pickSlideImage(activeSlide, isFullLayout ? "mobile" : platform);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -111,7 +112,9 @@ export function LandingPlatformPreview() {
               key={`${platform}-${activeSlide.id}`}
               className={cn(
                 "relative slide-preview-enter lg:scale-[1.08] lg:origin-center",
-                platform === "mobile" && "mx-auto max-w-[380px] sm:max-w-[420px] lg:max-w-[460px]",
+                !isFullLayout &&
+                  platform === "mobile" &&
+                  "mx-auto max-w-[380px] sm:max-w-[420px] lg:max-w-[460px]",
               )}
             >
               <SlideImage

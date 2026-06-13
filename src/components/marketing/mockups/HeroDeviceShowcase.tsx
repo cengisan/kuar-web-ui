@@ -14,12 +14,16 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
   const [progressKey, setProgressKey] = useState(0);
 
   const activeSlide = heroShowcaseSlides[activeIndex];
+  const isFullLayout = activeSlide.layout === "full";
 
-  const webSlides = useMemo(
+  const mainSlides = useMemo(
     () =>
       heroShowcaseSlides.map((slide) => ({
-        src: pickSlideImage(slide, "web"),
-        alt: `${slide.title} — web`,
+        src:
+          slide.layout === "full" && slide.mobile
+            ? slide.mobile
+            : pickSlideImage(slide, "web"),
+        alt: slide.title,
       })),
     [],
   );
@@ -75,19 +79,21 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
       <div className="relative mx-auto max-w-[820px] lg:max-w-none xl:max-w-[900px]">
         <div className="relative w-full scale-[1.02] sm:scale-105 lg:scale-100 lg:origin-center">
           <SlideCrossfade
-            slides={webSlides}
+            slides={mainSlides}
             activeIndex={activeIndex}
             priorityFirst
             sizes="(max-width: 1024px) 95vw, 900px"
           />
 
-          <div className="absolute -bottom-3 right-0 z-20 w-[38%] min-w-[128px] max-w-[210px] sm:-bottom-5 sm:right-2 sm:w-[36%] sm:max-w-[240px] lg:-right-6 lg:max-w-[270px] slide-float">
-            <SlideCrossfade
-              slides={mobileSlides}
-              activeIndex={activeIndex}
-              sizes="(max-width: 1024px) 38vw, 270px"
-            />
-          </div>
+          {!isFullLayout && (
+            <div className="absolute -bottom-3 right-0 z-20 w-[38%] min-w-[128px] max-w-[210px] sm:-bottom-5 sm:right-2 sm:w-[36%] sm:max-w-[240px] lg:-right-6 lg:max-w-[270px] slide-float">
+              <SlideCrossfade
+                slides={mobileSlides}
+                activeIndex={activeIndex}
+                sizes="(max-width: 1024px) 38vw, 270px"
+              />
+            </div>
+          )}
         </div>
 
         <button
@@ -127,7 +133,9 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
         <div className="flex items-end justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-foreground">{activeSlide.title}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">Web paneli & mobil uygulama</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {isFullLayout ? "Operasyon akışı" : "Web paneli & mobil uygulama"}
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <div className="hidden items-center gap-1.5 sm:flex">

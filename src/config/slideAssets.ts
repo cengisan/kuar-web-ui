@@ -5,17 +5,20 @@ import mobileDigitalMenu from "@assets/slide/mobil/digital-menu.png";
 import mobileCreateMenu from "@assets/slide/mobil/create-menu.png";
 import mobileTableArea from "@assets/slide/mobil/table-area.png";
 import mobileTables from "@assets/slide/mobil/tables.png";
+import mobileTableOrder from "@assets/slide/mobil/table-order.png";
 import mobileKitchen from "@assets/slide/mobil/kitchen.png";
 import mobileCashier from "@assets/slide/mobil/cashier.png";
-import mobileDashboard1 from "@assets/slide/mobil/dashboad-1.png";
+import mobileOrderKitchenCashier from "@assets/slide/mobil/order-kitchen-cashier.png";
+import mobileDashboard1 from "@assets/slide/mobil/dashboard-1.png";
 import mobileDashboard2 from "@assets/slide/mobil/dashboard-2.png";
 import mobileProducts from "@assets/slide/mobil/products.png";
 import mobileStock1 from "@assets/slide/mobil/stock-1.png";
 import mobileStock2 from "@assets/slide/mobil/stock-2.png";
 import mobileEmployee from "@assets/slide/mobil/employee.png";
+import mobileFeedback from "@assets/slide/mobil/feedback.png";
 import mobileReservation from "@assets/slide/mobil/reservation.png";
 
-import webCreateMenu from "@assets/slide/web/create-menu-web.png";
+import webCreateMenu from "@assets/slide/web/create-menu.png";
 import webTableArea from "@assets/slide/web/table-area-web.png";
 import webTables from "@assets/slide/web/tables-web.png";
 import webTableOrder from "@assets/slide/web/table-order-web.png";
@@ -33,6 +36,8 @@ export type SlideAsset = {
   title: string;
   mobile?: StaticImageData;
   web?: StaticImageData;
+  /** Wide composite mockups render full-width instead of web+mobile overlay */
+  layout?: "dual" | "full";
 };
 
 export const slideAssets = {
@@ -42,14 +47,17 @@ export const slideAssets = {
     createMenu: mobileCreateMenu,
     tableArea: mobileTableArea,
     tables: mobileTables,
+    tableOrder: mobileTableOrder,
     kitchen: mobileKitchen,
     cashier: mobileCashier,
+    orderKitchenCashier: mobileOrderKitchenCashier,
     dashboard1: mobileDashboard1,
     dashboard2: mobileDashboard2,
     products: mobileProducts,
     stock1: mobileStock1,
     stock2: mobileStock2,
     employee: mobileEmployee,
+    feedback: mobileFeedback,
     reservation: mobileReservation,
   },
   web: {
@@ -89,16 +97,10 @@ export const heroShowcaseSlides: SlideAsset[] = [
     web: slideAssets.web.tables,
   },
   {
-    id: "kitchen",
-    title: "Mutfak ekranı",
-    mobile: slideAssets.mobile.kitchen,
-    web: slideAssets.web.kitchen,
-  },
-  {
-    id: "cashier",
-    title: "Kasa & ödeme",
-    mobile: slideAssets.mobile.cashier,
-    web: slideAssets.web.cashier,
+    id: "operation-flow",
+    title: "Sipariş → mutfak → kasa",
+    mobile: slideAssets.mobile.orderKitchenCashier,
+    layout: "full",
   },
   {
     id: "dashboard",
@@ -171,8 +173,14 @@ export const platformGallerySlides: SlideAsset[] = [
   {
     id: "table-order",
     title: "Masa siparişi",
-    mobile: slideAssets.mobile.tables,
+    mobile: slideAssets.mobile.tableOrder,
     web: slideAssets.web.tableOrder,
+  },
+  {
+    id: "operation-flow",
+    title: "Sipariş → mutfak → kasa",
+    mobile: slideAssets.mobile.orderKitchenCashier,
+    layout: "full",
   },
   {
     id: "products",
@@ -189,8 +197,8 @@ export const platformGallerySlides: SlideAsset[] = [
   {
     id: "feedback",
     title: "Geri bildirim",
+    mobile: slideAssets.mobile.feedback,
     web: slideAssets.web.feedback,
-    mobile: slideAssets.mobile.reservation,
   },
 ];
 
