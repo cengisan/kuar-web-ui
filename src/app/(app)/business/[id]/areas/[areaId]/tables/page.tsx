@@ -286,55 +286,77 @@ export default function TablesPage() {
             const status = table.status || "EMPTY";
             const variant = STATUS_COLORS[status] || "default";
             const iconStyles = STATUS_ICON_STYLES[status] || STATUS_ICON_STYLES.EMPTY;
+            const orderTotal =
+              status === "OCCUPIED" &&
+              table.currentOrderTotal != null &&
+              table.currentOrderTotal > 0
+                ? table.currentOrderTotal
+                : null;
+            const statusLabel =
+              status === "EMPTY" || status === "AVAILABLE"
+                ? translations.tableStatusEmpty || translations.statusAvailable
+                : status === "OCCUPIED"
+                  ? translations.tableStatusOccupied || translations.statusOccupied
+                  : status === "CLEANING"
+                    ? translations.statusCleaning
+                    : translations.tableStatusReserved || translations.statusReserved;
+
             return (
               <Card
                 key={table.id}
-                className="cursor-pointer transition-colors hover:border-primary"
+                className="flex h-full cursor-pointer flex-col transition-colors hover:border-primary"
                 onClick={() => handleTableClick(table)}
               >
-                <CardContent className="space-y-2 p-4 text-center">
+                <CardContent className="flex flex-1 flex-col p-4 text-center">
                   <div
                     className={cn(
-                      "mx-auto mb-1 flex h-14 w-14 items-center justify-center rounded-full",
+                      "mx-auto flex h-14 w-14 shrink-0 items-center justify-center rounded-full",
                       iconStyles.bg
                     )}
                   >
                     <TableFurnitureIcon className={cn("h-7 w-7", iconStyles.icon)} />
                   </div>
-                  <p className="text-2xl font-bold">{table.tableNumber}</p>
-                  {status === "OCCUPIED" &&
-                    table.currentOrderTotal != null &&
-                    table.currentOrderTotal > 0 && (
-                      <p className="text-sm font-bold text-emerald-500">
-                        ₺{table.currentOrderTotal.toFixed(2)}
-                      </p>
+
+                  <p className="mt-2 truncate text-2xl font-bold leading-tight">
+                    {table.tableNumber}
+                  </p>
+
+                  <p
+                    className={cn(
+                      "mt-1 min-h-5 text-sm font-bold leading-5",
+                      orderTotal != null ? "text-emerald-500" : "invisible"
                     )}
-                  <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
-                    <Users className="h-3 w-3" />
+                    aria-hidden={orderTotal == null}
+                  >
+                    {orderTotal != null ? `₺${orderTotal.toFixed(2)}` : "₺0.00"}
+                  </p>
+
+                  <div className="mt-1 flex items-center justify-center gap-1 text-xs text-muted-foreground">
+                    <Users className="h-3 w-3 shrink-0" />
                     <span>{table.capacity || 0}</span>
                   </div>
-                  <TableOrderStatusBadges table={table} />
-                  <Badge variant={variant}>
-                    {status === "EMPTY" || status === "AVAILABLE"
-                      ? translations.tableStatusEmpty || translations.statusAvailable
-                      : status === "OCCUPIED"
-                        ? translations.tableStatusOccupied || translations.statusOccupied
-                        : status === "CLEANING"
-                          ? translations.statusCleaning
-                          : translations.tableStatusReserved || translations.statusReserved}
-                  </Badge>
-                  {!isCashierMode && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDeleteTarget(table);
-                      }}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  )}
+
+                  <TableOrderStatusBadges table={table} className="mt-1" />
+
+                  <div className="mt-auto flex items-center justify-center gap-2 pt-3">
+                    <Badge variant={variant} className="min-w-[4.5rem] justify-center">
+                      {statusLabel}
+                    </Badge>
+                    {!isCashierMode && (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8 shrink-0 text-muted-foreground"
+                        aria-label={translations.delete}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteTarget(table);
+                        }}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             );
