@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { PageLayout } from "@/components/layout/PageLayout";
-import { Banknote, Minus, Plus, CheckCheck, UtensilsCrossed } from "lucide-react";
+import { Minus, Plus, CheckCheck, UtensilsCrossed } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -225,7 +225,6 @@ export default function TableOrderPage() {
   const productsHref = order
     ? `/business/${businessId}/tables/${tableId}/order/products?orderId=${order.id}`
     : `/business/${businessId}/tables/${tableId}/order/products`;
-  const cashierHref = `/business/${businessId}/tables/${tableId}/cashier`;
 
   if (loading) {
     return (
@@ -375,13 +374,6 @@ export default function TableOrderPage() {
               <Link href={productsHref}>
                 <Plus />
                 {translations.addMore || translations.addItem}
-              </Link>
-            </Button>
-            <Button asChild className="flex-1">
-              <Link href={cashierHref}>
-                <Banknote />
-                {translations.goToCashier ||
-                  translations.closeOrder}
               </Link>
             </Button>
             {!fullyDelivered && hasAnyDeliverableItem && (
