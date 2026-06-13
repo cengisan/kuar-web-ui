@@ -31,7 +31,7 @@ export function LandingCapabilities() {
           </Link>
         </div>
 
-        <div className="mt-14 grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-stretch lg:gap-12">
+        <div className="mt-14 grid gap-8 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-stretch lg:gap-10">
           <div className="space-y-2">
             {landingCapabilities.map((capability) => {
               const isActive = capability.id === activeId;
@@ -90,20 +90,20 @@ export function LandingCapabilities() {
                   <p className="text-xs text-muted-foreground">Web & mobil</p>
                 </div>
 
-                <div className="relative w-full">
+                <div className="relative w-full lg:scale-[1.06] lg:origin-center">
                   <SlideImage
                     src={pickSlideImage(activeSlide, "web")}
                     alt={`${active.title} — web paneli`}
                     priority
-                    sizes="(max-width: 1024px) 100vw, 560px"
+                    sizes="(max-width: 1024px) 100vw, 720px"
                   />
 
                   {activeSlide.mobile && (
-                    <div className="absolute -bottom-3 right-0 z-10 w-[32%] min-w-[96px] max-w-[140px] sm:-bottom-4 sm:right-2 sm:max-w-[160px] slide-float-delayed">
+                    <div className="absolute -bottom-4 right-0 z-10 w-[38%] min-w-[112px] max-w-[180px] sm:-bottom-5 sm:right-2 sm:max-w-[210px] lg:max-w-[230px] slide-float-delayed">
                       <SlideImage
                         src={pickSlideImage(activeSlide, "mobile")}
                         alt={`${active.title} — mobil uygulama`}
-                        sizes="(max-width: 1024px) 32vw, 160px"
+                        sizes="(max-width: 1024px) 38vw, 230px"
                       />
                     </div>
                   )}

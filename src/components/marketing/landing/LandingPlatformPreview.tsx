@@ -37,7 +37,7 @@ export function LandingPlatformPreview() {
   return (
     <section className="landing-section overflow-hidden border-t border-border/60">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:gap-12">
           <div>
             <p className="landing-eyebrow">Her cihazda aynı deneyim</p>
             <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl lg:text-[2.75rem] lg:leading-[1.1]">
@@ -102,7 +102,7 @@ export function LandingPlatformPreview() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
+          <div className="relative mx-auto w-full max-w-2xl lg:max-w-none">
             <div
               className="pointer-events-none absolute inset-0 rounded-[2rem] bg-gradient-to-br from-primary/10 via-transparent to-accent/10 blur-2xl"
               aria-hidden
@@ -110,8 +110,8 @@ export function LandingPlatformPreview() {
             <div
               key={`${platform}-${activeSlide.id}`}
               className={cn(
-                "relative slide-preview-enter",
-                platform === "mobile" && "mx-auto max-w-[320px] sm:max-w-[360px]",
+                "relative slide-preview-enter lg:scale-[1.08] lg:origin-center",
+                platform === "mobile" && "mx-auto max-w-[380px] sm:max-w-[420px] lg:max-w-[460px]",
               )}
             >
               <SlideImage
@@ -120,8 +120,8 @@ export function LandingPlatformPreview() {
                 priority
                 sizes={
                   platform === "mobile"
-                    ? "(max-width: 1024px) 80vw, 360px"
-                    : "(max-width: 1024px) 100vw, 640px"
+                    ? "(max-width: 1024px) 85vw, 460px"
+                    : "(max-width: 1024px) 100vw, 820px"
                 }
               />
             </div>

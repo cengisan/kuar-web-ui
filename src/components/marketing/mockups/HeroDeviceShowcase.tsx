@@ -72,20 +72,20 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
         aria-hidden
       />
 
-      <div className="relative mx-auto max-w-[640px] lg:max-w-none">
-        <div className="relative w-full">
+      <div className="relative mx-auto max-w-[820px] lg:max-w-none xl:max-w-[900px]">
+        <div className="relative w-full scale-[1.02] sm:scale-105 lg:scale-100 lg:origin-center">
           <SlideCrossfade
             slides={webSlides}
             activeIndex={activeIndex}
             priorityFirst
-            sizes="(max-width: 1024px) 90vw, 640px"
+            sizes="(max-width: 1024px) 95vw, 900px"
           />
 
-          <div className="absolute -bottom-2 right-0 z-20 w-[34%] min-w-[108px] max-w-[168px] sm:-bottom-4 sm:right-2 sm:w-[30%] sm:max-w-[190px] lg:-right-4 lg:max-w-[210px] slide-float">
+          <div className="absolute -bottom-3 right-0 z-20 w-[38%] min-w-[128px] max-w-[210px] sm:-bottom-5 sm:right-2 sm:w-[36%] sm:max-w-[240px] lg:-right-6 lg:max-w-[270px] slide-float">
             <SlideCrossfade
               slides={mobileSlides}
               activeIndex={activeIndex}
-              sizes="(max-width: 1024px) 30vw, 210px"
+              sizes="(max-width: 1024px) 38vw, 270px"
             />
           </div>
         </div>
