@@ -28,7 +28,7 @@ export default function LandingPage() {
       <PublicHeader />
       <main className="flex-1">
         {/* Hero — Mode-style split headline + product preview */}
-        <section className="relative overflow-hidden">
+        <section className="relative overflow-x-hidden">
           <div className="absolute inset-0 landing-hero-bg" />
           <div className="relative mx-auto grid max-w-[1400px] items-center gap-10 px-6 pb-24 pt-20 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:gap-12 lg:pb-32 lg:pt-24 xl:gap-16">
             <div className="text-center lg:text-left">

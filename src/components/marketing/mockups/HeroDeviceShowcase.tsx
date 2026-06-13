@@ -67,7 +67,7 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
   }, [reduceMotion]);
 
   return (
-    <div className={cn("group relative w-full", className)}>
+    <div className={cn("group relative w-full overflow-visible", className)}>
       <div
         className="pointer-events-none absolute -right-10 top-1/4 size-64 rounded-full bg-primary/15 blur-3xl slide-glow-pulse"
         aria-hidden
@@ -87,7 +87,7 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
           />
 
           {!isFullLayout && (
-            <div className="absolute right-0 bottom-[8%] z-20 w-[48%] min-w-[150px] max-w-[300px] sm:w-[46%] sm:max-w-[360px] lg:-right-4 lg:max-w-[420px] xl:max-w-[460px] slide-float">
+            <div className="absolute right-0 bottom-[5%] z-20 w-[62%] min-w-[200px] max-w-[400px] sm:min-w-[240px] sm:max-w-[480px] md:max-w-[540px] lg:-right-10 lg:bottom-[3%] lg:w-[56%] lg:min-w-[300px] lg:max-w-[620px] xl:-right-12 xl:max-w-[700px] slide-float">
               <SlideCrossfade
                 slides={mobileSlides}
                 activeIndex={activeIndex}
