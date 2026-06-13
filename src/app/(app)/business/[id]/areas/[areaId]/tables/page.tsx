@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Plus, Trash2, Users } from "lucide-react";
@@ -20,9 +20,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { TableOrderStatusBadges } from "@/components/tables/TableOrderStatusBadges";
 import TableRepositoryImpl from "@/data/repositories/TableRepositoryImpl";
+import webSocketService from "@/services/WebSocketService";
 import { useAppSelector } from "@/presentation/state/hooks";
 import type { CafeTable } from "@/types";
+
+interface TableCardEvent {
+  eventType?: string;
+  tableId?: number;
+  orderId?: number | null;
+  status?: string;
+  currentOrderTotal?: number | null;
+  pendingCount?: number;
+  preparingCount?: number;
+  readyCount?: number;
+  deliveredCount?: number;
+}
 
 const STATUS_COLORS: Record<string, "default" | "success" | "warning" | "destructive"> = {
   EMPTY: "success",
@@ -61,7 +75,10 @@ export default function TablesPage() {
   const businessId = Number(params.id);
   const areaId = Number(params.areaId);
   const isCashierMode = searchParams.get("mode") === "cashier";
-  const { translations, accessToken } = useAppSelector((s) => s.user);
+  const { translations, accessToken, subscriberId, employeeData } = useAppSelector(
+    (s) => s.user
+  );
+  const wsOwnerId = subscriberId ?? employeeData?.employerId ?? null;
 
   const [tables, setTables] = useState<CafeTable[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,6 +88,7 @@ export default function TablesPage() {
   const [bulkCapacity, setBulkCapacity] = useState("4");
   const [creating, setCreating] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<CafeTable | null>(null);
+  const refreshDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchTables = useCallback(async () => {
     if (!accessToken) return;
@@ -86,6 +104,85 @@ export default function TablesPage() {
   useEffect(() => {
     fetchTables();
   }, [fetchTables]);
+
+  const scheduleFullRefresh = useCallback(() => {
+    if (refreshDebounceRef.current) {
+      clearTimeout(refreshDebounceRef.current);
+    }
+    refreshDebounceRef.current = setTimeout(() => {
+      refreshDebounceRef.current = null;
+      fetchTables();
+    }, 350);
+  }, [fetchTables]);
+
+  const applyTableCardEvent = useCallback(
+    (event: TableCardEvent) => {
+      const tableId = event.tableId;
+      if (tableId == null) return;
+
+      setTables((prev) => {
+        const idx = prev.findIndex((t) => Number(t.id) === Number(tableId));
+        if (idx === -1) {
+          scheduleFullRefresh();
+          return prev;
+        }
+        const row = prev[idx];
+        const next = [...prev];
+        const hasOrder = event.orderId != null;
+        next[idx] = {
+          ...row,
+          status: event.status != null ? event.status : row.status,
+          currentOrderTotal: hasOrder
+            ? event.currentOrderTotal != null
+              ? event.currentOrderTotal
+              : row.currentOrderTotal
+            : null,
+          pendingCount: event.pendingCount ?? 0,
+          preparingCount: event.preparingCount ?? 0,
+          readyCount: event.readyCount ?? 0,
+          deliveredCount: event.deliveredCount ?? 0,
+        };
+        return next;
+      });
+    },
+    [scheduleFullRefresh]
+  );
+
+  const handleRealtimeEvent = useCallback(
+    (event: unknown) => {
+      const typed = event as TableCardEvent;
+      if (typed?.eventType === "TABLE_CARD_UPDATED") {
+        applyTableCardEvent(typed);
+        return;
+      }
+      scheduleFullRefresh();
+    },
+    [applyTableCardEvent, scheduleFullRefresh]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (refreshDebounceRef.current) {
+        clearTimeout(refreshDebounceRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!wsOwnerId) return;
+
+    webSocketService.connect(wsOwnerId, {
+      onTableUpdate: handleRealtimeEvent,
+      onOrderUpdate: handleRealtimeEvent,
+      onKitchenUpdate: handleRealtimeEvent,
+    });
+
+    return () => {
+      webSocketService.removeHandler("onTableUpdate", handleRealtimeEvent);
+      webSocketService.removeHandler("onOrderUpdate", handleRealtimeEvent);
+      webSocketService.removeHandler("onKitchenUpdate", handleRealtimeEvent);
+    };
+  }, [wsOwnerId, handleRealtimeEvent]);
 
   const handleCreate = async () => {
     if (!accessToken) return;
@@ -205,10 +302,18 @@ export default function TablesPage() {
                     <TableFurnitureIcon className={cn("h-7 w-7", iconStyles.icon)} />
                   </div>
                   <p className="text-2xl font-bold">{table.tableNumber}</p>
+                  {status === "OCCUPIED" &&
+                    table.currentOrderTotal != null &&
+                    table.currentOrderTotal > 0 && (
+                      <p className="text-sm font-bold text-emerald-500">
+                        ₺{table.currentOrderTotal.toFixed(2)}
+                      </p>
+                    )}
                   <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
                     <Users className="h-3 w-3" />
                     <span>{table.capacity || 0}</span>
                   </div>
+                  <TableOrderStatusBadges table={table} />
                   <Badge variant={variant}>
                     {status === "EMPTY" || status === "AVAILABLE"
                       ? translations.tableStatusEmpty || translations.statusAvailable

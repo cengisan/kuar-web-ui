@@ -165,6 +165,11 @@ export interface CafeTable {
   areaId?: number;
   business_id?: number;
   reservationNote?: string;
+  currentOrderTotal?: number | null;
+  pendingCount?: number;
+  preparingCount?: number;
+  readyCount?: number;
+  deliveredCount?: number;
 }
 
 export interface Employee {
