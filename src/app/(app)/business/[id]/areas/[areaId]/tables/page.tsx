@@ -133,7 +133,9 @@ export default function TablesPage() {
 
     if (isCashierMode) {
       if (status === "OCCUPIED") {
-        router.push(`/business/${businessId}/tables/${table.id}/cashier`);
+        router.push(
+          `/business/${businessId}/tables/${table.id}/cashier?areaId=${areaId}`
+        );
         return;
       }
       toast.info(
@@ -145,9 +147,17 @@ export default function TablesPage() {
     router.push(`/business/${businessId}/tables/${table.id}/order`);
   };
 
+  const handleBack = () => {
+    if (isCashierMode) {
+      router.push(`/business/${businessId}/areas?mode=cashier`);
+      return;
+    }
+    router.back();
+  };
+
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: () => router.back() }}
+      back={{ label: translations.back, onClick: handleBack }}
       contentClassName="space-y-6"
     ><div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">

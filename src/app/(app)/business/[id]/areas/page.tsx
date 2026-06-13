@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { ChevronRight, Plus, LayoutGrid, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -33,8 +33,10 @@ function getAreaTableCount(area: TableArea) {
 
 export default function TableAreasPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const params = useParams<{ id: string }>();
   const businessId = Number(params.id);
+  const isCashierMode = searchParams.get("mode") === "cashier";
   const { translations, accessToken } = useAppSelector((s) => s.user);
 
   const [areas, setAreas] = useState<TableArea[]>([]);
@@ -122,18 +124,35 @@ export default function TableAreasPage() {
     }
   };
 
+  const tablesHref = (areaId: number) =>
+    isCashierMode
+      ? `/business/${businessId}/areas/${areaId}/tables?mode=cashier`
+      : `/business/${businessId}/areas/${areaId}/tables`;
+
+  const handleBack = () => {
+    if (isCashierMode) {
+      router.push(`/business/${businessId}`);
+      return;
+    }
+    router.back();
+  };
+
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: () => router.back() }}
+      back={{ label: translations.back, onClick: handleBack }}
       contentClassName="space-y-6"
     ><div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">
-          {translations.tableManagement}
+          {isCashierMode
+            ? translations.cashier
+            : translations.tableManagement}
         </h1>
-        <Button onClick={openCreate}>
-          <Plus />
-          {translations.addArea}
-        </Button>
+        {!isCashierMode && (
+          <Button onClick={openCreate}>
+            <Plus />
+            {translations.addArea}
+          </Button>
+        )}
       </div>
 
       {loading ? (
@@ -155,7 +174,7 @@ export default function TableAreasPage() {
               className="overflow-hidden border-border/80 shadow-card transition-colors hover:border-primary/30"
             >
               <Link
-                href={`/business/${businessId}/areas/${area.id}/tables`}
+                href={tablesHref(area.id)}
                 className="flex items-center gap-3 p-4 transition-colors hover:bg-muted/30"
               >
                 <div
@@ -172,6 +191,7 @@ export default function TableAreasPage() {
                 </div>
                 <ChevronRight className="size-5 shrink-0 text-muted-foreground opacity-80" />
               </Link>
+              {!isCashierMode && (
               <div className="flex border-t border-border">
                 <Button
                   type="button"
@@ -199,6 +219,7 @@ export default function TableAreasPage() {
                   {translations.tableCardDelete}
                 </Button>
               </div>
+              )}
             </Card>
           ))}
         </div>
