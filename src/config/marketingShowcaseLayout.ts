@@ -1,6 +1,6 @@
 /** Balanced mobile phone overlay on web dashboard mockups (hero + capabilities). */
 export const mobileOverlayClassName =
-  "absolute -right-3 bottom-[5%] w-[46%] min-w-[140px] max-w-[240px] sm:-right-4 sm:min-w-[165px] sm:max-w-[280px] md:-right-5 md:max-w-[300px] lg:-right-7 lg:bottom-[3%] lg:w-[44%] lg:min-w-[185px] lg:max-w-[320px] xl:-right-9 xl:max-w-[340px]";
+  "absolute -right-4 bottom-[8%] w-[32%] min-w-[108px] max-w-[160px] sm:-right-5 sm:min-w-[120px] sm:max-w-[180px] md:-right-6 md:max-w-[200px] lg:-right-8 lg:bottom-[6%] lg:w-[30%] lg:min-w-[130px] lg:max-w-[220px] xl:-right-10 xl:max-w-[240px]";
 
 /** Standalone mobile preview in platform gallery (Mobil uygulama tab). */
 export const platformMobilePreviewClassName =
