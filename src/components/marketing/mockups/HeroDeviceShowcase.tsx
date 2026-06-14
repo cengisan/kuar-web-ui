@@ -6,8 +6,8 @@ import { cn } from "@/lib/cn";
 import { heroShowcaseSlides, pickSlideImage } from "@/config/slideAssets";
 import { SLIDE_SIZES } from "@/config/slideImageConfig";
 import {
-  heroMobileStackClassName,
-  heroShowcaseStackClassName,
+  heroMobileCornerClassName,
+  heroShowcaseClassName,
 } from "@/config/marketingShowcaseLayout";
 import { SlideCrossfade } from "./SlideImage";
 
@@ -82,18 +82,16 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
       />
 
       <div className="relative w-full min-w-0">
-        <div className={heroShowcaseStackClassName}>
-          <div className="w-full">
-            <SlideCrossfade
-              slides={mainSlides}
-              activeIndex={activeIndex}
-              priorityFirst
-              sizes={SLIDE_SIZES.heroMain}
-            />
-          </div>
+        <div className={heroShowcaseClassName}>
+          <SlideCrossfade
+            slides={mainSlides}
+            activeIndex={activeIndex}
+            priorityFirst
+            sizes={SLIDE_SIZES.heroMain}
+          />
 
           {!isFullLayout && (
-            <div className={heroMobileStackClassName}>
+            <div className={heroMobileCornerClassName}>
               <SlideCrossfade
                 slides={mobileSlides}
                 activeIndex={activeIndex}

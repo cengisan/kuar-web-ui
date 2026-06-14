@@ -1,9 +1,10 @@
-/** Mobile phone stacked below web mockup (hero). */
-export const heroShowcaseStackClassName =
-  "relative mx-auto flex w-full max-w-[560px] flex-col items-center overflow-visible sm:max-w-[600px] lg:max-w-none";
+/** Hero showcase — web mockup with mobile anchored to lower-right overlap zone. */
+export const heroShowcaseClassName =
+  "relative mx-auto w-full max-w-[560px] overflow-visible sm:max-w-[600px] lg:max-w-none";
 
-export const heroMobileStackClassName =
-  "mt-4 w-full max-w-[180px] sm:mt-5 sm:max-w-[200px] md:max-w-[220px] lg:max-w-[240px] xl:max-w-[260px]";
+/** Hero mobile mockup sits on the lower-right of the web frame (marked green area). */
+export const heroMobileCornerClassName =
+  "absolute z-20 right-0 top-[42%] w-[34%] min-w-[115px] max-w-[190px] sm:top-[44%] sm:min-w-[125px] sm:max-w-[210px] md:max-w-[225px] lg:-right-1 lg:top-[40%] lg:w-[32%] lg:max-w-[235px] xl:-right-2 xl:max-w-[255px] slide-float";
 
 /** Balanced mobile phone overlay on web dashboard mockups (capabilities). */
 export const mobileOverlayClassName =
