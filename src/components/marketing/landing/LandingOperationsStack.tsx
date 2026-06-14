@@ -28,7 +28,7 @@ export function LandingOperationsStack() {
           </p>
         </div>
 
-        <div className="mt-14 grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.88fr)] lg:gap-14 xl:gap-16">
+        <div className="mt-14 grid items-center gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-14 xl:gap-16">
           <div className="space-y-4">
             {flowHighlights.map((step, index) => (
               <div
@@ -49,7 +49,7 @@ export function LandingOperationsStack() {
             ))}
           </div>
 
-          <div className="relative min-w-0 w-full lg:max-w-[540px] lg:justify-self-end xl:max-w-[580px]">
+          <div className="relative min-w-0 w-full lg:max-w-[620px] lg:justify-self-end xl:max-w-[680px]">
             <div
               className="pointer-events-none absolute -inset-10 rounded-[2rem] bg-gradient-to-br from-primary/15 via-transparent to-accent/10 blur-3xl slide-glow-pulse"
               aria-hidden

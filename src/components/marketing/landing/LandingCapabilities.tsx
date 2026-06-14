@@ -32,7 +32,7 @@ export function LandingCapabilities() {
           </Link>
         </div>
 
-        <div className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:items-start lg:gap-8 xl:gap-10">
+        <div className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-start lg:gap-8 xl:gap-10">
           <div className="space-y-2">
             {landingCapabilities.map((capability) => {
               const isActive = capability.id === activeId;
@@ -77,7 +77,7 @@ export function LandingCapabilities() {
           </div>
 
           {activeSlide && (
-            <div className="relative flex min-w-0 flex-col lg:sticky lg:top-24 lg:max-w-[580px] lg:justify-self-end xl:max-w-[620px]">
+            <div className="relative flex min-w-0 flex-col lg:sticky lg:top-24 lg:max-w-[640px] lg:justify-self-end xl:max-w-[700px]">
               <div
                 className="pointer-events-none absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-primary/10 via-transparent to-accent/10 blur-2xl slide-glow-pulse"
                 aria-hidden
@@ -91,7 +91,7 @@ export function LandingCapabilities() {
                   <p className="text-xs text-muted-foreground">Web & mobil</p>
                 </div>
 
-                <div className="relative mx-auto w-full max-w-[520px] overflow-visible sm:max-w-[560px] lg:max-w-none">
+                <div className="relative mx-auto w-full max-w-[560px] overflow-visible sm:max-w-[600px] lg:max-w-none">
                   <SlideImage
                     src={pickSlideImage(activeSlide, "web")}
                     alt={`${active.title} — web paneli`}
@@ -100,7 +100,7 @@ export function LandingCapabilities() {
                   />
 
                   {activeSlide.mobile && (
-                    <div className="absolute right-0 bottom-[4%] z-10 w-[58%] min-w-[170px] max-w-[300px] sm:min-w-[200px] sm:max-w-[340px] lg:-right-6 lg:bottom-[2%] lg:w-[54%] lg:min-w-[240px] lg:max-w-[420px] xl:-right-8 xl:max-w-[460px] slide-float-delayed">
+                    <div className="absolute -right-4 bottom-[6%] z-10 w-[42%] min-w-[120px] max-w-[200px] sm:-right-5 sm:min-w-[140px] sm:max-w-[220px] lg:-right-12 lg:bottom-[4%] lg:w-[38%] lg:min-w-[150px] lg:max-w-[240px] xl:-right-16 xl:max-w-[260px] slide-float-delayed">
                       <SlideImage
                         src={pickSlideImage(activeSlide, "mobile")}
                         alt={`${active.title} — mobil uygulama`}
