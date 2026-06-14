@@ -78,7 +78,7 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
       />
 
       <div className="relative w-full min-w-0">
-        <div className="relative w-full overflow-visible">
+        <div className="relative mx-auto w-full max-w-[520px] overflow-visible sm:max-w-[560px] lg:max-w-none">
           <SlideCrossfade
             slides={mainSlides}
             activeIndex={activeIndex}
@@ -87,7 +87,7 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
           />
 
           {!isFullLayout && (
-            <div className="absolute right-0 bottom-[4%] z-20 w-[72%] min-w-[230px] max-w-[480px] sm:min-w-[270px] sm:max-w-[560px] md:max-w-[620px] lg:-right-14 lg:bottom-[2%] lg:w-[66%] lg:min-w-[360px] lg:max-w-[760px] xl:-right-16 xl:min-w-[400px] xl:max-w-[820px] 2xl:-right-20 2xl:max-w-[880px] slide-float">
+            <div className="absolute right-0 bottom-[4%] z-20 w-[58%] min-w-[170px] max-w-[300px] sm:min-w-[200px] sm:max-w-[340px] md:max-w-[380px] lg:-right-6 lg:bottom-[2%] lg:w-[54%] lg:min-w-[240px] lg:max-w-[420px] xl:-right-8 xl:min-w-[260px] xl:max-w-[460px] slide-float">
               <SlideCrossfade
                 slides={mobileSlides}
                 activeIndex={activeIndex}
