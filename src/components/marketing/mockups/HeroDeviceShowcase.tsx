@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { heroShowcaseSlides, pickSlideImage } from "@/config/slideAssets";
 import { SLIDE_SIZES } from "@/config/slideImageConfig";
+import { mobileOverlayClassName, webShowcaseClassName } from "@/config/marketingShowcaseLayout";
 import { SlideCrossfade } from "./SlideImage";
 
 const SLIDE_INTERVAL_MS = 8000;
@@ -78,7 +79,7 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
       />
 
       <div className="relative w-full min-w-0">
-        <div className="relative mx-auto w-full max-w-[560px] overflow-visible sm:max-w-[600px] lg:max-w-none">
+        <div className={webShowcaseClassName}>
           <SlideCrossfade
             slides={mainSlides}
             activeIndex={activeIndex}
@@ -87,7 +88,7 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
           />
 
           {!isFullLayout && (
-            <div className="absolute -right-4 bottom-[6%] z-20 w-[42%] min-w-[120px] max-w-[200px] sm:-right-5 sm:min-w-[140px] sm:max-w-[220px] md:-right-6 md:max-w-[240px] lg:-right-12 lg:bottom-[4%] lg:w-[38%] lg:min-w-[150px] lg:max-w-[240px] xl:-right-16 xl:max-w-[260px] slide-float">
+            <div className={cn("z-20 slide-float", mobileOverlayClassName)}>
               <SlideCrossfade
                 slides={mobileSlides}
                 activeIndex={activeIndex}

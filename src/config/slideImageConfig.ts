@@ -3,10 +3,10 @@ export const SLIDE_IMAGE_QUALITY = 95;
 
 export const SLIDE_SIZES = {
   heroMain: "(max-width: 1280px) 100vw, 1920px",
-  heroMobile: "(max-width: 1024px) 42vw, 520px",
+  heroMobile: "(max-width: 1024px) 46vw, 680px",
   capabilityMain: "(max-width: 1280px) 100vw, 1920px",
-  capabilityMobile: "(max-width: 1024px) 38vw, 520px",
+  capabilityMobile: "(max-width: 1024px) 44vw, 680px",
   galleryWeb: "(max-width: 1280px) 100vw, 1920px",
-  galleryMobile: "(max-width: 1280px) 100vw, 1200px",
+  galleryMobile: "(max-width: 1280px) 90vw, 1080px",
   operations: "(max-width: 1280px) 100vw, 1920px",
 } as const;

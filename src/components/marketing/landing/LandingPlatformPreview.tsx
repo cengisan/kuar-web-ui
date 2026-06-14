@@ -5,6 +5,10 @@ import { Monitor, Smartphone } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { platformGallerySlides, pickSlideImage } from "@/config/slideAssets";
 import { SLIDE_SIZES } from "@/config/slideImageConfig";
+import {
+  platformMobilePreviewClassName,
+  webShowcaseColumnClassName,
+} from "@/config/marketingShowcaseLayout";
 import { SlideImage } from "@/components/marketing/mockups/SlideImage";
 
 type Platform = "web" | "mobile";
@@ -103,7 +107,7 @@ export function LandingPlatformPreview() {
             </div>
           </div>
 
-          <div className="relative min-w-0 w-full lg:sticky lg:top-24 lg:max-w-[640px] lg:justify-self-end xl:max-w-[700px]">
+          <div className={cn("relative min-w-0 w-full lg:sticky lg:top-24", webShowcaseColumnClassName)}>
             <div
               className="pointer-events-none absolute -inset-10 rounded-[2rem] bg-gradient-to-br from-primary/12 via-transparent to-accent/10 blur-3xl"
               aria-hidden
@@ -112,9 +116,7 @@ export function LandingPlatformPreview() {
               key={`${platform}-${activeSlide.id}`}
               className={cn(
                 "relative w-full slide-preview-enter",
-                platform === "mobile" &&
-                  !isFullLayout &&
-                  "mx-auto w-full max-w-[560px] sm:max-w-[600px] lg:mx-0 lg:max-w-[640px] xl:max-w-[700px]",
+                platform === "mobile" && !isFullLayout && platformMobilePreviewClassName,
               )}
             >
               <SlideImage

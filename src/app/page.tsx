@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cn } from "@/lib/cn";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { Footer } from "@/components/layout/Footer";
 import { HomeHashCleanup } from "@/components/marketing/HomeHashCleanup";
@@ -20,6 +21,7 @@ import {
   landingStats,
   landingSteps,
 } from "@/config/landingContent";
+import { webShowcaseColumnClassName } from "@/config/marketingShowcaseLayout";
 
 export default function LandingPage() {
   return (
@@ -62,7 +64,12 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <HeroDeviceShowcase className="animate-fade-up-delay-2 w-full min-w-0 lg:max-w-[640px] lg:justify-self-end xl:max-w-[700px]" />
+            <HeroDeviceShowcase
+              className={cn(
+                "animate-fade-up-delay-2 w-full min-w-0",
+                webShowcaseColumnClassName,
+              )}
+            />
           </div>
         </section>
 

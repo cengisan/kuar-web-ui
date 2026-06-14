@@ -7,6 +7,11 @@ import { cn } from "@/lib/cn";
 import { landingCapabilities } from "@/config/landingContent";
 import { capabilitySlideMap, pickSlideImage } from "@/config/slideAssets";
 import { SLIDE_SIZES } from "@/config/slideImageConfig";
+import {
+  mobileOverlayClassName,
+  webShowcaseClassName,
+  webShowcaseColumnClassName,
+} from "@/config/marketingShowcaseLayout";
 import { SlideImage } from "@/components/marketing/mockups/SlideImage";
 
 export function LandingCapabilities() {
@@ -77,7 +82,7 @@ export function LandingCapabilities() {
           </div>
 
           {activeSlide && (
-            <div className="relative flex min-w-0 flex-col lg:sticky lg:top-24 lg:max-w-[640px] lg:justify-self-end xl:max-w-[700px]">
+            <div className={cn("relative flex min-w-0 flex-col lg:sticky lg:top-24", webShowcaseColumnClassName)}>
               <div
                 className="pointer-events-none absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-primary/10 via-transparent to-accent/10 blur-2xl slide-glow-pulse"
                 aria-hidden
@@ -91,7 +96,7 @@ export function LandingCapabilities() {
                   <p className="text-xs text-muted-foreground">Web & mobil</p>
                 </div>
 
-                <div className="relative mx-auto w-full max-w-[560px] overflow-visible sm:max-w-[600px] lg:max-w-none">
+                <div className={webShowcaseClassName}>
                   <SlideImage
                     src={pickSlideImage(activeSlide, "web")}
                     alt={`${active.title} — web paneli`}
@@ -100,7 +105,7 @@ export function LandingCapabilities() {
                   />
 
                   {activeSlide.mobile && (
-                    <div className="absolute -right-4 bottom-[6%] z-10 w-[42%] min-w-[120px] max-w-[200px] sm:-right-5 sm:min-w-[140px] sm:max-w-[220px] lg:-right-12 lg:bottom-[4%] lg:w-[38%] lg:min-w-[150px] lg:max-w-[240px] xl:-right-16 xl:max-w-[260px] slide-float-delayed">
+                    <div className={cn("z-10 slide-float-delayed", mobileOverlayClassName)}>
                       <SlideImage
                         src={pickSlideImage(activeSlide, "mobile")}
                         alt={`${active.title} — mobil uygulama`}
