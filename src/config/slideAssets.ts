@@ -24,6 +24,7 @@ import webTables from "@assets/slide/web/tables-web.png";
 import webTableOrder from "@assets/slide/web/table-order-web.png";
 import webKitchen from "@assets/slide/web/kitchen-web.png";
 import webCashier from "@assets/slide/web/cashier-web.png";
+import webOrderKitchenCashier from "@assets/slide/web/order-kitchen-cashier-web.png";
 import webDashboard1 from "@assets/slide/web/dashboard-web-1.png";
 import webDashboard2 from "@assets/slide/web/dashboard-web-2.png";
 import webProducts from "@assets/slide/web/products-web.png";
@@ -67,6 +68,7 @@ export const slideAssets = {
     tableOrder: webTableOrder,
     kitchen: webKitchen,
     cashier: webCashier,
+    orderKitchenCashier: webOrderKitchenCashier,
     dashboard1: webDashboard1,
     dashboard2: webDashboard2,
     products: webProducts,
@@ -180,7 +182,7 @@ export const platformGallerySlides: SlideAsset[] = [
     id: "operation-flow",
     title: "Sipariş → mutfak → kasa",
     mobile: slideAssets.mobile.orderKitchenCashier,
-    layout: "full",
+    web: slideAssets.web.orderKitchenCashier,
   },
   {
     id: "products",

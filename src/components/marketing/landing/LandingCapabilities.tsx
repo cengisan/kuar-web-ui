@@ -8,8 +8,8 @@ import { landingCapabilities } from "@/config/landingContent";
 import { capabilitySlideMap, pickSlideImage } from "@/config/slideAssets";
 import { SLIDE_SIZES } from "@/config/slideImageConfig";
 import {
-  mobileOverlayClassName,
-  webShowcaseClassName,
+  heroMobileCornerClassName,
+  heroShowcaseClassName,
   webShowcaseColumnClassName,
 } from "@/config/marketingShowcaseLayout";
 import { SlideImage } from "@/components/marketing/mockups/SlideImage";
@@ -96,7 +96,7 @@ export function LandingCapabilities() {
                   <p className="text-xs text-muted-foreground">Web & mobil</p>
                 </div>
 
-                <div className={webShowcaseClassName}>
+                <div className={heroShowcaseClassName}>
                   <SlideImage
                     src={pickSlideImage(activeSlide, "web")}
                     alt={`${active.title} — web paneli`}
@@ -105,7 +105,7 @@ export function LandingCapabilities() {
                   />
 
                   {activeSlide.mobile && (
-                    <div className={cn("z-10 slide-float-delayed", mobileOverlayClassName)}>
+                    <div className={heroMobileCornerClassName}>
                       <SlideImage
                         src={pickSlideImage(activeSlide, "mobile")}
                         alt={`${active.title} — mobil uygulama`}
