@@ -16,7 +16,6 @@ const SLIDE_INTERVAL_MS = 8000;
 export function HeroDeviceShowcase({ className }: { className?: string }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [reduceMotion, setReduceMotion] = useState(false);
-  const [progressKey, setProgressKey] = useState(0);
 
   const activeSlide = heroShowcaseSlides[activeIndex];
   const isFullLayout = activeSlide.layout === "full";
@@ -53,7 +52,6 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
   const goTo = useCallback((index: number) => {
     const next = (index + heroShowcaseSlides.length) % heroShowcaseSlides.length;
     setActiveIndex(next);
-    setProgressKey((key) => key + 1);
   }, []);
 
   const goNext = useCallback(() => goTo(activeIndex + 1), [activeIndex, goTo]);
@@ -64,7 +62,6 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
 
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % heroShowcaseSlides.length);
-      setProgressKey((key) => key + 1);
     }, SLIDE_INTERVAL_MS);
 
     return () => window.clearInterval(timer);
@@ -119,51 +116,9 @@ export function HeroDeviceShowcase({ className }: { className?: string }) {
         </button>
       </div>
 
-      <div className="mt-6 px-1">
-        <div className="mb-3 h-1 overflow-hidden rounded-full bg-muted/50">
-          <div
-            key={progressKey}
-            className={cn(
-              "h-full rounded-full bg-gradient-to-r from-primary to-accent",
-              reduceMotion ? "w-full" : "hero-slide-progress",
-            )}
-            style={
-              reduceMotion
-                ? undefined
-                : ({ "--slide-duration": `${SLIDE_INTERVAL_MS}ms` } as React.CSSProperties)
-            }
-          />
-        </div>
-
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold text-foreground">{activeSlide.title}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              {isFullLayout ? "Operasyon akışı" : "Web paneli & mobil uygulama"}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="hidden items-center gap-1.5 sm:flex">
-              {heroShowcaseSlides.map((slide, index) => (
-                <button
-                  key={slide.id}
-                  type="button"
-                  aria-label={slide.title}
-                  onClick={() => goTo(index)}
-                  className={cn(
-                    "h-1.5 rounded-full transition-all duration-300",
-                    index === activeIndex
-                      ? "w-6 bg-primary"
-                      : "w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/50",
-                  )}
-                />
-              ))}
-            </div>
-            <p className="shrink-0 text-xs tabular-nums text-muted-foreground">
-              {activeIndex + 1}/{heroShowcaseSlides.length}
-            </p>
-          </div>
-        </div>
+      <div className="relative z-30 mt-6 px-1">
+        <p className="text-sm font-semibold text-foreground">Tek platform, tüm operasyon</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">Web paneli & mobil uygulama</p>
       </div>
     </div>
   );
