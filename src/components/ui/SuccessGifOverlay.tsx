@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { assets } from "@/config/assets";
 import { cn } from "@/lib/cn";
@@ -15,15 +17,21 @@ export function SuccessGifOverlay({
   variant?: SuccessGifVariant;
   className?: string;
 }) {
-  if (!show) return null;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!show || !mounted) return null;
 
   const src =
     variant === "paymentSuccess" ? assets.gif.paymentSuccess : assets.gif.successful;
 
-  return (
+  return createPortal(
     <div
       className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm",
+        "fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md",
         className
       )}
       aria-hidden
@@ -36,6 +44,7 @@ export function SuccessGifOverlay({
         unoptimized
         className="max-h-[min(80vh,28rem)] w-auto max-w-[min(90vw,28rem)]"
       />
-    </div>
+    </div>,
+    document.body
   );
 }
