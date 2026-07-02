@@ -49,6 +49,7 @@ class ProductRepositoryImpl {
 
   async updateProduct(
     productId: number,
+    subscriberId: number,
     businessId: number,
     productData: Record<string, unknown>
   ) {
@@ -58,6 +59,7 @@ class ProductRepositoryImpl {
         `/product/update-product/${productId}`,
         {
           ...rest,
+          subscriber_id: subscriberId,
           business_id: businessId ?? rest.business_id,
         }
       );
