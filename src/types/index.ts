@@ -64,6 +64,7 @@ export interface Product {
   name: string;
   description?: string;
   price: number;
+  calories?: number;
   currency?: string;
   category?: string;
   is_available?: boolean;
