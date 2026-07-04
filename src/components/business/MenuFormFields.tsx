@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { AtSign, Expand, Upload, X } from "lucide-react";
+import Link from "next/link";
+import { AtSign, Crown, Expand, Upload, X } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +34,7 @@ export interface MenuFormValues {
   currency: string;
   theme: string;
   isAvailable: boolean;
+  orderingEnabled: boolean;
 }
 
 export interface MenuFormFieldsProps {
@@ -43,6 +45,7 @@ export interface MenuFormFieldsProps {
   onImageChange?: (file: File | null) => void;
   existingImageUrl?: string | null;
   idPrefix?: string;
+  canUseOrdering?: boolean;
 }
 
 function FieldHint({ text }: { text?: string }) {
@@ -58,6 +61,7 @@ export function MenuFormFields({
   onImageChange,
   existingImageUrl,
   idPrefix = "menu",
+  canUseOrdering = false,
 }: MenuFormFieldsProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [themePreviewOpen, setThemePreviewOpen] = useState(false);
@@ -302,6 +306,49 @@ export function MenuFormFields({
           </div>
         </section>
       </div>
+
+      {/* Digital Menu Ordering (Dijital Menü Sipariş) sub-module */}
+      <section
+        className={`space-y-3 rounded-2xl border border-border/80 bg-muted/20 p-4 ${
+          canUseOrdering ? "" : "opacity-70"
+        }`}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Label htmlFor={`${idPrefix}-ordering`}>
+                {translations.digitalMenuOrdering}
+              </Label>
+              {!canUseOrdering && <Crown className="size-4 text-amber-500" />}
+            </div>
+            <FieldHint
+              text={
+                canUseOrdering
+                  ? translations.digitalMenuOrderingHint
+                  : translations.digitalMenuOrderRequiredMessage
+              }
+            />
+          </div>
+          <Switch
+            id={`${idPrefix}-ordering`}
+            checked={canUseOrdering ? values.orderingEnabled : false}
+            disabled={!canUseOrdering}
+            onCheckedChange={(orderingEnabled) => onChange({ orderingEnabled })}
+          />
+        </div>
+
+        {!canUseOrdering && (
+          <p className="text-sm text-muted-foreground">
+            {translations.digitalMenuOrderRequiredMessage}{" "}
+            <Link
+              href="/subscription"
+              className="font-medium text-primary hover:underline"
+            >
+              {translations.subscription}
+            </Link>
+          </p>
+        )}
+      </section>
 
       <Dialog open={themePreviewOpen} onOpenChange={setThemePreviewOpen}>
         <DialogContent className="flex max-h-[92vh] w-[min(100vw-2rem,28rem)] flex-col overflow-hidden p-4 sm:p-6">

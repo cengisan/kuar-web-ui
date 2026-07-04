@@ -94,6 +94,7 @@ export interface DigitalMenu {
   subscriber_id?: number;
   business_name?: string | null;
   is_available?: boolean;
+  ordering_enabled?: boolean;
   theme?: string;
   currency?: string;
   social_media?: string | null;
