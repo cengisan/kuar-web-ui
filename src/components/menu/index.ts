@@ -1,11 +1,13 @@
 import type { ComponentType } from "react";
 import type { MenuApiData } from "@/types/menu";
-import MenuTheme1 from "./themes/MenuTheme1";
-import MenuTheme2 from "./themes/MenuTheme2";
-import MenuTheme3 from "./themes/MenuTheme3";
-import MenuTheme4 from "./themes/MenuTheme4";
-import MenuTheme5 from "./themes/MenuTheme5";
-import MenuTheme6 from "./themes/MenuTheme6";
+
+// Each theme is a fully standalone "use client" component with its own layout.
+import MenuTheme1 from "./themes/MenuTheme1"; // Neumorphic bej + yatay tab nav + grid
+import MenuTheme2 from "./themes/MenuTheme2"; // Dark + kategori tile grid → ürün grid
+import MenuTheme3 from "./themes/MenuTheme3"; // Clean beyaz + hamburger sidebar + liste
+import MenuTheme4 from "./themes/MenuTheme4"; // Klasik scroll-all + dashed + thumbnail
+import MenuTheme5 from "./themes/MenuTheme5"; // Vibrant şeftali + banner tile → card grid
+import MenuTheme6 from "./themes/MenuTheme6"; // Urban sage + panel header + pill tabs + grid
 
 export interface MenuThemeProps {
   menuId: string;

@@ -1,66 +1,153 @@
+"use client";
+
 /**
- * Theme 4 — "Rustic Earth"
- * Warm terracotta/clay tones, Playfair Display, café/bistro feel.
- * Horizontal thumbnail list product layout — earthy & cozy.
+ * Tema 4 — Classic Scroll-All
+ * Yapı (menu-4 inspired): Krem zemin, ahşap header image (yeşil overlay),
+ * NAVİGASYON YOK — tüm kategoriler başlık + kesik çizgi ayraç + ürün satırları
+ * şeklinde tek sayfada SCROLL ederek görünür. Her ürün:
+ * daire thumbnail + isim + açıklama + fiyat. Playfair Display başlıklar.
+ * Ürüne tıklanınca detay drawer açılır.
  */
-import type { MenuApiData } from "@/types/menu";
-import { MenuClientApp, type MenuThemeVariant } from "@/components/menu/MenuClientApp";
 
-const THEME: MenuThemeVariant = {
-  id: "menu4",
+import Image from "next/image";
+import { useState } from "react";
+import type { MenuApiData, ProductData } from "@/types/menu";
+import {
+  buildImgUrl,
+  groupCategories,
+  useCurrency,
+  ProductDrawer,
+  OrderWidget,
+} from "@/components/menu/MenuShared";
 
-  bodyBg: "linear-gradient(160deg,#fdf4ea 0%,#f2e2cc 100%)",
-  bodyBgFixed: true,
+const BG = "#f7f3ea";
+const SURFACE = "#fffdf8";
+const MAIN = "#4a5138";
+const DARK = "#2f3324";
+const ACCENT_T = "#c06a45";
+const ACCENT_G = "#6f7d4a";
+const MUTED = "#7c7561";
+const LINE = "rgba(111,125,74,0.30)";
 
-  headerBg: "#3d1f0d",
-  headerOverlay: "linear-gradient(180deg, rgba(61,31,13,0.50) 0%, rgba(61,31,13,0.86) 100%)",
-  headerText: "#fdf4ea",
-  headerSubtext: "rgba(253,244,234,0.65)",
-  logoRingColor: "#e07a40",
-
-  tileGradients: [
-    "linear-gradient(135deg,#c06a3a 0%,#8c3e18 100%)",   // terracotta
-    "linear-gradient(135deg,#8b5e3c 0%,#6b3e20 100%)",   // clay
-    "linear-gradient(135deg,#d4835a 0%,#b0603a 100%)",   // salmon
-    "linear-gradient(135deg,#7a4527 0%,#5c3018 100%)",   // brown
-    "linear-gradient(135deg,#b8764a 0%,#8c5530 100%)",   // warm brown
-  ],
-  tileOverlay: "linear-gradient(to bottom, rgba(61,20,8,0.12) 0%, rgba(61,20,8,0.60) 60%, rgba(61,20,8,0.82) 100%)",
-  tileTextColor: "#fdf4ea",
-
-  productLayout: "list-thumbnail",
-
-  cardBg: "#fffbf5",
-  cardBorder: "#e8d0b0",
-  cardShadow: "0 2px 8px rgba(100,50,20,0.08)",
-
-  text: "#3d1f0d",
-  textMuted: "#8a6040",
-  accent: "#c06a3a",
-  accentContrast: "#ffffff",
-
-  navBg: "#fffbf5",
-  navBorder: "#e8d0b0",
-  navText: "#3d1f0d",
-
-  backBtnBg: "rgba(192,106,58,0.15)",
-  backBtnText: "#c06a3a",
-
-  fontFamily: "'Playfair Display', Georgia, serif",
-  headingFont: "'Playfair Display', serif",
-
-  radius: "14px",
-
-  orderAccent: "#c06a3a",
-  orderSurface: "#3d1f0d",
-  orderText: "#fdf4ea",
-};
-
-interface Props {
-  menuId: string;
-  data: MenuApiData;
-}
+interface Props { menuId: string; data: MenuApiData }
 
 export default function MenuTheme4({ menuId, data }: Props) {
-  return <MenuClientApp menuId={menuId} data={data} theme={THEME} />;
+  const categories = groupCategories(data.products);
+  const [drawer, setDrawer] = useState<ProductData | null>(null);
+  const currency = useCurrency(data);
+  const logoUrl = buildImgUrl(data.digitalMenu.digital_menu_image?.[0]?.image_url);
+
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+        html,body{margin:0;padding:0;box-sizing:border-box}
+        body{background:${BG};min-height:100vh}
+      `}</style>
+
+      <div style={{ padding: "1.25rem 1rem 2rem", maxWidth: 900, margin: "0 auto", fontFamily: "'Plus Jakarta Sans',sans-serif", color: DARK }}>
+
+        {/* Container card */}
+        <div style={{ background: SURFACE, borderRadius: 18, overflow: "hidden", boxShadow: "0 6px 22px rgba(47,51,36,0.08)", border: `1px solid rgba(111,125,74,0.14)` }}>
+
+          {/* Header with dark wood overlay */}
+          <div style={{
+            position: "relative",
+            padding: "3rem 1.5rem",
+            textAlign: "center",
+            background: DARK,
+            overflow: "hidden",
+          }}>
+            <div style={{ position: "absolute", inset: 0, background: "rgba(47,51,36,0.82)" }} />
+            <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+              {logoUrl ? (
+                <div style={{ width: 96, height: 96, borderRadius: "50%", overflow: "hidden", border: "3px solid rgba(255,255,255,0.9)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)" }}>
+                  <Image src={logoUrl} alt={data.name} width={96} height={96} className="object-cover" />
+                </div>
+              ) : (
+                <div style={{ width: 96, height: 96, borderRadius: "50%", border: "3px solid rgba(255,255,255,0.7)", background: MAIN, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, color: "#fff" }}>🍽</div>
+              )}
+              <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(1.5rem,4vw,2.2rem)", color: "#fff", margin: 0, fontWeight: 600 }}>
+                {data.name}
+              </h1>
+            </div>
+          </div>
+
+          {/* All categories */}
+          <div style={{ padding: "1.5rem 1.5rem 4rem" }}>
+            {categories.map((cat) => (
+              <section key={cat.name} id={`cat-${cat.name}`} style={{ marginBottom: "2.25rem" }}>
+                {/* Category title */}
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  fontFamily: "'Playfair Display',serif",
+                  fontSize: "1.4rem", fontWeight: 600, color: MAIN,
+                  borderBottom: `1px solid ${LINE}`,
+                  paddingBottom: "0.5rem", marginBottom: "1rem",
+                }}>
+                  <span style={{ color: ACCENT_T, fontSize: "0.9rem" }}>◆</span>
+                  {cat.name}
+                </div>
+
+                {/* Product items */}
+                {cat.items.map((p, idx) => {
+                  const imgUrl = buildImgUrl(p.product_image?.[0]?.image_url);
+                  const ep = p.extra_parameters;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => setDrawer(p)}
+                      style={{
+                        width: "100%", display: "flex", alignItems: "flex-start", gap: 14,
+                        padding: "1.1rem 0.25rem", textAlign: "left",
+                        background: "none", border: "none", cursor: "pointer",
+                        borderBottom: idx < cat.items.length - 1 ? `1.5px dashed ${LINE}` : "none",
+                        transition: "background 0.15s",
+                      }}
+                    >
+                      {/* Circle thumbnail */}
+                      {imgUrl ? (
+                        <div style={{ width: 58, height: 58, borderRadius: "50%", overflow: "hidden", flexShrink: 0, border: `2px solid rgba(111,125,74,0.3)` }}>
+                          <Image src={imgUrl} alt={p.name} width={58} height={58} className="object-cover" />
+                        </div>
+                      ) : (
+                        <div style={{ width: 58, height: 58, borderRadius: "50%", background: BG, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, color: "#ccc", border: `2px solid ${LINE}` }}>
+                          🍽
+                        </div>
+                      )}
+                      {/* Text */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+                          <span style={{ fontWeight: 600, fontSize: "0.95rem", color: DARK }}>{p.name}</span>
+                          <span style={{ fontWeight: 700, fontSize: "0.95rem", color: ACCENT_T, flexShrink: 0 }}>{(p.price ?? 0).toFixed(2)} {currency}</span>
+                        </div>
+                        {p.description && (
+                          <p style={{ margin: "3px 0 0", fontSize: "0.8rem", color: MUTED, lineHeight: 1.4 }}>{p.description}</p>
+                        )}
+                        {ep && (ep.is_new_item || ep.is_campaign || ep.is_favorite) && (
+                          <div style={{ display: "flex", gap: 4, marginTop: 5 }}>
+                            {ep.is_new_item && <span style={{ background: "#28a745", color: "#fff", borderRadius: 999, padding: "1px 8px", fontSize: "0.7rem", fontWeight: 700 }}>YENİ</span>}
+                            {ep.is_campaign && <span style={{ background: "#ffc107", color: "#222", borderRadius: 999, padding: "1px 8px", fontSize: "0.7rem", fontWeight: 700 }}>KAMPANYA</span>}
+                            {ep.is_favorite && <span style={{ background: "#dc3545", color: "#fff", borderRadius: 999, padding: "1px 8px", fontSize: "0.7rem", fontWeight: 700 }}>FAVORİ</span>}
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </section>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {drawer && (
+        <ProductDrawer product={drawer} currency={currency} accentColor={ACCENT_T} onClose={() => setDrawer(null)} />
+      )}
+
+      {data.orderingEnabled && data.orderToken && data.orderProducts.length > 0 && (
+        <OrderWidget menuId={menuId} orderToken={data.orderToken} tables={data.tables} orderProducts={data.orderProducts} accentColor={ACCENT_G} surfaceColor={MAIN} />
+      )}
+    </>
+  );
 }
