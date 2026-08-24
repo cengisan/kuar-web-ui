@@ -17,6 +17,9 @@ import {
   useCurrency,
   ProductDrawer,
   OrderWidget,
+  ProductImagePlaceholder,
+  ProductExtraLabels,
+  ProductCardMeta,
 } from "@/components/menu/MenuShared";
 
 const BG = "#e9e0d2";
@@ -54,8 +57,8 @@ export default function MenuTheme1({ menuId, data }: Props) {
               <Image src={logoUrl} alt={data.name} width={100} height={100} className="object-cover" />
             </div>
           ) : (
-            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 100, height: 100, borderRadius: "50%", background: SURFACE, boxShadow: NEU_SHADOW, fontSize: 36, marginBottom: 14, color: MUTED }}>
-              🍽
+            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 100, height: 100, borderRadius: "50%", background: SURFACE, boxShadow: NEU_SHADOW, marginBottom: 14, color: MUTED }}>
+              <ProductImagePlaceholder size={36} color={MUTED} />
             </div>
           )}
           <h1 style={{ fontSize: "clamp(1.5rem,4vw,2.2rem)", fontWeight: 700, margin: 0, color: DARK }}>{data.name}</h1>
@@ -102,7 +105,6 @@ export default function MenuTheme1({ menuId, data }: Props) {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 14 }}>
             {activeItems.map((p) => {
               const imgUrl = buildImgUrl(p.product_image?.[0]?.image_url);
-              const ep = p.extra_parameters;
               return (
                 <div
                   key={p.id}
@@ -123,14 +125,11 @@ export default function MenuTheme1({ menuId, data }: Props) {
                     {imgUrl ? (
                       <Image src={imgUrl} alt={p.name} fill className="object-cover" sizes="50vw" />
                     ) : (
-                      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, color: MUTED, background: "#ddd5c6" }}>🍽</div>
+                      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#ddd5c6" }}>
+                        <ProductImagePlaceholder size={36} color={MUTED} />
+                      </div>
                     )}
-                    {ep?.is_new_item && (
-                      <span style={{ position: "absolute", top: 8, left: 8, background: "#28a745", color: "#fff", borderRadius: 999, padding: "2px 9px", fontSize: 10, fontWeight: 700 }}>YENİ</span>
-                    )}
-                    {ep?.is_campaign && (
-                      <span style={{ position: "absolute", top: ep?.is_new_item ? 30 : 8, left: 8, background: "#ffc107", color: "#222", borderRadius: 999, padding: "2px 9px", fontSize: 10, fontWeight: 700 }}>KAMPANYA</span>
-                    )}
+                    <ProductExtraLabels product={p} layout="overlay" />
                   </div>
                   {/* Body */}
                   <div style={{ padding: "0.9rem 0.85rem 0.85rem", flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
@@ -140,6 +139,7 @@ export default function MenuTheme1({ menuId, data }: Props) {
                         {p.description}
                       </p>
                     )}
+                    <ProductCardMeta product={p} showLabels={false} />
                     <p style={{ margin: "4px 0 0", fontWeight: 700, fontSize: "1.05rem", color: ACCENT }}>{(p.price ?? 0).toFixed(2)} {currency}</p>
                   </div>
                 </div>

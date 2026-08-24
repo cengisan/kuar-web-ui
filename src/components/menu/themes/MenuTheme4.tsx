@@ -18,6 +18,8 @@ import {
   useCurrency,
   ProductDrawer,
   OrderWidget,
+  ProductImagePlaceholder,
+  ProductCardMeta,
 } from "@/components/menu/MenuShared";
 
 const BG = "#f7f3ea";
@@ -65,7 +67,9 @@ export default function MenuTheme4({ menuId, data }: Props) {
                   <Image src={logoUrl} alt={data.name} width={96} height={96} className="object-cover" />
                 </div>
               ) : (
-                <div style={{ width: 96, height: 96, borderRadius: "50%", border: "3px solid rgba(255,255,255,0.7)", background: MAIN, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, color: "#fff" }}>🍽</div>
+                <div style={{ width: 96, height: 96, borderRadius: "50%", border: "3px solid rgba(255,255,255,0.7)", background: MAIN, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <ProductImagePlaceholder size={36} color="rgba(255,255,255,0.7)" />
+                </div>
               )}
               <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(1.5rem,4vw,2.2rem)", color: "#fff", margin: 0, fontWeight: 600 }}>
                 {data.name}
@@ -92,7 +96,6 @@ export default function MenuTheme4({ menuId, data }: Props) {
                 {/* Product items */}
                 {cat.items.map((p, idx) => {
                   const imgUrl = buildImgUrl(p.product_image?.[0]?.image_url);
-                  const ep = p.extra_parameters;
                   return (
                     <button
                       key={p.id}
@@ -105,17 +108,15 @@ export default function MenuTheme4({ menuId, data }: Props) {
                         transition: "background 0.15s",
                       }}
                     >
-                      {/* Circle thumbnail */}
                       {imgUrl ? (
                         <div style={{ width: 58, height: 58, borderRadius: "50%", overflow: "hidden", flexShrink: 0, border: `2px solid rgba(111,125,74,0.3)` }}>
                           <Image src={imgUrl} alt={p.name} width={58} height={58} className="object-cover" />
                         </div>
                       ) : (
-                        <div style={{ width: 58, height: 58, borderRadius: "50%", background: BG, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, color: "#ccc", border: `2px solid ${LINE}` }}>
-                          🍽
+                        <div style={{ width: 58, height: 58, borderRadius: "50%", background: BG, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: `2px solid ${LINE}` }}>
+                          <ProductImagePlaceholder size={22} color="#ccc" />
                         </div>
                       )}
-                      {/* Text */}
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
                           <span style={{ fontWeight: 600, fontSize: "0.95rem", color: DARK }}>{p.name}</span>
@@ -124,13 +125,7 @@ export default function MenuTheme4({ menuId, data }: Props) {
                         {p.description && (
                           <p style={{ margin: "3px 0 0", fontSize: "0.8rem", color: MUTED, lineHeight: 1.4 }}>{p.description}</p>
                         )}
-                        {ep && (ep.is_new_item || ep.is_campaign || ep.is_favorite) && (
-                          <div style={{ display: "flex", gap: 4, marginTop: 5 }}>
-                            {ep.is_new_item && <span style={{ background: "#28a745", color: "#fff", borderRadius: 999, padding: "1px 8px", fontSize: "0.7rem", fontWeight: 700 }}>YENİ</span>}
-                            {ep.is_campaign && <span style={{ background: "#ffc107", color: "#222", borderRadius: 999, padding: "1px 8px", fontSize: "0.7rem", fontWeight: 700 }}>KAMPANYA</span>}
-                            {ep.is_favorite && <span style={{ background: "#dc3545", color: "#fff", borderRadius: 999, padding: "1px 8px", fontSize: "0.7rem", fontWeight: 700 }}>FAVORİ</span>}
-                          </div>
-                        )}
+                        <ProductCardMeta product={p} />
                       </div>
                     </button>
                   );
