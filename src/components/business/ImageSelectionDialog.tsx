@@ -87,10 +87,24 @@ export function ImageSelectionDialog({
   const handleSelectPixabayImage = async (image: PixabayImage) => {
     setDownloadingId(image.id);
     try {
-      const file = await downloadPixabayImage(
-        image.webformatURL,
-        `pixabay_${image.id}.jpg`
-      );
+      let file: File | null = null;
+      for (const sourceUrl of [image.url, image.webformatURL]) {
+        if (!sourceUrl) continue;
+        try {
+          file = await downloadPixabayImage(
+            sourceUrl,
+            `pixabay_${image.id}.jpg`
+          );
+          break;
+        } catch {
+          /* try next URL */
+        }
+      }
+
+      if (!file) {
+        throw new Error("download_failed");
+      }
+
       onSelectFile(file);
       toast.success(translations.imageSelected);
       onOpenChange(false);

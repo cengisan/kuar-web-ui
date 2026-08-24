@@ -1,27 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
 
-function isAllowedPixabayUrl(url: string): boolean {
+function normalizePixabayUrl(raw: string): string | null {
   try {
-    const parsed = new URL(url);
-    return (
-      parsed.protocol === "https:" &&
-      (parsed.hostname === "cdn.pixabay.com" ||
-        parsed.hostname.endsWith(".pixabay.com"))
-    );
+    const parsed = new URL(raw);
+    const host = parsed.hostname.toLowerCase();
+
+    const allowed =
+      host === "pixabay.com" ||
+      host === "cdn.pixabay.com" ||
+      host.endsWith(".pixabay.com");
+
+    if (!allowed) return null;
+
+    if (parsed.protocol === "http:") {
+      parsed.protocol = "https:";
+    } else if (parsed.protocol !== "https:") {
+      return null;
+    }
+
+    return parsed.toString();
   } catch {
-    return false;
+    return null;
   }
 }
 
 export async function GET(request: NextRequest) {
-  const url = request.nextUrl.searchParams.get("url");
+  const rawUrl = request.nextUrl.searchParams.get("url");
+  const url = rawUrl ? normalizePixabayUrl(rawUrl) : null;
 
-  if (!url || !isAllowedPixabayUrl(url)) {
+  if (!url) {
     return NextResponse.json({ error: "Invalid image URL" }, { status: 400 });
   }
 
   try {
-    const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    const response = await fetch(url, {
+      signal: AbortSignal.timeout(15000),
+      headers: {
+        Accept: "image/*",
+        "User-Agent": "KuarWeb/1.0",
+      },
+      redirect: "follow",
+    });
     if (!response.ok) {
       return NextResponse.json({ error: "Download failed" }, { status: 502 });
     }
