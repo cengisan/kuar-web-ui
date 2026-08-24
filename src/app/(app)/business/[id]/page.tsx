@@ -10,6 +10,7 @@ import {
   LayoutGrid,
   ChefHat,
   CreditCard,
+  Calendar,
   BarChart3,
   Boxes,
   MessageSquare,
@@ -125,6 +126,14 @@ export default function BusinessDetailPage() {
         icon: CreditCard,
         color: "#8b5cf6",
         href: `/business/${businessId}/cashier`,
+      },
+      {
+        key: "reservations",
+        permission: "RESERVATION",
+        title: translations.reservations,
+        icon: Calendar,
+        color: "#14b8a6",
+        href: `/business/${businessId}/areas?mode=reservation`,
       },
       {
         key: "stock",

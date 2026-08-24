@@ -36,7 +36,10 @@ export default function TableAreasPage() {
   const searchParams = useSearchParams();
   const params = useParams<{ id: string }>();
   const businessId = Number(params.id);
-  const isCashierMode = searchParams.get("mode") === "cashier";
+  const mode = searchParams.get("mode");
+  const isCashierMode = mode === "cashier";
+  const isReservationMode = mode === "reservation";
+  const isReadOnlyMode = isCashierMode || isReservationMode;
   const { translations, accessToken } = useAppSelector((s) => s.user);
 
   const [areas, setAreas] = useState<TableArea[]>([]);
@@ -124,13 +127,18 @@ export default function TableAreasPage() {
     }
   };
 
-  const tablesHref = (areaId: number) =>
-    isCashierMode
-      ? `/business/${businessId}/areas/${areaId}/tables?mode=cashier`
-      : `/business/${businessId}/areas/${areaId}/tables`;
+  const tablesHref = (areaId: number) => {
+    if (isCashierMode) {
+      return `/business/${businessId}/areas/${areaId}/tables?mode=cashier`;
+    }
+    if (isReservationMode) {
+      return `/business/${businessId}/areas/${areaId}/tables?mode=reservation`;
+    }
+    return `/business/${businessId}/areas/${areaId}/tables`;
+  };
 
   const handleBack = () => {
-    if (isCashierMode) {
+    if (isReadOnlyMode) {
       router.push(`/business/${businessId}`);
       return;
     }
@@ -145,9 +153,11 @@ export default function TableAreasPage() {
         <h1 className="text-2xl font-bold">
           {isCashierMode
             ? translations.cashier
-            : translations.tableManagement}
+            : isReservationMode
+              ? translations.reservations
+              : translations.tableManagement}
         </h1>
-        {!isCashierMode && (
+        {!isReadOnlyMode && (
           <Button onClick={openCreate}>
             <Plus />
             {translations.addArea}
@@ -191,7 +201,7 @@ export default function TableAreasPage() {
                 </div>
                 <ChevronRight className="size-5 shrink-0 text-muted-foreground opacity-80" />
               </Link>
-              {!isCashierMode && (
+              {!isReadOnlyMode && (
               <div className="flex border-t border-border">
                 <Button
                   type="button"

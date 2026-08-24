@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
@@ -74,7 +75,10 @@ export default function TablesPage() {
   const searchParams = useSearchParams();
   const businessId = Number(params.id);
   const areaId = Number(params.areaId);
-  const isCashierMode = searchParams.get("mode") === "cashier";
+  const mode = searchParams.get("mode");
+  const isCashierMode = mode === "cashier";
+  const isReservationMode = mode === "reservation";
+  const isReadOnlyMode = isCashierMode || isReservationMode;
   const { translations, accessToken, subscriberId, employeeData } = useAppSelector(
     (s) => s.user
   );
@@ -88,6 +92,9 @@ export default function TablesPage() {
   const [bulkCapacity, setBulkCapacity] = useState("4");
   const [creating, setCreating] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<CafeTable | null>(null);
+  const [reservationTarget, setReservationTarget] = useState<CafeTable | null>(null);
+  const [reservationNote, setReservationNote] = useState("");
+  const [savingReservation, setSavingReservation] = useState(false);
   const refreshDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchTables = useCallback(async () => {
@@ -241,12 +248,84 @@ export default function TablesPage() {
       return;
     }
 
+    if (isReservationMode) {
+      if (status === "AVAILABLE" || status === "RESERVED") {
+        setReservationTarget(table);
+        setReservationNote(table.reservationNote || "");
+        return;
+      }
+      if (status === "OCCUPIED") {
+        toast.info(translations.tableOccupiedForReservation);
+        return;
+      }
+      toast.info(translations.tableNotAvailableForCashier);
+      return;
+    }
+
     router.push(`/business/${businessId}/tables/${table.id}/order`);
+  };
+
+  const closeReservationDialog = () => {
+    if (savingReservation) return;
+    setReservationTarget(null);
+    setReservationNote("");
+  };
+
+  const handleSaveReservation = async () => {
+    if (!accessToken || !reservationTarget) return;
+    const note = reservationNote.trim();
+    if (!note) {
+      toast.error(translations.reservationNoteRequired);
+      return;
+    }
+    setSavingReservation(true);
+    try {
+      const repo = new TableRepositoryImpl(translations, accessToken);
+      const result = await repo.updateTableStatus(
+        reservationTarget.id,
+        "RESERVED",
+        note
+      );
+      if (result.success) {
+        toast.success(translations.reservationUpdated);
+        closeReservationDialog();
+        fetchTables();
+      } else {
+        toast.error(result.message);
+      }
+    } finally {
+      setSavingReservation(false);
+    }
+  };
+
+  const handleClearReservation = async () => {
+    if (!accessToken || !reservationTarget) return;
+    setSavingReservation(true);
+    try {
+      const repo = new TableRepositoryImpl(translations, accessToken);
+      const result = await repo.updateTableStatus(
+        reservationTarget.id,
+        "AVAILABLE"
+      );
+      if (result.success) {
+        toast.success(translations.reservationCleared);
+        closeReservationDialog();
+        fetchTables();
+      } else {
+        toast.error(result.message);
+      }
+    } finally {
+      setSavingReservation(false);
+    }
   };
 
   const handleBack = () => {
     if (isCashierMode) {
       router.push(`/business/${businessId}/areas?mode=cashier`);
+      return;
+    }
+    if (isReservationMode) {
+      router.push(`/business/${businessId}/areas?mode=reservation`);
       return;
     }
     router.back();
@@ -260,9 +339,11 @@ export default function TablesPage() {
         <h1 className="text-2xl font-bold">
           {isCashierMode
             ? translations.cashier
-            : translations.tables}
+            : isReservationMode
+              ? translations.reservations
+              : translations.tables}
         </h1>
-        {!isCashierMode && (
+        {!isReadOnlyMode && (
           <Button onClick={() => setCreateOpen(true)}>
             <Plus />
             {translations.createTable}
@@ -338,11 +419,17 @@ export default function TablesPage() {
 
                   <TableOrderStatusBadges table={table} className="mt-1" />
 
+                  {status === "RESERVED" && table.reservationNote ? (
+                    <p className="mt-1 line-clamp-2 text-xs text-amber-600 dark:text-amber-400">
+                      {table.reservationNote}
+                    </p>
+                  ) : null}
+
                   <div className="mt-auto flex items-center justify-center gap-2 pt-3">
                     <Badge variant={variant} className="min-w-[4.5rem] justify-center">
                       {statusLabel}
                     </Badge>
-                    {!isCashierMode && (
+                    {!isReadOnlyMode && (
                       <Button
                         size="icon"
                         variant="ghost"
@@ -411,6 +498,47 @@ export default function TablesPage() {
             </Button>
             <Button onClick={handleCreate} loading={creating}>
               {translations.create}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!reservationTarget}
+        onOpenChange={(open) => !open && closeReservationDialog()}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {translations.reservations} — {reservationTarget?.tableNumber}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="reservation-note">{translations.reservationNote}</Label>
+            <Textarea
+              id="reservation-note"
+              value={reservationNote}
+              onChange={(e) => setReservationNote(e.target.value)}
+              placeholder={translations.reservationNotePlaceholder}
+              rows={4}
+            />
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            {reservationTarget?.status === "RESERVED" && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClearReservation}
+                loading={savingReservation}
+              >
+                {translations.clearReservation}
+              </Button>
+            )}
+            <Button variant="outline" onClick={closeReservationDialog}>
+              {translations.cancel}
+            </Button>
+            <Button onClick={handleSaveReservation} loading={savingReservation}>
+              {translations.save}
             </Button>
           </DialogFooter>
         </DialogContent>
