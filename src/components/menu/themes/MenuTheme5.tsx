@@ -13,8 +13,7 @@
  * Kategori görünümü (tile'a tıklanınca):
  *   - Sticky back-bar
  *   - Kategori adı (metin başlık)
- *   - İlk ürün: tam genişlik hero kart
- *   - Diğer ürünler: küçük kare thumbnail + isim + açıklama + fiyat satırları
+ *   - Tüm ürünler: tam genişlik hero kart
  *
  * Ürün tıklanınca: bottom sheet drawer
  */
@@ -46,6 +45,96 @@ const ACCENT = "#ffffff";
 const BORDER = "rgba(255,255,255,0.10)";
 
 interface Props { menuId: string; data: MenuApiData }
+
+function ProductHeroCard({
+  product,
+  currency,
+  onOpen,
+}: {
+  product: ProductData;
+  currency: string;
+  onOpen: () => void;
+}) {
+  const imgUrl = buildImgUrl(product.product_image?.[0]?.image_url);
+
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      style={{
+        position: "relative",
+        width: "100%",
+        height: 220,
+        borderRadius: 10,
+        overflow: "hidden",
+        border: "none",
+        cursor: "pointer",
+        marginBottom: 10,
+        padding: 0,
+        background: SURFACE,
+        display: "block",
+      }}
+    >
+      {imgUrl ? (
+        <Image src={imgUrl} alt={product.name} fill style={{ objectFit: "cover" }} sizes="100vw" />
+      ) : (
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            background: "#222",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <ProductImagePlaceholder size={40} color="#555" />
+        </div>
+      )}
+      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)" }} />
+      <ProductExtraLabels product={product} layout="overlay" />
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 6,
+          background: "rgba(0,0,0,0.7)",
+          padding: "0.9rem 1rem",
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
+          <span style={{ fontWeight: 700, fontSize: "1.05rem", color: "#fff" }}>{product.name}</span>
+          <ProductPriceDisplay
+            product={product}
+            currency={currency}
+            accentColor="#fff"
+            originalColor="rgba(255,255,255,0.55)"
+            fontSize="1.05rem"
+            style={{ flexShrink: 0 }}
+          />
+        </div>
+        {product.description && (
+          <p
+            style={{
+              margin: "3px 0 0",
+              fontSize: "0.78rem",
+              color: "rgba(255,255,255,0.65)",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {product.description}
+          </p>
+        )}
+        <ProductCardMeta product={product} variant="dark" showLabels={false} />
+      </div>
+    </button>
+  );
+}
 
 export default function MenuTheme5({ menuId, data }: Props) {
   const categories = groupCategories(data.products);
@@ -195,93 +284,14 @@ export default function MenuTheme5({ menuId, data }: Props) {
             </div>
 
             <div style={{ padding: "1rem 0.75rem" }}>
-              {activeItems.map((p, idx) => {
-                const imgUrl = buildImgUrl(p.product_image?.[0]?.image_url);
-
-                if (idx === 0) {
-                  return (
-                    <button
-                      key={p.id}
-                      onClick={() => setDrawer(p)}
-                      style={{
-                        position: "relative", width: "100%", height: 220,
-                        borderRadius: 10, overflow: "hidden", border: "none",
-                        cursor: "pointer", marginBottom: 10, padding: 0,
-                        background: SURFACE, display: "block",
-                      }}
-                    >
-                      {imgUrl ? (
-                        <Image src={imgUrl} alt={p.name} fill style={{ objectFit: "cover" }} sizes="100vw" />
-                      ) : (
-                        <div style={{ width: "100%", height: "100%", background: "#222", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <ProductImagePlaceholder size={40} color="#555" />
-                        </div>
-                      )}
-                      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)" }} />
-                      <ProductExtraLabels product={p} layout="overlay" />
-                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 6, background: "rgba(0,0,0,0.7)", padding: "0.9rem 1rem" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                          <span style={{ fontWeight: 700, fontSize: "1.05rem", color: "#fff" }}>{p.name}</span>
-                          <ProductPriceDisplay
-                            product={p}
-                            currency={currency}
-                            accentColor="#fff"
-                            originalColor="rgba(255,255,255,0.55)"
-                            fontSize="1.05rem"
-                            style={{ flexShrink: 0, marginLeft: 8 }}
-                          />
-                        </div>
-                        {p.description && (
-                          <p style={{ margin: "3px 0 0", fontSize: "0.78rem", color: "rgba(255,255,255,0.65)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                            {p.description}
-                          </p>
-                        )}
-                        <ProductCardMeta product={p} variant="dark" showLabels={false} />
-                      </div>
-                    </button>
-                  );
-                }
-
-                return (
-                  <button
-                    key={p.id}
-                    onClick={() => setDrawer(p)}
-                    style={{
-                      width: "100%", display: "flex", alignItems: "center", gap: 12,
-                      padding: "0.85rem 0.75rem", border: "none", background: "none",
-                      cursor: "pointer", textAlign: "left",
-                      borderBottom: idx < activeItems.length - 1 ? `1px solid ${BORDER}` : "none",
-                    }}
-                  >
-                    {imgUrl ? (
-                      <div style={{ width: 64, height: 64, borderRadius: 8, overflow: "hidden", flexShrink: 0 }}>
-                        <Image src={imgUrl} alt={p.name} width={64} height={64} style={{ objectFit: "cover", width: "100%", height: "100%" }} />
-                      </div>
-                    ) : (
-                      <div style={{ width: 64, height: 64, borderRadius: 8, background: SURFACE, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <ProductImagePlaceholder size={22} color="#555" />
-                      </div>
-                    )}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ margin: 0, fontWeight: 600, fontSize: "0.93rem", color: TEXT, lineHeight: 1.3 }}>{p.name}</p>
-                      {p.description && (
-                        <p style={{ margin: "3px 0 0", fontSize: "0.78rem", color: MUTED, lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                          {p.description}
-                        </p>
-                      )}
-                      <ProductCardMeta product={p} variant="dark" />
-                    </div>
-                    <ProductPriceDisplay
-                      product={p}
-                      currency={currency}
-                      accentColor={TEXT}
-                      fontSize="0.95rem"
-                      style={{ flexShrink: 0, marginLeft: 6, textAlign: "right" }}
-                      currencyOnNewLine
-                    />
-                  </button>
-                );
-              })}
+              {activeItems.map((p) => (
+                <ProductHeroCard
+                  key={p.id}
+                  product={p}
+                  currency={currency}
+                  onOpen={() => setDrawer(p)}
+                />
+              ))}
             </div>
           </div>
         )}
