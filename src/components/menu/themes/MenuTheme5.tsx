@@ -27,7 +27,7 @@ import {
   useCurrency,
   firstProductImage,
   ProductDrawer,
-  OrderWidget,
+  MenuFeatureWidgets,
   ProductImagePlaceholder,
   ProductExtraLabels,
   ProductCardMeta,
@@ -302,9 +302,7 @@ export default function MenuTheme5({ menuId, data }: Props) {
           <ProductDrawer product={drawer} currency={currency} accentColor="#ffffff" onClose={() => setDrawer(null)} />
         )}
 
-        {data.orderingEnabled && data.orderToken && data.orderProducts.length > 0 && (
-          <OrderWidget menuId={menuId} orderToken={data.orderToken} tables={data.tables} orderProducts={data.orderProducts} accentColor="#ffffff" surfaceColor={SURFACE} />
-        )}
+        <MenuFeatureWidgets menuId={menuId} data={data} accentColor="#ffffff" surfaceColor={SURFACE} />
       </div>
     </>
   );

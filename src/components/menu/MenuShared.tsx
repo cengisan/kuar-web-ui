@@ -17,6 +17,7 @@ import type {
 import {
   getCurrencySymbol,
   getProductAllergenNames,
+  isPublicMenuOrderingAvailable,
 } from "@/types/menu";
 import {
   getAllergenDisplayName,
@@ -982,6 +983,257 @@ export function OrderWidget({
             )}
           </div>
         </div>
+      )}
+    </>
+  );
+}
+
+// ─── Feedback widget ───────────────────────────────────────────────────────────
+
+type FeedbackRatings = {
+  tasteRating: number;
+  serviceRating: number;
+  speedRating: number;
+  priceRating: number;
+};
+
+const FEEDBACK_RATING_ROWS: { key: keyof FeedbackRatings; label: string }[] = [
+  { key: "tasteRating", label: "Lezzet" },
+  { key: "serviceRating", label: "Hizmet" },
+  { key: "speedRating", label: "Süre" },
+  { key: "priceRating", label: "Fiyat" },
+];
+
+const EMPTY_FEEDBACK_RATINGS: FeedbackRatings = {
+  tasteRating: 0,
+  serviceRating: 0,
+  speedRating: 0,
+  priceRating: 0,
+};
+
+function StarRatingRow({
+  label,
+  value,
+  onChange,
+  accentColor,
+}: {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  accentColor: string;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 py-1.5">
+      <span className="w-16 shrink-0 text-sm text-gray-600">{label}</span>
+      <div className="flex gap-0.5">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            onClick={() => onChange(star)}
+            className="px-0.5 text-xl leading-none transition-opacity hover:opacity-80"
+            style={{ color: star <= value ? accentColor : "#d1d5db" }}
+            aria-label={`${label} ${star} yıldız`}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function FeedbackWidget({
+  subscriberId,
+  accentColor,
+  orderVisible = false,
+}: {
+  subscriberId: number;
+  accentColor: string;
+  orderVisible?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [ratings, setRatings] = useState<FeedbackRatings>(EMPTY_FEEDBACK_RATINGS);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  const onAccentText = contrastTextOn(accentColor);
+  const hasRating = Object.values(ratings).some((value) => value > 0);
+
+  const reset = useCallback(() => {
+    setOpen(false);
+    setFeedback("");
+    setRatings(EMPTY_FEEDBACK_RATINGS);
+    setError(null);
+    setSuccess(false);
+    setSending(false);
+  }, []);
+
+  const submit = async () => {
+    if (!feedback.trim() && !hasRating) {
+      setError("Lütfen en az bir puan verin veya yorum yazın.");
+      return;
+    }
+
+    setSending(true);
+    setError(null);
+
+    const body: Record<string, string | number> = {};
+    if (feedback.trim()) body.feedback = feedback.trim();
+    if (ratings.tasteRating > 0) body.tasteRating = ratings.tasteRating;
+    if (ratings.serviceRating > 0) body.serviceRating = ratings.serviceRating;
+    if (ratings.speedRating > 0) body.speedRating = ratings.speedRating;
+    if (ratings.priceRating > 0) body.priceRating = ratings.priceRating;
+
+    try {
+      const response = await fetch(
+        `${getApiBase()}/feedback/create-feedback/${subscriberId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        },
+      );
+
+      if (response.status === 201) {
+        setSuccess(true);
+        setTimeout(reset, 1500);
+        return;
+      }
+
+      setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+      setSending(false);
+    } catch {
+      setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+      setSending(false);
+    }
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className={`fixed right-5 z-40 flex h-12 w-12 items-center justify-center rounded-full shadow-xl transition-transform active:scale-95 ${
+          orderVisible ? "bottom-[5.5rem]" : "bottom-6"
+        }`}
+        style={{ background: accentColor, color: onAccentText }}
+        aria-label="Görüş bildir"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+        </svg>
+      </button>
+
+      {open && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.45)" }}
+          onClick={(e) => e.target === e.currentTarget && reset()}
+        >
+          <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white text-gray-900 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+              <h2 className="text-lg font-bold">Görüş Bildir</h2>
+              <button
+                type="button"
+                onClick={reset}
+                className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100"
+                aria-label="Kapat"
+              >
+                ×
+              </button>
+            </div>
+
+            {success ? (
+              <div className="flex flex-col items-center gap-3 px-6 py-10 text-center">
+                <div
+                  className="flex h-14 w-14 items-center justify-center rounded-full text-2xl"
+                  style={{ background: accentColor, color: onAccentText }}
+                >
+                  ✓
+                </div>
+                <p className="font-semibold text-green-600">Görüş bildirimi başarılı</p>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-1 px-5 py-4">
+                  <p className="mb-2 text-sm font-semibold text-gray-700">Deneyiminizi Puanlayın</p>
+                  {FEEDBACK_RATING_ROWS.map(({ key, label }) => (
+                    <StarRatingRow
+                      key={key}
+                      label={label}
+                      value={ratings[key]}
+                      accentColor={accentColor}
+                      onChange={(value) =>
+                        setRatings((prev) => ({ ...prev, [key]: value }))
+                      }
+                    />
+                  ))}
+                  <textarea
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
+                    rows={3}
+                    placeholder="Yorum yazın (isteğe bağlı)"
+                    className="mt-3 w-full resize-none rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-gray-400"
+                  />
+                  {error && <p className="mt-2 text-center text-sm text-red-500">{error}</p>}
+                </div>
+                <div className="border-t border-gray-100 px-5 py-4">
+                  <button
+                    type="button"
+                    onClick={submit}
+                    disabled={sending}
+                    className="w-full rounded-full py-3 font-bold disabled:opacity-50"
+                    style={{ background: accentColor, color: onAccentText }}
+                  >
+                    {sending ? "Gönderiliyor…" : "Gönder"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+export function MenuFeatureWidgets({
+  menuId,
+  data,
+  accentColor,
+  surfaceColor,
+}: {
+  menuId: string;
+  data: MenuApiData;
+  accentColor: string;
+  surfaceColor?: string;
+}) {
+  const showOrder = isPublicMenuOrderingAvailable(data);
+  const showFeedback = Boolean(data.hasFeedbackFeature && data.subscriberId);
+
+  if (!showOrder && !showFeedback) return null;
+
+  return (
+    <>
+      {showFeedback && (
+        <FeedbackWidget
+          subscriberId={data.subscriberId}
+          accentColor={accentColor}
+          orderVisible={showOrder}
+        />
+      )}
+      {showOrder && (
+        <OrderWidget
+          menuId={menuId}
+          orderToken={data.orderToken!}
+          tables={data.tables}
+          orderProducts={data.orderProducts}
+          accentColor={accentColor}
+          surfaceColor={surfaceColor}
+        />
       )}
     </>
   );
