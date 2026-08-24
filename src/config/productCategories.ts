@@ -72,6 +72,18 @@ export function getCategoryLabel(categoryId: string, language: ProductLanguage) 
   return categoryId;
 }
 
+export function getProductCategoryDisplay(
+  category: string | undefined,
+  language: ProductLanguage
+): string {
+  if (!category) return "";
+  const fromId = getCategoryLabel(category, language);
+  if (fromId !== category) return fromId;
+  const mappedId = findCategoryIdByLabel(category);
+  if (mappedId) return getCategoryLabel(mappedId, language);
+  return category;
+}
+
 export function findCategoryIdByLabel(label: string) {
   if (!label) return null;
   for (const group of productCategoryGroups) {

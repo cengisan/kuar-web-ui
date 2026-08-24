@@ -12,6 +12,7 @@ export function createDefaultProductFormValues(): ProductFormValues {
     isCustomCategory: false,
     price: "",
     discount: "",
+    calories: "",
     isAvailable: true,
     isNewItem: false,
     isCampaign: false,
@@ -35,6 +36,7 @@ export function productToFormValues(product: Product): ProductFormValues {
     isCustomCategory,
     price: product.price != null ? String(product.price) : "",
     discount: product.extra_parameters?.discount || "",
+    calories: product.calories != null ? String(product.calories) : "",
     isAvailable: product.is_available ?? true,
     isNewItem: product.extra_parameters?.is_new_item ?? false,
     isCampaign: product.extra_parameters?.is_campaign ?? false,
@@ -68,6 +70,7 @@ export function buildProductPayload(
     description: values.description.trim() || null,
     category: options.categoryLabel || null,
     price: normalizedPrice,
+    calories: values.calories.trim() ? parseInt(values.calories, 10) : null,
     is_available: values.isAvailable,
     allergenIds: values.allergenIds,
     extra_parameters: {

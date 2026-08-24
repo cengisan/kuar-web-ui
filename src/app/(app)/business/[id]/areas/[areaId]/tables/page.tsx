@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Plus, Trash2, Users } from "lucide-react";
@@ -20,9 +20,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { TableOrderStatusBadges } from "@/components/tables/TableOrderStatusBadges";
 import TableRepositoryImpl from "@/data/repositories/TableRepositoryImpl";
+import webSocketService from "@/services/WebSocketService";
 import { useAppSelector } from "@/presentation/state/hooks";
 import type { CafeTable } from "@/types";
+
+interface TableCardEvent {
+  eventType?: string;
+  tableId?: number;
+  orderId?: number | null;
+  status?: string;
+  currentOrderTotal?: number | null;
+  pendingCount?: number;
+  preparingCount?: number;
+  readyCount?: number;
+  deliveredCount?: number;
+}
 
 const STATUS_COLORS: Record<string, "default" | "success" | "warning" | "destructive"> = {
   EMPTY: "success",
@@ -61,7 +75,10 @@ export default function TablesPage() {
   const businessId = Number(params.id);
   const areaId = Number(params.areaId);
   const isCashierMode = searchParams.get("mode") === "cashier";
-  const { translations, accessToken } = useAppSelector((s) => s.user);
+  const { translations, accessToken, subscriberId, employeeData } = useAppSelector(
+    (s) => s.user
+  );
+  const wsOwnerId = subscriberId ?? employeeData?.employerId ?? null;
 
   const [tables, setTables] = useState<CafeTable[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,6 +88,7 @@ export default function TablesPage() {
   const [bulkCapacity, setBulkCapacity] = useState("4");
   const [creating, setCreating] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<CafeTable | null>(null);
+  const refreshDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchTables = useCallback(async () => {
     if (!accessToken) return;
@@ -86,6 +104,85 @@ export default function TablesPage() {
   useEffect(() => {
     fetchTables();
   }, [fetchTables]);
+
+  const scheduleFullRefresh = useCallback(() => {
+    if (refreshDebounceRef.current) {
+      clearTimeout(refreshDebounceRef.current);
+    }
+    refreshDebounceRef.current = setTimeout(() => {
+      refreshDebounceRef.current = null;
+      fetchTables();
+    }, 350);
+  }, [fetchTables]);
+
+  const applyTableCardEvent = useCallback(
+    (event: TableCardEvent) => {
+      const tableId = event.tableId;
+      if (tableId == null) return;
+
+      setTables((prev) => {
+        const idx = prev.findIndex((t) => Number(t.id) === Number(tableId));
+        if (idx === -1) {
+          scheduleFullRefresh();
+          return prev;
+        }
+        const row = prev[idx];
+        const next = [...prev];
+        const hasOrder = event.orderId != null;
+        next[idx] = {
+          ...row,
+          status: event.status != null ? event.status : row.status,
+          currentOrderTotal: hasOrder
+            ? event.currentOrderTotal != null
+              ? event.currentOrderTotal
+              : row.currentOrderTotal
+            : null,
+          pendingCount: event.pendingCount ?? 0,
+          preparingCount: event.preparingCount ?? 0,
+          readyCount: event.readyCount ?? 0,
+          deliveredCount: event.deliveredCount ?? 0,
+        };
+        return next;
+      });
+    },
+    [scheduleFullRefresh]
+  );
+
+  const handleRealtimeEvent = useCallback(
+    (event: unknown) => {
+      const typed = event as TableCardEvent;
+      if (typed?.eventType === "TABLE_CARD_UPDATED") {
+        applyTableCardEvent(typed);
+        return;
+      }
+      scheduleFullRefresh();
+    },
+    [applyTableCardEvent, scheduleFullRefresh]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (refreshDebounceRef.current) {
+        clearTimeout(refreshDebounceRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!wsOwnerId) return;
+
+    webSocketService.connect(wsOwnerId, {
+      onTableUpdate: [handleRealtimeEvent],
+      onOrderUpdate: [handleRealtimeEvent],
+      onKitchenUpdate: [handleRealtimeEvent],
+    });
+
+    return () => {
+      webSocketService.removeHandler("onTableUpdate", handleRealtimeEvent);
+      webSocketService.removeHandler("onOrderUpdate", handleRealtimeEvent);
+      webSocketService.removeHandler("onKitchenUpdate", handleRealtimeEvent);
+    };
+  }, [wsOwnerId, handleRealtimeEvent]);
 
   const handleCreate = async () => {
     if (!accessToken) return;
@@ -133,7 +230,9 @@ export default function TablesPage() {
 
     if (isCashierMode) {
       if (status === "OCCUPIED") {
-        router.push(`/business/${businessId}/tables/${table.id}/cashier`);
+        router.push(
+          `/business/${businessId}/tables/${table.id}/cashier?areaId=${areaId}`
+        );
         return;
       }
       toast.info(
@@ -145,9 +244,17 @@ export default function TablesPage() {
     router.push(`/business/${businessId}/tables/${table.id}/order`);
   };
 
+  const handleBack = () => {
+    if (isCashierMode) {
+      router.push(`/business/${businessId}/areas?mode=cashier`);
+      return;
+    }
+    router.back();
+  };
+
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: () => router.back() }}
+      back={{ label: translations.back, onClick: handleBack }}
       contentClassName="space-y-6"
     ><div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">
@@ -179,47 +286,77 @@ export default function TablesPage() {
             const status = table.status || "EMPTY";
             const variant = STATUS_COLORS[status] || "default";
             const iconStyles = STATUS_ICON_STYLES[status] || STATUS_ICON_STYLES.EMPTY;
+            const orderTotal =
+              status === "OCCUPIED" &&
+              table.currentOrderTotal != null &&
+              table.currentOrderTotal > 0
+                ? table.currentOrderTotal
+                : null;
+            const statusLabel =
+              status === "EMPTY" || status === "AVAILABLE"
+                ? translations.tableStatusEmpty || translations.statusAvailable
+                : status === "OCCUPIED"
+                  ? translations.tableStatusOccupied || translations.statusOccupied
+                  : status === "CLEANING"
+                    ? translations.statusCleaning
+                    : translations.tableStatusReserved || translations.statusReserved;
+
             return (
               <Card
                 key={table.id}
-                className="cursor-pointer transition-colors hover:border-primary"
+                className="flex h-full cursor-pointer flex-col transition-colors hover:border-primary"
                 onClick={() => handleTableClick(table)}
               >
-                <CardContent className="space-y-2 p-4 text-center">
+                <CardContent className="flex flex-1 flex-col p-4 text-center">
                   <div
                     className={cn(
-                      "mx-auto mb-1 flex h-14 w-14 items-center justify-center rounded-full",
+                      "mx-auto flex h-14 w-14 shrink-0 items-center justify-center rounded-full",
                       iconStyles.bg
                     )}
                   >
                     <TableFurnitureIcon className={cn("h-7 w-7", iconStyles.icon)} />
                   </div>
-                  <p className="text-2xl font-bold">{table.tableNumber}</p>
-                  <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
-                    <Users className="h-3 w-3" />
+
+                  <p className="mt-2 truncate text-2xl font-bold leading-tight">
+                    {table.tableNumber}
+                  </p>
+
+                  <p
+                    className={cn(
+                      "mt-1 min-h-5 text-sm font-bold leading-5",
+                      orderTotal != null ? "text-emerald-500" : "invisible"
+                    )}
+                    aria-hidden={orderTotal == null}
+                  >
+                    {orderTotal != null ? `₺${orderTotal.toFixed(2)}` : "₺0.00"}
+                  </p>
+
+                  <div className="mt-1 flex items-center justify-center gap-1 text-xs text-muted-foreground">
+                    <Users className="h-3 w-3 shrink-0" />
                     <span>{table.capacity || 0}</span>
                   </div>
-                  <Badge variant={variant}>
-                    {status === "EMPTY" || status === "AVAILABLE"
-                      ? translations.tableStatusEmpty || translations.statusAvailable
-                      : status === "OCCUPIED"
-                        ? translations.tableStatusOccupied || translations.statusOccupied
-                        : status === "CLEANING"
-                          ? translations.statusCleaning
-                          : translations.tableStatusReserved || translations.statusReserved}
-                  </Badge>
-                  {!isCashierMode && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDeleteTarget(table);
-                      }}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  )}
+
+                  <TableOrderStatusBadges table={table} className="mt-1" />
+
+                  <div className="mt-auto flex items-center justify-center gap-2 pt-3">
+                    <Badge variant={variant} className="min-w-[4.5rem] justify-center">
+                      {statusLabel}
+                    </Badge>
+                    {!isCashierMode && (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8 shrink-0 text-muted-foreground"
+                        aria-label={translations.delete}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteTarget(table);
+                        }}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             );

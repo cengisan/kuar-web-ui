@@ -15,6 +15,7 @@ export const MODULE_CODE_TO_PERMISSION: Record<string, string> = {
   DASHBOARD: "DASHBOARD",
   CREATE_BUSINESS: "CREATE_BUSINESS",
   STOCK_MANAGEMENT: "STOCK",
+  DIGITAL_MENU_ORDER: "DIGITAL_MENU_ORDER",
 };
 
 export async function fetchAvailableFeatures({

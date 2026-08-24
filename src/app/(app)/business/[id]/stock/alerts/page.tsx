@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { PageLayout } from "@/components/layout/PageLayout";
-
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -16,27 +15,30 @@ import StockRepositoryImpl from "@/data/repositories/StockRepositoryImpl";
 import { useAppSelector } from "@/presentation/state/hooks";
 
 interface AlertSettings {
-  email_enabled?: boolean;
-  sms_enabled?: boolean;
-  push_enabled?: boolean;
-  threshold_percentage?: number;
-  notification_email?: string;
-  notification_phone?: string;
+  material_threshold_percent?: number;
+  product_threshold_percent?: number;
+  alert_email?: string;
+  is_active?: boolean;
 }
+
+const DEFAULT_SETTINGS: AlertSettings = {
+  material_threshold_percent: 25,
+  product_threshold_percent: 25,
+  alert_email: "",
+  is_active: true,
+};
 
 export default function AlertSettingsPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const businessId = Number(params.id);
-  const { translations, accessToken, subscriberId } = useAppSelector((s) => s.user);
+  const { translations, accessToken, subscriberId, email } = useAppSelector(
+    (s) => s.user
+  );
 
   const [settings, setSettings] = useState<AlertSettings>({
-    email_enabled: false,
-    sms_enabled: false,
-    push_enabled: true,
-    threshold_percentage: 20,
-    notification_email: "",
-    notification_phone: "",
+    ...DEFAULT_SETTINGS,
+    alert_email: email || "",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -47,15 +49,24 @@ export default function AlertSettingsPage() {
       const repo = new StockRepositoryImpl(translations, accessToken);
       const response = await repo.getAlertSettings(businessId);
       if (response?.data) {
-        setSettings({ ...settings, ...(response.data as AlertSettings) });
+        const data = response.data as AlertSettings;
+        setSettings({
+          material_threshold_percent:
+            data.material_threshold_percent ??
+            DEFAULT_SETTINGS.material_threshold_percent,
+          product_threshold_percent:
+            data.product_threshold_percent ??
+            DEFAULT_SETTINGS.product_threshold_percent,
+          alert_email: data.alert_email || email || "",
+          is_active: data.is_active !== false,
+        });
       }
     } catch {
-      /* using defaults */
+      /* keep defaults */
     } finally {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken, businessId, translations]);
+  }, [accessToken, businessId, email, translations]);
 
   useEffect(() => {
     load();
@@ -67,12 +78,14 @@ export default function AlertSettingsPage() {
     setSaving(true);
     try {
       const repo = new StockRepositoryImpl(translations, accessToken);
-      await repo.saveAlertSettings(
-        subscriberId,
-        businessId,
-        settings as Record<string, unknown>
-      );
+      await repo.saveAlertSettings(subscriberId, businessId, {
+        material_threshold_percent: settings.material_threshold_percent ?? 25,
+        product_threshold_percent: settings.product_threshold_percent ?? 25,
+        alert_email: settings.alert_email?.trim() || null,
+        is_active: settings.is_active !== false,
+      });
       toast.success(translations.settingsSaved);
+      router.back();
     } catch (e) {
       toast.error((e as Error).message || translations.updateFailed);
     } finally {
@@ -96,97 +109,91 @@ export default function AlertSettingsPage() {
     <PageLayout
       back={{ label: translations.back, onClick: () => router.back() }}
       contentClassName="space-y-6"
-    ><Card>
+    >
+      <Card className="border-border/80 shadow-card">
         <CardHeader>
-          <CardTitle>{translations.alertSettings}</CardTitle>
+          <CardTitle>{translations.stockAlertSettings}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSave} className="space-y-4">
-            <div className="flex items-center justify-between rounded-lg border border-border p-4">
-              <Label htmlFor="email-alert">
-                {translations.emailNotifications}
+            <div className="space-y-2">
+              <Label htmlFor="material-threshold">
+                {translations.materialThreshold}
               </Label>
-              <Switch
-                id="email-alert"
-                checked={!!settings.email_enabled}
-                onCheckedChange={(v) => setSettings({ ...settings, email_enabled: v })}
-              />
-            </div>
-
-            {settings.email_enabled && (
-              <div className="space-y-2">
-                <Label htmlFor="email">{translations.email}</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={settings.notification_email || ""}
-                  onChange={(e) =>
-                    setSettings({ ...settings, notification_email: e.target.value })
-                  }
-                />
-              </div>
-            )}
-
-            <div className="flex items-center justify-between rounded-lg border border-border p-4">
-              <Label htmlFor="sms-alert">
-                {translations.smsNotifications}
-              </Label>
-              <Switch
-                id="sms-alert"
-                checked={!!settings.sms_enabled}
-                onCheckedChange={(v) => setSettings({ ...settings, sms_enabled: v })}
-              />
-            </div>
-
-            {settings.sms_enabled && (
-              <div className="space-y-2">
-                <Label htmlFor="phone">{translations.phone}</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={settings.notification_phone || ""}
-                  onChange={(e) =>
-                    setSettings({ ...settings, notification_phone: e.target.value })
-                  }
-                />
-              </div>
-            )}
-
-            <div className="flex items-center justify-between rounded-lg border border-border p-4">
-              <Label htmlFor="push-alert">
-                {translations.pushNotifications}
-              </Label>
-              <Switch
-                id="push-alert"
-                checked={!!settings.push_enabled}
-                onCheckedChange={(v) => setSettings({ ...settings, push_enabled: v })}
+              <Input
+                id="material-threshold"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={100}
+                value={settings.material_threshold_percent ?? 25}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    material_threshold_percent: Number(e.target.value) || 25,
+                  })
+                }
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="threshold">
-                {translations.thresholdPercentage}: {settings.threshold_percentage}%
+              <Label htmlFor="product-threshold">
+                {translations.productThreshold}
               </Label>
               <Input
-                id="threshold"
-                type="range"
-                min="5"
-                max="100"
-                step="5"
-                value={settings.threshold_percentage || 20}
+                id="product-threshold"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={100}
+                value={settings.product_threshold_percent ?? 25}
                 onChange={(e) =>
                   setSettings({
                     ...settings,
-                    threshold_percentage: Number(e.target.value),
+                    product_threshold_percent: Number(e.target.value) || 25,
                   })
                 }
-                className="h-2 cursor-pointer"
               />
             </div>
 
-            <Button type="submit" loading={saving} className="w-full">
-              {translations.save}
-            </Button>
+            <div className="space-y-2">
+              <Label htmlFor="alert-email">{translations.alertEmail}</Label>
+              <Input
+                id="alert-email"
+                type="email"
+                value={settings.alert_email || ""}
+                onChange={(e) =>
+                  setSettings({ ...settings, alert_email: e.target.value })
+                }
+                placeholder={translations.email}
+              />
+            </div>
+
+            <div className="flex items-center justify-between rounded-lg border border-border p-4">
+              <Label htmlFor="alerts-active" className="cursor-pointer">
+                {translations.alertsActive}
+              </Label>
+              <Switch
+                id="alerts-active"
+                checked={settings.is_active !== false}
+                onCheckedChange={(v) =>
+                  setSettings({ ...settings, is_active: v })
+                }
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 border-t border-border/60 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.back()}
+              >
+                {translations.cancel}
+              </Button>
+              <Button type="submit" loading={saving}>
+                {translations.save}
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>

@@ -15,6 +15,7 @@ import { PageLayout } from "@/components/layout/PageLayout";
 import DigitalMenuRepositoryImpl from "@/data/repositories/DigitalMenuRepositoryImpl";
 import { useAppSelector } from "@/presentation/state/hooks";
 import { getResponseData } from "@/utils/apiResponse";
+import { fetchAvailableFeatures, hasPermissionAccess } from "@/utils/featureAccess";
 import type { DigitalMenu } from "@/types";
 
 const defaultValues = (currency: string): MenuFormValues => ({
@@ -24,13 +25,14 @@ const defaultValues = (currency: string): MenuFormValues => ({
   currency,
   theme: "menu1",
   isAvailable: true,
+  orderingEnabled: false,
 });
 
 export default function CreateMenuPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const businessId = Number(params.id);
-  const { translations, accessToken, subscriberId, currency: userCurrency } =
+  const { translations, accessToken, subscriberId, currency: userCurrency, isEmployee } =
     useAppSelector((s) => s.user);
 
   const [values, setValues] = useState<MenuFormValues>(() =>
@@ -39,6 +41,7 @@ export default function CreateMenuPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [checkingLimit, setCheckingLimit] = useState(true);
+  const [canUseOrdering, setCanUseOrdering] = useState(false);
 
   const patchValues = (patch: Partial<MenuFormValues>) => {
     setValues((prev) => ({ ...prev, ...patch }));
@@ -66,9 +69,22 @@ export default function CreateMenuPage() {
     }
   }, [accessToken, businessId, router, translations]);
 
+  const loadOrderingAccess = useCallback(async () => {
+    if (!accessToken || !subscriberId) return;
+    const features = await fetchAvailableFeatures({
+      subscriberId,
+      accessToken,
+      translations,
+    });
+    setCanUseOrdering(
+      hasPermissionAccess(features, "DIGITAL_MENU_ORDER", isEmployee)
+    );
+  }, [accessToken, subscriberId, translations, isEmployee]);
+
   useEffect(() => {
     checkExistingMenus();
-  }, [checkExistingMenus]);
+    loadOrderingAccess();
+  }, [checkExistingMenus, loadOrderingAccess]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,6 +105,7 @@ export default function CreateMenuPage() {
         currency: values.currency,
         social_media: values.instagramUsername.trim() || null,
         business_id: businessId,
+        ...(canUseOrdering ? { ordering_enabled: values.orderingEnabled } : {}),
       });
 
       if (!result.success) {
@@ -145,6 +162,7 @@ export default function CreateMenuPage() {
               imageFile={imageFile}
               onImageChange={setImageFile}
               idPrefix="create-menu"
+              canUseOrdering={canUseOrdering}
             />
 
             <div className="flex justify-end gap-3 border-t border-border/60 pt-4">

@@ -1,14 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { PageLayout } from "@/components/layout/PageLayout";
-import { Plus, UtensilsCrossed, Pencil, Trash2 } from "lucide-react";
+import { Plus, UtensilsCrossed, Pencil, Trash2, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import {
   Dialog,
@@ -21,18 +22,22 @@ import {
 import DigitalMenuRepositoryImpl from "@/data/repositories/DigitalMenuRepositoryImpl";
 import { useAppSelector } from "@/presentation/state/hooks";
 import { getResponseData, isActionSuccess, getActionMessage } from "@/utils/apiResponse";
+import { getDefaultKuarLogo, getMenuLogoUrl } from "@/lib/menuImage";
+import { cn } from "@/lib/cn";
 import type { DigitalMenu } from "@/types";
 
 export default function MenusPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const businessId = Number(params.id);
-  const { translations, accessToken } = useAppSelector((s) => s.user);
+  const { translations, accessToken, theme } = useAppSelector((s) => s.user);
 
   const [menus, setMenus] = useState<DigitalMenu[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<DigitalMenu | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  const defaultLogo = getDefaultKuarLogo(theme);
 
   const fetchMenus = useCallback(async () => {
     if (!accessToken) return;
@@ -74,7 +79,8 @@ export default function MenusPage() {
     <PageLayout
       back={{ label: translations.back, onClick: () => router.back() }}
       contentClassName="space-y-6"
-    ><div className="flex items-center justify-between">
+    >
+      <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{translations.digitalMenu}</h1>
         <Button asChild>
           <Link href={`/business/${businessId}/menus/create`}>
@@ -97,45 +103,70 @@ export default function MenusPage() {
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {menus.map((menu) => (
-            <Card key={menu.id} className="overflow-hidden">
-              <CardContent className="space-y-3 p-4">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/15">
-                      <UtensilsCrossed className="h-5 w-5 text-amber-500" />
-                    </div>
-                    <div>
-                      <p className="font-semibold">{menu.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {(menu.images?.length || 0)} {translations.images}
-                      </p>
-                    </div>
+          {menus.map((menu) => {
+            const menuLogoUrl = getMenuLogoUrl(menu);
+            const imageSrc = menuLogoUrl || defaultLogo;
+
+            return (
+              <Card
+                key={menu.id}
+                className="overflow-hidden border-border/80 shadow-card transition-colors hover:border-primary/30"
+              >
+                <Link
+                  href={`/business/${businessId}/menus/${menu.id}/edit`}
+                  className="block transition-colors hover:bg-muted/20"
+                >
+                  <div className="relative h-44 w-full bg-muted">
+                    <Image
+                      src={imageSrc}
+                      alt={menu.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className={
+                        menuLogoUrl
+                          ? "object-cover"
+                          : "object-contain p-8"
+                      }
+                      unoptimized={!!menuLogoUrl}
+                    />
                   </div>
-                </div>
-                <div className="flex gap-2">
+                  <div className="flex items-center justify-between gap-2 px-4 py-3">
+                    <p className="truncate font-semibold">{menu.name}</p>
+                    <ChevronRight className="size-5 shrink-0 text-muted-foreground opacity-80" />
+                  </div>
+                </Link>
+                <div className="flex border-t border-border">
                   <Button
-                    asChild
-                    variant="outline"
+                    type="button"
+                    variant="ghost"
                     size="sm"
-                    className="flex-1"
+                    className={cn(
+                      "h-auto flex-1 rounded-none py-3 text-blue-500 hover:bg-blue-500/10 hover:text-blue-500"
+                    )}
+                    asChild
                   >
                     <Link href={`/business/${businessId}/menus/${menu.id}/edit`}>
-                      <Pencil />
-                      {translations.edit}
+                      <Pencil className="size-4" />
+                      {translations.tableCardEdit}
                     </Link>
                   </Button>
+                  <div className="w-px bg-border" aria-hidden />
                   <Button
+                    type="button"
+                    variant="ghost"
                     size="sm"
-                    variant="outline"
+                    className={cn(
+                      "h-auto flex-1 rounded-none py-3 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    )}
                     onClick={() => setDeleteTarget(menu)}
                   >
-                    <Trash2 />
+                    <Trash2 className="size-4" />
+                    {translations.tableCardDelete}
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </div>
       )}
 

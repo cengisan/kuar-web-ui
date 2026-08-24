@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { PublicHeader } from "@/components/layout/PublicHeader";
-import { ActivationForm } from "@/components/auth/ActivationForm";
+import { ActivationPageClient } from "@/components/auth/ActivationPageClient";
 
 function ActivationContent() {
   const searchParams = useSearchParams();
@@ -14,7 +14,7 @@ function ActivationContent() {
     return <p className="text-destructive">Email parameter required.</p>;
   }
 
-  return <ActivationForm email={email} />;
+  return <ActivationPageClient email={email} />;
 }
 
 export default function ActivationPage() {

@@ -27,7 +27,8 @@ export type EmployeeLoginValues = {
 export interface LoginFormProps {
   onBusinessSubmit?: (values: BusinessLoginValues) => Promise<void> | void;
   onEmployeeSubmit?: (values: EmployeeLoginValues) => Promise<void> | void;
-  onGoogleLogin?: () => void;
+  googleSignIn?: React.ReactNode;
+  appleSignIn?: React.ReactNode;
   onForgotPassword?: () => void;
   loading?: boolean;
   className?: string;
@@ -43,7 +44,8 @@ function formatAccessCode(raw: string): string {
 export function LoginForm({
   onBusinessSubmit,
   onEmployeeSubmit,
-  onGoogleLogin,
+  googleSignIn,
+  appleSignIn,
   onForgotPassword,
   loading,
   className,
@@ -97,6 +99,7 @@ export function LoginForm({
           <TabsTrigger value="employee">{t("employeeLogin")}</TabsTrigger>
         </TabsList>
 
+        <div className="min-h-[10.5rem]">
         <TabsContent value="business" className="mt-6 space-y-4">
           <form
             onSubmit={businessForm.handleSubmit(async (values) => {
@@ -195,39 +198,30 @@ export function LoginForm({
             </Button>
           </form>
         </TabsContent>
+        </div>
       </Tabs>
 
-      {activeTab === "business" && (
-        <>
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">{t("orContinueWith")}</span>
-            </div>
+      <div
+        className={cn(
+          "space-y-6",
+          activeTab !== "business" && "invisible pointer-events-none select-none"
+        )}
+        aria-hidden={activeTab !== "business"}
+      >
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center" aria-hidden="true">
+            <div className="w-full border-t border-border" />
           </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-card px-2 text-muted-foreground">{t("orContinueWith")}</span>
+          </div>
+        </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            className="w-full"
-            onClick={onGoogleLogin}
-            disabled={!onGoogleLogin}
-          >
-            <Image
-              src={assets.google}
-              alt=""
-              width={assets.google.width}
-              height={assets.google.height}
-              className="size-4"
-              aria-hidden
-            />
-            {t("loginWithGoogle")}
-          </Button>
-        </>
-      )}
+        <div className="space-y-3">
+          {googleSignIn}
+          {appleSignIn}
+        </div>
+      </div>
     </div>
   );
 }

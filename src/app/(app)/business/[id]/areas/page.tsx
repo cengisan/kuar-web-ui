@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { PageLayout } from "@/components/layout/PageLayout";
-import { Plus, LayoutGrid, Pencil, Trash2 } from "lucide-react";
+import { ChevronRight, Plus, LayoutGrid, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -23,11 +23,20 @@ import {
 import TableRepositoryImpl from "@/data/repositories/TableRepositoryImpl";
 import { useAppSelector } from "@/presentation/state/hooks";
 import type { TableArea } from "@/types";
+import { cn } from "@/lib/cn";
+
+const AREA_EMOJI = "🚪";
+
+function getAreaTableCount(area: TableArea) {
+  return area.tableCount ?? area.table_count ?? 0;
+}
 
 export default function TableAreasPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const params = useParams<{ id: string }>();
   const businessId = Number(params.id);
+  const isCashierMode = searchParams.get("mode") === "cashier";
   const { translations, accessToken } = useAppSelector((s) => s.user);
 
   const [areas, setAreas] = useState<TableArea[]>([]);
@@ -115,18 +124,35 @@ export default function TableAreasPage() {
     }
   };
 
+  const tablesHref = (areaId: number) =>
+    isCashierMode
+      ? `/business/${businessId}/areas/${areaId}/tables?mode=cashier`
+      : `/business/${businessId}/areas/${areaId}/tables`;
+
+  const handleBack = () => {
+    if (isCashierMode) {
+      router.push(`/business/${businessId}`);
+      return;
+    }
+    router.back();
+  };
+
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: () => router.back() }}
+      back={{ label: translations.back, onClick: handleBack }}
       contentClassName="space-y-6"
     ><div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">
-          {translations.tableManagement}
+          {isCashierMode
+            ? translations.cashier
+            : translations.tableManagement}
         </h1>
-        <Button onClick={openCreate}>
-          <Plus />
-          {translations.addArea}
-        </Button>
+        {!isCashierMode && (
+          <Button onClick={openCreate}>
+            <Plus />
+            {translations.addArea}
+          </Button>
+        )}
       </div>
 
       {loading ? (
@@ -137,34 +163,63 @@ export default function TableAreasPage() {
         <div className="rounded-2xl border border-dashed border-border p-12 text-center">
           <LayoutGrid className="mx-auto h-12 w-12 text-muted-foreground" />
           <p className="mt-4 text-lg font-semibold">
-            {translations.noAreas}
+            {translations.noAreasFound}
           </p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {areas.map((area) => (
-            <Card key={area.id}>
-              <CardContent className="space-y-3 p-4">
-                <Link
-                  href={`/business/${businessId}/areas/${area.id}/tables`}
-                  className="block font-semibold hover:text-primary"
+            <Card
+              key={area.id}
+              className="overflow-hidden border-border/80 shadow-card transition-colors hover:border-primary/30"
+            >
+              <Link
+                href={tablesHref(area.id)}
+                className="flex items-center gap-3 p-4 transition-colors hover:bg-muted/30"
+              >
+                <div
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/15 text-2xl"
+                  aria-hidden
                 >
-                  {area.name}
-                </Link>
-                <div className="flex gap-2">
-                  <Button asChild variant="outline" size="sm" className="flex-1">
-                    <Link href={`/business/${businessId}/areas/${area.id}/tables`}>
-                      {translations.viewTables}
-                    </Link>
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => openEdit(area)}>
-                    <Pencil />
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => setDeleteTarget(area)}>
-                    <Trash2 />
-                  </Button>
+                  {AREA_EMOJI}
                 </div>
-              </CardContent>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold">{area.name}</p>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    {getAreaTableCount(area)} {translations.tables}
+                  </p>
+                </div>
+                <ChevronRight className="size-5 shrink-0 text-muted-foreground opacity-80" />
+              </Link>
+              {!isCashierMode && (
+              <div className="flex border-t border-border">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "h-auto flex-1 rounded-none py-3 text-blue-500 hover:bg-blue-500/10 hover:text-blue-500"
+                  )}
+                  onClick={() => openEdit(area)}
+                >
+                  <Pencil className="size-4" />
+                  {translations.tableCardEdit}
+                </Button>
+                <div className="w-px bg-border" aria-hidden />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "h-auto flex-1 rounded-none py-3 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  )}
+                  onClick={() => setDeleteTarget(area)}
+                >
+                  <Trash2 className="size-4" />
+                  {translations.tableCardDelete}
+                </Button>
+              </div>
+              )}
             </Card>
           ))}
         </div>

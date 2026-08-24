@@ -73,6 +73,9 @@ export default function DeleteAccountPage() {
           <p className="text-sm text-muted-foreground">
             {translations.deleteAccountDescription}
           </p>
+          <p className="text-sm italic text-muted-foreground">
+            {translations.deleteAccountWarning}
+          </p>
 
           {stage === "email" ? (
             <form onSubmit={sendCode} className="space-y-4">
@@ -92,14 +95,14 @@ export default function DeleteAccountPage() {
                 loading={loading}
                 className="w-full"
               >
-                {translations.sendingCode || translations.send}
+                {translations.confirmDelete}
               </Button>
             </form>
           ) : (
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="del-code">
-                  {translations.verificationCode}
+                  {translations.enterVerificationCode}
                 </Label>
                 <Input
                   id="del-code"
