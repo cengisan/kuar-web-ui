@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { PageLayout } from "@/components/layout/PageLayout";
 import {
   Plus,
@@ -34,10 +34,17 @@ import { useAppSelector } from "@/presentation/state/hooks";
 import { getResponseData, isActionSuccess } from "@/utils/apiResponse";
 import { getProductCategoryDisplay } from "@/config/productCategories";
 import { getProductDisplayImageUrl } from "@/utils/productImage";
+import {
+  createProductPath,
+  editProductPath,
+  productsPagePath,
+  readCategoryParam,
+} from "@/utils/productNavigation";
 import type { Product } from "@/types";
 
 export default function ProductsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const params = useParams<{ id: string }>();
   const businessId = Number(params.id);
   const { translations, accessToken, currency, language } = useAppSelector(
@@ -70,6 +77,14 @@ export default function ProductsPage() {
     fetchProducts();
   }, [fetchProducts]);
 
+  const categoryFromUrl = readCategoryParam(searchParams.get("category"));
+
+  const selectCategory = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    setQuery("");
+    router.replace(productsPagePath(businessId, categoryId));
+  };
+
   const categoriesWithCounts = useMemo(() => {
     const counts = new Map<string, number>();
     products.forEach((product) => {
@@ -85,6 +100,21 @@ export default function ProductsPage() {
       }))
       .sort((a, b) => a.label.localeCompare(b.label, lang === "tr" ? "tr" : "en"));
   }, [products, lang]);
+
+  useEffect(() => {
+    if (!categoryFromUrl) {
+      setSelectedCategory(null);
+      return;
+    }
+
+    if (loading) return;
+
+    const categoryExists =
+      products.some((product) => product.category === categoryFromUrl) ||
+      categoriesWithCounts.some((category) => category.id === categoryFromUrl);
+
+    setSelectedCategory(categoryExists ? categoryFromUrl : null);
+  }, [categoryFromUrl, loading, products, categoriesWithCounts]);
 
   const filteredProducts = useMemo(() => {
     if (!selectedCategory) return [];
@@ -102,6 +132,7 @@ export default function ProductsPage() {
   const handleBackToCategories = () => {
     setSelectedCategory(null);
     setQuery("");
+    router.replace(productsPagePath(businessId));
   };
 
   const handlePageBack = () => {
@@ -146,7 +177,7 @@ export default function ProductsPage() {
           {selectedCategory ? selectedCategoryLabel : translations.categories}
         </h1>
         <Button asChild className="shrink-0">
-          <Link href={`/business/${businessId}/products/create`}>
+          <Link href={createProductPath(businessId, selectedCategory)}>
             <Plus />
             {translations.createProduct}
           </Link>
@@ -193,7 +224,7 @@ export default function ProductsPage() {
               <button
                 key={category.id}
                 type="button"
-                onClick={() => setSelectedCategory(category.id)}
+                onClick={() => selectCategory(category.id)}
                 className="text-left"
               >
                 <Card className="h-full transition-colors hover:border-primary/40 hover:bg-muted/20">
@@ -257,7 +288,11 @@ export default function ProductsPage() {
                   <div className="flex gap-2">
                     <Button asChild variant="outline" size="sm" className="flex-1">
                       <Link
-                        href={`/business/${businessId}/products/${product.id}/edit`}
+                        href={editProductPath(
+                          businessId,
+                          product.id,
+                          selectedCategory
+                        )}
                       >
                         <Pencil />
                         {translations.edit}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,13 +17,19 @@ import {
   hasPermissionAccess,
 } from "@/utils/featureAccess";
 import { buildProductPayload } from "@/utils/productForm";
+import {
+  productsPagePath,
+  readCategoryParam,
+} from "@/utils/productNavigation";
 import { resolveCategoryForApi } from "@/config/productCategories";
 import type { StockMaterial } from "@/types";
 
 export default function CreateProductPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const params = useParams<{ id: string }>();
   const businessId = Number(params.id);
+  const returnCategory = readCategoryParam(searchParams.get("category"));
   const { translations, accessToken, subscriberId, language, isEmployee } =
     useAppSelector((s) => s.user);
   const lang = (language === "en" ? "en" : "tr") as "en" | "tr";
@@ -57,6 +63,10 @@ export default function CreateProductPage() {
     loadStockAccess();
   }, [loadStockAccess]);
 
+  const goBackToProducts = () => {
+    router.push(productsPagePath(businessId, returnCategory));
+  };
+
   const handleSubmit = async (values: ProductFormValues) => {
     if (!accessToken || !subscriberId) return;
     setSaving(true);
@@ -78,7 +88,7 @@ export default function CreateProductPage() {
       }
 
       toast.success(translations.productCreated);
-      router.push(`/business/${businessId}/products`);
+      router.push(productsPagePath(businessId, returnCategory));
     } catch (e) {
       toast.error((e as Error).message || translations.createFailed);
     } finally {
@@ -88,7 +98,7 @@ export default function CreateProductPage() {
 
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: () => router.back() }}
+      back={{ label: translations.back, onClick: goBackToProducts }}
       contentClassName="space-y-6"
     >
       <Card className="border-border/80 shadow-card">
@@ -103,7 +113,7 @@ export default function CreateProductPage() {
             submitting={saving}
             submitLabel={translations.create}
             onSubmit={handleSubmit}
-            onCancel={() => router.back()}
+            onCancel={goBackToProducts}
           />
         </CardContent>
       </Card>

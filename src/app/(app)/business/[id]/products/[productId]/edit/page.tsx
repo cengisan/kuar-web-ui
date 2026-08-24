@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,14 +18,20 @@ import {
   hasPermissionAccess,
 } from "@/utils/featureAccess";
 import { buildProductPayload } from "@/utils/productForm";
+import {
+  productsPagePath,
+  readCategoryParam,
+} from "@/utils/productNavigation";
 import { resolveCategoryForApi } from "@/config/productCategories";
 import type { Product, StockMaterial } from "@/types";
 
 export default function EditProductPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const params = useParams<{ id: string; productId: string }>();
   const businessId = Number(params.id);
   const productId = Number(params.productId);
+  const categoryFromQuery = readCategoryParam(searchParams.get("category"));
   const { translations, accessToken, subscriberId, language, isEmployee } =
     useAppSelector((s) => s.user);
   const lang = (language === "en" ? "en" : "tr") as "en" | "tr";
@@ -80,6 +86,13 @@ export default function EditProductPage() {
     loadStockAccess();
   }, [loadProduct, loadStockAccess]);
 
+  const returnCategory =
+    categoryFromQuery || readCategoryParam(product?.category ?? null);
+
+  const goBackToProducts = () => {
+    router.push(productsPagePath(businessId, returnCategory));
+  };
+
   const handleSubmit = async (values: ProductFormValues) => {
     if (!accessToken || !subscriberId || !product) return;
     setSaving(true);
@@ -110,7 +123,7 @@ export default function EditProductPage() {
           }
         }
         toast.success(translations.productUpdated);
-        router.push(`/business/${businessId}/products`);
+        router.push(productsPagePath(businessId, returnCategory));
       } else {
         toast.error((result as { message?: string }).message);
       }
@@ -124,7 +137,7 @@ export default function EditProductPage() {
   if (loading) {
     return (
       <PageLayout
-        back={{ label: translations.back, onClick: () => router.back() }}
+        back={{ label: translations.back, onClick: goBackToProducts }}
       >
         <div className="flex min-h-[60vh] items-center justify-center">
           <Spinner size="lg" />
@@ -137,7 +150,7 @@ export default function EditProductPage() {
 
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: () => router.back() }}
+      back={{ label: translations.back, onClick: goBackToProducts }}
       contentClassName="space-y-6"
     >
       <Card className="border-border/80 shadow-card">
@@ -153,7 +166,7 @@ export default function EditProductPage() {
             submitting={saving}
             submitLabel={translations.save}
             onSubmit={handleSubmit}
-            onCancel={() => router.back()}
+            onCancel={goBackToProducts}
           />
         </CardContent>
       </Card>
