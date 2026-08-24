@@ -163,8 +163,8 @@ export function MenuLastUpdatedFooter({
 }
 
 /**
- * Decorative header background — photo stays subdued behind a strong overlay
- * so logo and title remain the visual focus.
+ * Decorative header background — photo visible through overlay;
+ * logo and title remain the visual focus.
  */
 export function MenuHeaderBanner({
   background,
@@ -175,7 +175,7 @@ export function MenuHeaderBanner({
   children,
 }: {
   background: StaticImageData;
-  /** Solid rgba overlay — use high opacity (0.82–0.94) to keep photo subtle */
+  /** Solid rgba overlay — typical range 0.72–0.82 balances photo vs logo legibility */
   overlay: string;
   minHeight?: number;
   padding?: string;

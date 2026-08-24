@@ -54,8 +54,8 @@ export default function MenuTheme2({ menuId, data }: Props) {
 
         <MenuHeaderBanner
           background={getMenuHeaderImage("menu2")}
-          overlay="rgba(11,10,9,0.84)"
-          minHeight={240}
+          overlay="rgba(11,10,9,0.72)"
+          minHeight={250}
           padding="4rem 1.5rem 3rem"
         >
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>

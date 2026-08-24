@@ -56,8 +56,8 @@ export default function MenuTheme1({ menuId, data }: Props) {
         {/* Header — subtle photo, logo forward */}
         <MenuHeaderBanner
           background={getMenuHeaderImage("menu1")}
-          overlay="rgba(233,224,210,0.93)"
-          minHeight={210}
+          overlay="rgba(233,224,210,0.80)"
+          minHeight={220}
           padding="2.5rem 1.5rem 2rem"
         >
           {logoUrl ? (
