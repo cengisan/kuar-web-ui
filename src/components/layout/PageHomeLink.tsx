@@ -1,38 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { Home } from "lucide-react";
+import { Building2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 export function PageHomeLink({
   href,
   onClick,
-  children,
+  ariaLabel,
   className,
 }: {
   href?: string;
   onClick?: () => void;
-  children: React.ReactNode;
+  ariaLabel: string;
   className?: string;
 }) {
   const classes = cn(
-    "inline-flex min-h-10 items-center gap-2.5 rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground",
+    "inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20 transition-colors hover:bg-primary/15 hover:text-primary",
     className
   );
 
+  const icon = <Building2 className="size-5" aria-hidden />;
+
   if (href) {
     return (
-      <Link href={href} className={classes}>
-        <Home className="size-4" />
-        {children}
+      <Link href={href} className={classes} aria-label={ariaLabel}>
+        {icon}
       </Link>
     );
   }
 
   return (
-    <button type="button" onClick={onClick} className={classes}>
-      <Home className="size-4" />
-      {children}
+    <button type="button" onClick={onClick} className={classes} aria-label={ariaLabel}>
+      {icon}
     </button>
   );
 }

@@ -52,7 +52,7 @@ export function PageLayout({
   const homeConfig =
     home === false
       ? null
-      : home ?? (autoHomeHref ? { href: autoHomeHref, label: translations.home } : null);
+      : home ?? (autoHomeHref ? { href: autoHomeHref } : null);
 
   return (
     <div className={cn("space-y-6", className)}>
@@ -62,9 +62,11 @@ export function PageLayout({
             {back.label}
           </PageBackLink>
           {homeConfig ? (
-            <PageHomeLink href={homeConfig.href} onClick={homeConfig.onClick}>
-              {homeConfig.label ?? translations.home}
-            </PageHomeLink>
+            <PageHomeLink
+              href={homeConfig.href}
+              onClick={homeConfig.onClick}
+              ariaLabel={homeConfig.label?.toString() ?? translations.home}
+            />
           ) : null}
         </div>
       ) : null}
