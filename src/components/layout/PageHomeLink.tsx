@@ -16,7 +16,7 @@ export function PageHomeLink({
   className?: string;
 }) {
   const classes = cn(
-    "inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20 transition-colors hover:bg-primary/15 hover:text-primary",
+    "inline-flex size-10 shrink-0 items-center justify-center rounded-xl text-primary transition-colors hover:bg-muted/70 hover:text-primary",
     className
   );
 
