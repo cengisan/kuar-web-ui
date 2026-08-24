@@ -15,14 +15,9 @@ import {
   validateProductFormValues,
 } from "@/utils/productForm";
 import type { Product, StockMaterial } from "@/types";
+import { getProductDisplayImageUrl } from "@/utils/productImage";
 
 export type { ProductFormValues };
-
-function getProductImageUrl(product?: Partial<Product>) {
-  const image =
-    product?.product_image?.[0] || product?.images?.[0];
-  return image?.image_url || image?.url || null;
-}
 
 interface ProductFormProps {
   businessId: number;
@@ -76,7 +71,7 @@ export function ProductForm({
         businessId={businessId}
         canUseStock={canUseStock}
         availableMaterials={availableMaterials}
-        existingImageUrl={getProductImageUrl(initial)}
+        existingImageUrl={getProductDisplayImageUrl(initial)}
         idPrefix={initial ? "edit-product" : "create-product"}
       />
 
