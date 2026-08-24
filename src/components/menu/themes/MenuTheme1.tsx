@@ -17,7 +17,6 @@ import {
   useCurrency,
   ProductDrawer,
   OrderWidget,
-  tileColor,
 } from "@/components/menu/MenuShared";
 
 const BG = "#e9e0d2";

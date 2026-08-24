@@ -16,8 +16,6 @@ import {
   groupCategories,
   useCurrency,
   firstProductImage,
-  categoryDefaultImage,
-  tileColor,
   ProductDrawer,
   OrderWidget,
 } from "@/components/menu/MenuShared";
@@ -85,9 +83,8 @@ export default function MenuTheme2({ menuId, data }: Props) {
         {!activeCat && (
           <div style={{ padding: "2rem 1rem" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))", gap: 14 }}>
-              {categories.map((cat, idx) => {
-                const img = firstProductImage(cat.items) ?? categoryDefaultImage(cat.name);
-                const fallback = tileColor(idx);
+              {categories.map((cat) => {
+                const img = firstProductImage(cat.items);
                 return (
                   <button
                     key={cat.name}
@@ -97,17 +94,18 @@ export default function MenuTheme2({ menuId, data }: Props) {
                       height: 200,
                       borderRadius: 12,
                       overflow: "hidden",
-                      border: "none",
+                      border: `1px solid ${CARD_BORDER}`,
                       cursor: "pointer",
-                      background: fallback,
+                      background: SURFACE,
                       padding: 0,
                     }}
                   >
                     {img && (
                       <Image src={img} alt={cat.name} fill className="object-cover" sizes="(max-width:640px) 50vw, 33vw" />
                     )}
-                    {/* Gradient overlay only over image for text legibility */}
-                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(transparent 30%, rgba(9,7,5,0.88) 100%)" }} />
+                    {img && (
+                      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)" }} />
+                    )}
                     <div
                       style={{
                         position: "absolute",
@@ -115,11 +113,11 @@ export default function MenuTheme2({ menuId, data }: Props) {
                         left: 0,
                         right: 0,
                         padding: "1rem 0.75rem 0.85rem",
-                        borderBottom: `2px solid ${GOLD}`,
+                        borderBottom: img ? `2px solid ${GOLD}` : "none",
                         fontFamily: "'Cormorant Garamond',serif",
                         fontSize: "1.2rem",
                         fontWeight: 600,
-                        color: "#fff",
+                        color: img ? "#fff" : GOLD,
                         textAlign: "center",
                         letterSpacing: "0.03em",
                       }}

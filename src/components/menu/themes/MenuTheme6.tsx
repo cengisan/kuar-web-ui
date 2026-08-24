@@ -22,7 +22,6 @@ import {
 const BG = "#f3efe6";
 const SURFACE = "#fffdf8";
 const ACCENT = "#7a8b5f";
-const ACCENT_D = "#64744b";
 const DARK = "#34362c";
 const MUTED = "#8a8577";
 const PANEL_BORDER = "#e7e0d0";
@@ -71,18 +70,6 @@ export default function MenuTheme6({ menuId, data }: Props) {
                 {data.digitalMenu.business_name && data.digitalMenu.business_name !== data.name && (
                   <p style={{ margin: 0, fontSize: "0.85rem", color: MUTED }}>{data.digitalMenu.business_name}</p>
                 )}
-                <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-                  {categories.slice(0, 3).map((c) => (
-                    <span key={c.name} style={{ background: `${ACCENT}22`, color: ACCENT_D, borderRadius: 999, padding: "2px 10px", fontSize: "0.72rem", fontWeight: 600 }}>
-                      {c.name}
-                    </span>
-                  ))}
-                  {categories.length > 3 && (
-                    <span style={{ background: `${ACCENT}22`, color: ACCENT_D, borderRadius: 999, padding: "2px 10px", fontSize: "0.72rem", fontWeight: 600 }}>
-                      +{categories.length - 3}
-                    </span>
-                  )}
-                </div>
               </div>
             </div>
           </div>
