@@ -1,4 +1,4 @@
-import { allergenIdsFromNames } from "@/config/allergens";
+import { allergenIdsFromNames, allergens } from "@/config/allergens";
 import { findCategoryIdByLabel } from "@/config/productCategories";
 import type { ProductFormValues } from "@/components/business/ProductFormFields";
 import type { Product, ProductMaterial } from "@/types";
@@ -74,7 +74,11 @@ export function buildProductPayload(
     price: normalizedPrice,
     calories: values.calories.trim() ? parseInt(values.calories, 10) : null,
     is_available: values.isAvailable,
+    allergen_ids: values.allergenIds,
     allergenIds: values.allergenIds,
+    allergen_names: values.allergenIds
+      .map((id) => allergens.find((item) => item.id === id)?.name)
+      .filter((name): name is string => Boolean(name)),
     extra_parameters: {
       is_new_item: values.isNewItem,
       is_campaign: values.isCampaign,
