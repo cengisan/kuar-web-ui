@@ -104,6 +104,14 @@ export default function ProductsPage() {
     setQuery("");
   };
 
+  const handlePageBack = () => {
+    if (selectedCategory) {
+      handleBackToCategories();
+      return;
+    }
+    router.push(`/business/${businessId}`);
+  };
+
   const handleDelete = async () => {
     if (!deleteTarget || !accessToken) return;
     setDeleting(true);
@@ -130,25 +138,13 @@ export default function ProductsPage() {
 
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: () => router.back() }}
+      back={{ label: translations.back, onClick: handlePageBack }}
       contentClassName="space-y-6"
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold">
-            {selectedCategory ? selectedCategoryLabel : translations.categories}
-          </h1>
-          {selectedCategory && (
-            <button
-              type="button"
-              onClick={handleBackToCategories}
-              className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <ChevronLeft className="size-4" />
-              {translations.categories}
-            </button>
-          )}
-        </div>
+        <h1 className="text-2xl font-bold">
+          {selectedCategory ? selectedCategoryLabel : translations.categories}
+        </h1>
         <Button asChild className="shrink-0">
           <Link href={`/business/${businessId}/products/create`}>
             <Plus />
