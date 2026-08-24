@@ -46,13 +46,14 @@ export default function MenuTheme4({ menuId, data }: Props) {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
-        html,body{margin:0;padding:0;box-sizing:border-box}
-        body{background:${BG};min-height:100vh}
-        .t4-shell{max-width:900px;margin:0 auto;background:${SURFACE};overflow:hidden}
-        .t4-content{padding:1rem 1rem 0}
+        html,body{margin:0;padding:0;box-sizing:border-box;width:100%}
+        body{background:${SURFACE};min-height:100vh}
+        .t4-shell{width:100%;max-width:100%;margin:0;background:${SURFACE};overflow:hidden}
+        .t4-content{padding:1rem 1.125rem 0}
         @media (min-width:769px){
-          .t4-shell{margin:0.75rem auto;border-radius:18px;box-shadow:0 6px 22px rgba(47,51,36,0.08);border:1px solid rgba(111,125,74,0.14)}
-          .t4-content{padding:1.25rem 1.25rem 0}
+          body{background:${BG}}
+          .t4-shell{max-width:900px;margin:0.75rem auto;border-radius:18px;box-shadow:0 6px 22px rgba(47,51,36,0.08);border:1px solid rgba(111,125,74,0.14)}
+          .t4-content{padding:1.25rem 1.5rem 0}
         }
       `}</style>
 
@@ -112,8 +113,8 @@ export default function MenuTheme4({ menuId, data }: Props) {
                       }}
                     >
                       {imgUrl ? (
-                        <div style={{ width: 58, height: 58, borderRadius: "50%", overflow: "hidden", flexShrink: 0, border: `2px solid rgba(111,125,74,0.3)` }}>
-                          <Image src={imgUrl} alt={p.name} width={58} height={58} className="object-cover" />
+                        <div style={{ position: "relative", width: 58, height: 58, borderRadius: "50%", overflow: "hidden", flexShrink: 0, border: `2px solid rgba(111,125,74,0.3)` }}>
+                          <Image src={imgUrl} alt={p.name} fill sizes="58px" className="object-cover" />
                         </div>
                       ) : (
                         <div style={{ width: 58, height: 58, borderRadius: "50%", background: BG, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: `2px solid ${LINE}` }}>

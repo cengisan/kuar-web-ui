@@ -445,9 +445,9 @@ export function ProductDrawer({ product, currency, accentColor, onClose }: Drawe
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-end justify-center"
+      className="fixed inset-0 flex items-end justify-center"
+      style={{ zIndex: 2400, background: "rgba(0,0,0,0.70)" }}
       onClick={onClose}
-      style={{ background: "rgba(0,0,0,0.70)" }}
     >
       <div
         className="relative w-full max-w-lg rounded-t-3xl bg-white overflow-y-auto"
