@@ -33,6 +33,7 @@ import ProductRepositoryImpl from "@/data/repositories/ProductRepositoryImpl";
 import { useAppSelector } from "@/presentation/state/hooks";
 import { getResponseData, isActionSuccess } from "@/utils/apiResponse";
 import { getProductCategoryDisplay } from "@/config/productCategories";
+import { getProductDisplayImageUrl } from "@/utils/productImage";
 import type { Product } from "@/types";
 
 export default function ProductsPage() {
@@ -227,8 +228,7 @@ export default function ProductsPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredProducts.map((product) => {
-            const firstImage =
-              product.images?.[0]?.image_url || product.images?.[0]?.url;
+            const firstImage = getProductDisplayImageUrl(product);
             return (
               <Card key={product.id} className="overflow-hidden">
                 {firstImage ? (
