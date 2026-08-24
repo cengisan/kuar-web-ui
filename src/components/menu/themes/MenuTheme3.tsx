@@ -19,6 +19,7 @@ import {
   OrderWidget,
   ProductImagePlaceholder,
   ProductCardMeta,
+  ProductPriceDisplay,
   MenuHeaderBanner,
   MenuLastUpdatedFooter,
 } from "@/components/menu/MenuShared";
@@ -263,7 +264,7 @@ export default function MenuTheme3({ menuId, data }: Props) {
                   <div style={{ flex: 1, minWidth: 0, padding: "1rem 1rem 1rem 0.95rem", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
                       <p style={{ margin: 0, fontWeight: 600, fontSize: "0.98rem", color: DARK, lineHeight: 1.3 }}>{p.name}</p>
-                      <p style={{ margin: 0, fontWeight: 700, fontSize: "0.95rem", color: ACCENT, flexShrink: 0 }}>{(p.price ?? 0).toFixed(2)} {currency}</p>
+                      <ProductPriceDisplay product={p} currency={currency} accentColor={ACCENT} fontSize="0.95rem" style={{ margin: 0, flexShrink: 0 }} />
                     </div>
                     {p.description && (
                       <p style={{ margin: "5px 0 0", fontSize: "0.82rem", color: MUTED, lineHeight: 1.45, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>

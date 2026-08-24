@@ -20,6 +20,7 @@ import {
   OrderWidget,
   ProductImagePlaceholder,
   ProductCardMeta,
+  ProductPriceDisplay,
   MenuHeaderBanner,
   MenuLastUpdatedFooter,
 } from "@/components/menu/MenuShared";
@@ -124,7 +125,7 @@ export default function MenuTheme4({ menuId, data }: Props) {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
                           <span style={{ fontWeight: 600, fontSize: "0.95rem", color: DARK }}>{p.name}</span>
-                          <span style={{ fontWeight: 700, fontSize: "0.95rem", color: ACCENT_T, flexShrink: 0 }}>{(p.price ?? 0).toFixed(2)} {currency}</span>
+                          <ProductPriceDisplay product={p} currency={currency} accentColor={ACCENT_T} fontSize="0.95rem" style={{ flexShrink: 0 }} />
                         </div>
                         {p.description && (
                           <p style={{ margin: "3px 0 0", fontSize: "0.8rem", color: MUTED, lineHeight: 1.4 }}>{p.description}</p>

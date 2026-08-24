@@ -72,6 +72,7 @@ export interface Product {
   subscriber_id?: number;
   images?: ProductImage[];
   product_image?: ProductImage[];
+  allergen_names?: string[];
   allergenNames?: string[];
   allergens?: string[];
   extra_parameters?: ProductExtraParameters;

@@ -1,4 +1,5 @@
 import type { MenuApiData, MenuApiResponse } from "@/types/menu";
+import { normalizeMenuData } from "@/types/menu";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://kuar-test.up.railway.app/api/v1";
@@ -16,7 +17,8 @@ export async function fetchPublicMenu(menuId: string): Promise<MenuApiData | nul
     if (res.status === 404) return null;
     if (!res.ok) return null;
     const json: MenuApiResponse = await res.json();
-    return json.data ?? null;
+    const data = json.data ?? null;
+    return data ? normalizeMenuData(data) : null;
   } catch {
     return null;
   }

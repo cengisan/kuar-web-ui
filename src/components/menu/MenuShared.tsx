@@ -16,6 +16,7 @@ import type {
 } from "@/types/menu";
 import {
   getCurrencySymbol,
+  getProductAllergenNames,
 } from "@/types/menu";
 
 // ─── Re-export types ───────────────────────────────────────────────────────────
@@ -331,6 +332,123 @@ export function ProductExtraLabels({
   );
 }
 
+export function parseDiscountPercent(discount: string | null | undefined): number | null {
+  if (discount == null || discount === "" || discount === "0") return null;
+  const value = parseFloat(discount.replace(",", "."));
+  if (Number.isNaN(value) || value <= 0) return null;
+  return value;
+}
+
+export function getProductDiscountPercent(product: ProductData): number | null {
+  return parseDiscountPercent(product.extra_parameters?.discount ?? null);
+}
+
+export function applyPriceDiscount(price: number, discountPercent: number): number {
+  return Math.round(price * (1 - discountPercent / 100) * 100) / 100;
+}
+
+export function getProductDisplayPrices(product: ProductData): {
+  original: number | null;
+  final: number | null;
+  hasDiscount: boolean;
+} {
+  const original = product.price ?? null;
+  if (original == null) return { original: null, final: null, hasDiscount: false };
+
+  const discountPercent = getProductDiscountPercent(product);
+  if (discountPercent == null) {
+    return { original, final: original, hasDiscount: false };
+  }
+
+  return {
+    original,
+    final: applyPriceDiscount(original, discountPercent),
+    hasDiscount: true,
+  };
+}
+
+/** Product price with optional strikethrough original + discounted final price */
+export function ProductPriceDisplay({
+  product,
+  currency,
+  accentColor = "#c0392b",
+  originalColor = "#dc3545",
+  fontSize = "1rem",
+  fontWeight = 700,
+  style,
+  className,
+  currencyOnNewLine = false,
+}: {
+  product: ProductData;
+  currency: string;
+  accentColor?: string;
+  originalColor?: string;
+  fontSize?: string | number;
+  fontWeight?: number;
+  style?: CSSProperties;
+  className?: string;
+  currencyOnNewLine?: boolean;
+}) {
+  const { original, final, hasDiscount } = getProductDisplayPrices(product);
+  if (final == null) return null;
+
+  const renderAmount = (amount: number, amountStyle?: CSSProperties) => {
+    if (currencyOnNewLine) {
+      return (
+        <>
+          {amount.toFixed(2)}
+          <br />
+          <span style={{ fontSize: "0.75rem", fontWeight: 400 }}>{currency}</span>
+        </>
+      );
+    }
+    return (
+      <>
+        {amount.toFixed(2)} {currency}
+      </>
+    );
+  };
+
+  if (!hasDiscount || original == null) {
+    return (
+      <span
+        className={className}
+        style={{ fontWeight, fontSize, color: accentColor, ...style }}
+      >
+        {renderAmount(final)}
+      </span>
+    );
+  }
+
+  return (
+    <span
+      className={className}
+      style={{
+        display: "inline-flex",
+        alignItems: "baseline",
+        flexWrap: "wrap",
+        gap: currencyOnNewLine ? 0 : 6,
+        fontSize,
+        ...style,
+      }}
+    >
+      <span
+        style={{
+          color: originalColor,
+          textDecoration: "line-through",
+          fontSize: typeof fontSize === "number" ? fontSize * 0.9 : `calc(${fontSize} * 0.9)`,
+          fontWeight: 500,
+        }}
+      >
+        {renderAmount(original)}
+      </span>
+      <span style={{ fontWeight, color: accentColor }}>
+        {renderAmount(final)}
+      </span>
+    </span>
+  );
+}
+
 /** Calorie badge for product cards */
 export function ProductCalorieTag({
   calories,
@@ -403,7 +521,7 @@ export function ProductCardMeta({
   showLabels?: boolean;
 }) {
   const hasCalorie = product.calories != null;
-  const allergens = product.allergenNames ?? [];
+  const allergens = getProductAllergenNames(product);
   const hasAllergens = allergens.length > 0;
   const ep = product.extra_parameters;
   const hasLabels =
@@ -437,6 +555,7 @@ interface DrawerProps {
 
 export function ProductDrawer({ product, currency, accentColor, onClose }: DrawerProps) {
   const imgUrl = buildImgUrl(product.product_image?.[0]?.image_url);
+  const drawerAllergens = getProductAllergenNames(product);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -483,17 +602,20 @@ export function ProductDrawer({ product, currency, accentColor, onClose }: Drawe
             <p className="text-sm text-gray-500 mb-3 leading-relaxed">{product.description}</p>
           )}
           <div className="flex items-center justify-between mb-3">
-            <span className="text-2xl font-bold" style={{ color: accentColor }}>
-              {(product.price ?? 0).toFixed(2)} {currency}
-            </span>
+            <ProductPriceDisplay
+              product={product}
+              currency={currency}
+              accentColor={accentColor}
+              fontSize="1.5rem"
+            />
             {product.calories != null && (
               <ProductCalorieTag calories={product.calories} />
             )}
           </div>
-          {product.allergenNames && product.allergenNames.length > 0 && (
+          {drawerAllergens.length > 0 && (
             <div className="rounded-xl bg-red-50 border border-red-100 px-4 py-3">
               <p className="text-xs font-semibold text-red-700 mb-2">Alerjenler</p>
-              <ProductAllergenTags allergens={product.allergenNames} />
+              <ProductAllergenTags allergens={drawerAllergens} />
             </div>
           )}
         </div>
