@@ -72,6 +72,8 @@ export interface MenuApiData {
   mainColor: string | null;
   socialMedia: string | null;
   hasFeedbackFeature: boolean;
+  /** DIGITAL_MENU_ORDER module purchased (or trial). */
+  hasOrderingFeature: boolean;
   orderingEnabled: boolean;
   orderToken: string | null;
   tables: TableOption[];
@@ -140,11 +142,49 @@ export function normalizeMenuProduct(product: ProductData | Record<string, unkno
   };
 }
 
+function readRootBoolean(
+  raw: Record<string, unknown>,
+  camelKey: string,
+  snakeKey: string,
+): boolean | undefined {
+  const camel = raw[camelKey];
+  if (typeof camel === "boolean") return camel;
+  const snake = raw[snakeKey];
+  if (typeof snake === "boolean") return snake;
+  return undefined;
+}
+
+/** Public menu: show order widget only when module is active and backend issued order data. */
+export function isPublicMenuOrderingAvailable(data: MenuApiData): boolean {
+  const hasModule =
+    readRootBoolean(data as unknown as Record<string, unknown>, "hasOrderingFeature", "has_ordering_feature") ??
+    data.orderingEnabled;
+
+  return Boolean(
+    hasModule &&
+      data.orderingEnabled &&
+      data.orderToken &&
+      data.orderProducts.length > 0,
+  );
+}
+
 export function normalizeMenuData(data: MenuApiData | Record<string, unknown>): MenuApiData {
   const raw = data as Record<string, unknown>;
   const products = Array.isArray(raw.products) ? raw.products : [];
+  const orderingEnabled =
+    readRootBoolean(raw, "orderingEnabled", "ordering_enabled") ?? false;
+  const digitalMenuRaw = raw.digitalMenu as DigitalMenuData | undefined;
+
   return {
     ...(data as MenuApiData),
+    subscriberId: Number(raw.subscriberId ?? raw.subscriber_id ?? 0),
+    hasFeedbackFeature: Boolean(raw.hasFeedbackFeature ?? raw.has_feedback_feature),
+    hasOrderingFeature: Boolean(raw.hasOrderingFeature ?? raw.has_ordering_feature),
+    orderingEnabled,
+    orderToken: (raw.orderToken ?? raw.order_token ?? null) as string | null,
+    digitalMenu: digitalMenuRaw
+      ? { ...digitalMenuRaw, ordering_enabled: orderingEnabled }
+      : (data as MenuApiData).digitalMenu,
     products: products.map((product) => normalizeMenuProduct(product as ProductData)),
   };
 }

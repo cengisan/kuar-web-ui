@@ -294,7 +294,7 @@ export function MenuLayout({ menuId, data, theme }: MenuLayoutProps) {
       </main>
 
       {/* Order widget */}
-      {orderingEnabled && orderToken && (
+      {orderingEnabled && orderToken && orderProducts.length > 0 && (
         <MenuOrderWidget
           menuId={menuId}
           orderToken={orderToken}

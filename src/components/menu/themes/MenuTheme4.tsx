@@ -17,7 +17,7 @@ import {
   groupCategories,
   useCurrency,
   ProductDrawer,
-  OrderWidget,
+  MenuFeatureWidgets,
   ProductImagePlaceholder,
   ProductCardMeta,
   ProductPriceDisplay,
@@ -146,9 +146,7 @@ export default function MenuTheme4({ menuId, data }: Props) {
         <ProductDrawer product={drawer} currency={currency} accentColor={ACCENT_T} onClose={() => setDrawer(null)} />
       )}
 
-      {data.orderingEnabled && data.orderToken && data.orderProducts.length > 0 && (
-        <OrderWidget menuId={menuId} orderToken={data.orderToken} tables={data.tables} orderProducts={data.orderProducts} accentColor={ACCENT_G} surfaceColor={MAIN} />
-      )}
+      <MenuFeatureWidgets menuId={menuId} data={data} accentColor={ACCENT_G} surfaceColor={MAIN} />
     </>
   );
 }
