@@ -17,6 +17,8 @@ import {
   useCurrency,
   ProductDrawer,
   OrderWidget,
+  ProductImagePlaceholder,
+  ProductCardMeta,
 } from "@/components/menu/MenuShared";
 
 const BG = "#ffffff";
@@ -142,7 +144,6 @@ export default function MenuTheme3({ menuId, data }: Props) {
           <div style={{ padding: "0.5rem 0 6rem" }}>
             {activeItems.map((p, idx) => {
               const imgUrl = buildImgUrl(p.product_image?.[0]?.image_url);
-              const ep = p.extra_parameters;
               return (
                 <button
                   key={p.id}
@@ -155,17 +156,15 @@ export default function MenuTheme3({ menuId, data }: Props) {
                     transition: "background 0.15s",
                   }}
                 >
-                  {/* Thumbnail */}
                   {imgUrl ? (
                     <div style={{ width: 70, height: 70, borderRadius: 10, overflow: "hidden", flexShrink: 0, border: `1px solid ${LINE}` }}>
                       <Image src={imgUrl} alt={p.name} width={70} height={70} className="object-cover" />
                     </div>
                   ) : (
-                    <div style={{ width: 70, height: 70, borderRadius: 10, background: SIDEBAR_BG, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, color: "#ccc" }}>
-                      🍽
+                    <div style={{ width: 70, height: 70, borderRadius: 10, background: SIDEBAR_BG, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${LINE}` }}>
+                      <ProductImagePlaceholder size={24} color="#ccc" />
                     </div>
                   )}
-                  {/* Text */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
                       <p style={{ margin: 0, fontWeight: 600, fontSize: "0.95rem", color: DARK, lineHeight: 1.3 }}>{p.name}</p>
@@ -176,12 +175,7 @@ export default function MenuTheme3({ menuId, data }: Props) {
                         {p.description}
                       </p>
                     )}
-                    {ep && (ep.is_new_item || ep.is_campaign) && (
-                      <div style={{ display: "flex", gap: 5, marginTop: 5 }}>
-                        {ep.is_new_item && <span style={{ background: "#28a745", color: "#fff", borderRadius: 999, padding: "1px 8px", fontSize: "0.7rem", fontWeight: 700 }}>YENİ</span>}
-                        {ep.is_campaign && <span style={{ background: "#ffc107", color: "#222", borderRadius: 999, padding: "1px 8px", fontSize: "0.7rem", fontWeight: 700 }}>KAMPANYA</span>}
-                      </div>
-                    )}
+                    <ProductCardMeta product={p} />
                   </div>
                 </button>
               );

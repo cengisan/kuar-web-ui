@@ -5,7 +5,7 @@
  * Each theme file imports from here; no theme-specific logic here.
  */
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, type CSSProperties } from "react";
 import Image from "next/image";
 import type {
   MenuApiData,
@@ -62,26 +62,216 @@ export function useCurrency(data: MenuApiData): string {
   return getCurrencySymbol(data.digitalMenu.currency);
 }
 
-// ─── Allergen label helper ─────────────────────────────────────────────────────
-export function allergenLabel(a: string): string {
+// ─── Allergen helpers ──────────────────────────────────────────────────────────
+export function allergenDisplayName(a: string): string {
   const map: Record<string, string> = {
-    Gluten: "🥖 Gluten",
-    Shellfish: "🦐 Kabuklu Deniz",
-    Egg: "🥚 Yumurta",
-    Fish: "🐟 Balık",
-    Peanuts: "🥜 Yer Fıstığı",
-    Soy: "🌱 Soya",
-    Milk: "🥛 Süt",
-    "Tree Nuts": "🌰 Yemiş",
-    Celery: "🥬 Kereviz",
-    Mustard: "🌭 Hardal",
-    Sesame: "⚪ Susam",
-    Sulphites: "🧪 Sülfitler",
-    Legumes: "🫘 Baklagil",
-    Molluscs: "🐚 Yumuşakça",
-    Nuts: "🌰 Kabuklu",
+    Gluten: "Gluten",
+    Shellfish: "Kabuklu Deniz Ürünleri",
+    Egg: "Yumurta",
+    Fish: "Balık",
+    Peanuts: "Yer Fıstığı",
+    Soy: "Soya",
+    Milk: "Süt",
+    "Tree Nuts": "Ağaç Yemişleri",
+    Celery: "Kereviz",
+    Mustard: "Hardal",
+    Sesame: "Susam",
+    Sulphites: "Sülfitler",
+    Legumes: "Baklagiller",
+    Molluscs: "Yumuşakçalar",
+    Nuts: "Sert Kabuklu Yemişler",
   };
-  return map[a] ?? `⚠️ ${a}`;
+  return map[a] ?? a;
+}
+
+export function allergenLabel(a: string): string {
+  return allergenDisplayName(a);
+}
+
+// ─── Shared product card UI ────────────────────────────────────────────────────
+
+/** SVG placeholder for products without an image (no emoji). */
+export function ProductImagePlaceholder({ size = 32, color = "#aaa" }: { size?: number; color?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" fill={color} stroke="none" />
+      <path d="m21 15-5-5L5 21" />
+    </svg>
+  );
+}
+
+const LABEL_STYLES = {
+  new: { bg: "#28a745", color: "#fff" },
+  campaign: { bg: "#ffc107", color: "#212529" },
+  favorite: { bg: "#dc3545", color: "#fff" },
+  discount: { bg: "#17a2b8", color: "#fff" },
+} as const;
+
+function ExtraLabel({ type, text }: { type: keyof typeof LABEL_STYLES; text: string }) {
+  const s = LABEL_STYLES[type];
+  return (
+    <span
+      style={{
+        background: s.bg,
+        color: s.color,
+        borderRadius: 999,
+        padding: "2px 8px",
+        fontSize: "0.68rem",
+        fontWeight: 700,
+        textTransform: "uppercase",
+        letterSpacing: "0.03em",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {text}
+    </span>
+  );
+}
+
+/** YENİ / KAMPANYA / FAVORİ / İNDİRİM badges */
+export function ProductExtraLabels({
+  product,
+  layout = "inline",
+}: {
+  product: ProductData;
+  layout?: "inline" | "overlay";
+}) {
+  const ep = product.extra_parameters;
+  if (!ep) return null;
+
+  const hasDiscount = ep.discount != null && ep.discount !== "" && ep.discount !== "0";
+  const hasAny = ep.is_new_item || ep.is_campaign || ep.is_favorite || hasDiscount;
+  if (!hasAny) return null;
+
+  const wrapperStyle: CSSProperties =
+    layout === "overlay"
+      ? {
+          position: "absolute",
+          top: 8,
+          right: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-end",
+          gap: 4,
+          zIndex: 7,
+        }
+      : { display: "flex", flexWrap: "wrap", gap: 4, marginTop: 4 };
+
+  return (
+    <div style={wrapperStyle}>
+      {ep.is_new_item && <ExtraLabel type="new" text="YENİ" />}
+      {ep.is_campaign && <ExtraLabel type="campaign" text="KAMPANYA" />}
+      {ep.is_favorite && <ExtraLabel type="favorite" text="FAVORİ" />}
+      {hasDiscount && <ExtraLabel type="discount" text={`%${ep.discount} İNDİRİM`} />}
+    </div>
+  );
+}
+
+/** Calorie badge for product cards */
+export function ProductCalorieTag({
+  calories,
+  variant = "light",
+}: {
+  calories: number;
+  variant?: "light" | "dark";
+}) {
+  const isDark = variant === "dark";
+  return (
+    <span
+      style={{
+        display: "inline-block",
+        background: isDark ? "rgba(255,152,0,0.15)" : "rgba(255,152,0,0.1)",
+        color: isDark ? "#ffb74d" : "#e65100",
+        border: `1px solid ${isDark ? "rgba(255,152,0,0.3)" : "rgba(255,152,0,0.2)"}`,
+        borderRadius: 999,
+        padding: "2px 8px",
+        fontSize: "0.72rem",
+        fontWeight: 500,
+      }}
+    >
+      {calories} kcal
+    </span>
+  );
+}
+
+/** Allergen tags for product cards */
+export function ProductAllergenTags({
+  allergens,
+  variant = "light",
+}: {
+  allergens: string[];
+  variant?: "light" | "dark";
+}) {
+  if (!allergens.length) return null;
+  const isDark = variant === "dark";
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 4 }}>
+      {allergens.map((a) => (
+        <span
+          key={a}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            background: isDark ? "rgba(220,53,69,0.12)" : "rgba(220,53,69,0.08)",
+            color: isDark ? "#ff8a80" : "#c0392b",
+            border: `1px solid ${isDark ? "rgba(220,53,69,0.25)" : "rgba(220,53,69,0.15)"}`,
+            borderRadius: 999,
+            padding: "2px 8px",
+            fontSize: "0.72rem",
+            fontWeight: 500,
+          }}
+        >
+          {allergenDisplayName(a)}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/** Combined meta block: labels (inline) + calorie + allergens — for card body */
+export function ProductCardMeta({
+  product,
+  variant = "light",
+  showLabels = true,
+}: {
+  product: ProductData;
+  variant?: "light" | "dark";
+  showLabels?: boolean;
+}) {
+  const hasCalorie = product.calories != null;
+  const allergens = product.allergenNames ?? [];
+  const hasAllergens = allergens.length > 0;
+  const ep = product.extra_parameters;
+  const hasLabels =
+    showLabels &&
+    ep &&
+    (ep.is_new_item || ep.is_campaign || ep.is_favorite ||
+      (ep.discount != null && ep.discount !== "" && ep.discount !== "0"));
+
+  if (!hasLabels && !hasCalorie && !hasAllergens) return null;
+
+  return (
+    <div style={{ marginTop: 6 }}>
+      {showLabels && <ProductExtraLabels product={product} layout="inline" />}
+      {hasCalorie && (
+        <div style={{ marginTop: hasLabels ? 4 : 0 }}>
+          <ProductCalorieTag calories={product.calories!} variant={variant} />
+        </div>
+      )}
+      {hasAllergens && <ProductAllergenTags allergens={allergens} variant={variant} />}
+    </div>
+  );
 }
 
 // ─── Product Detail Drawer ─────────────────────────────────────────────────────
@@ -94,7 +284,6 @@ interface DrawerProps {
 
 export function ProductDrawer({ product, currency, accentColor, onClose }: DrawerProps) {
   const imgUrl = buildImgUrl(product.product_image?.[0]?.image_url);
-  const ep = product.extra_parameters;
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -126,29 +315,17 @@ export function ProductDrawer({ product, currency, accentColor, onClose }: Drawe
           </div>
         ) : (
           <div
-            className="w-full flex items-center justify-center text-5xl text-black/10"
+            className="w-full flex items-center justify-center"
             style={{ height: 200, background: "#f5f5f5" }}
           >
-            🍽
+            <ProductImagePlaceholder size={48} color="#ccc" />
           </div>
         )}
 
         <div className="px-5 py-5 pb-8">
-          {ep && (ep.is_new_item || ep.is_campaign || ep.is_favorite) && (
-            <div className="flex gap-2 mb-3 flex-wrap">
-              {ep.is_new_item && (
-                <span className="rounded-full px-3 py-0.5 text-xs font-bold bg-green-500 text-white">YENİ</span>
-              )}
-              {ep.is_campaign && (
-                <span className="rounded-full px-3 py-0.5 text-xs font-bold bg-amber-400 text-white">KAMPANYA</span>
-              )}
-              {ep.is_favorite && (
-                <span className="rounded-full px-3 py-0.5 text-xs font-bold bg-red-500 text-white">❤ FAVORİ</span>
-              )}
-            </div>
-          )}
+          <ProductExtraLabels product={product} layout="inline" />
 
-          <h2 className="text-xl font-bold text-gray-900 mb-1">{product.name}</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-1 mt-2">{product.name}</h2>
           {product.description && (
             <p className="text-sm text-gray-500 mb-3 leading-relaxed">{product.description}</p>
           )}
@@ -157,15 +334,13 @@ export function ProductDrawer({ product, currency, accentColor, onClose }: Drawe
               {(product.price ?? 0).toFixed(2)} {currency}
             </span>
             {product.calories != null && (
-              <span className="text-xs bg-orange-50 text-orange-600 border border-orange-200 rounded-full px-3 py-1">
-                {product.calories} kcal
-              </span>
+              <ProductCalorieTag calories={product.calories} />
             )}
           </div>
           {product.allergenNames && product.allergenNames.length > 0 && (
-            <div className="rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-xs text-red-700">
-              <span className="font-semibold">⚠ Alerjenler: </span>
-              {product.allergenNames.map(allergenLabel).join(" · ")}
+            <div className="rounded-xl bg-red-50 border border-red-100 px-4 py-3">
+              <p className="text-xs font-semibold text-red-700 mb-2">Alerjenler</p>
+              <ProductAllergenTags allergens={product.allergenNames} />
             </div>
           )}
         </div>

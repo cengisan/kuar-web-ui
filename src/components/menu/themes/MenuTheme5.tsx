@@ -29,6 +29,9 @@ import {
   firstProductImage,
   ProductDrawer,
   OrderWidget,
+  ProductImagePlaceholder,
+  ProductExtraLabels,
+  ProductCardMeta,
 } from "@/components/menu/MenuShared";
 
 const BG = "#0d0d0d";
@@ -65,8 +68,8 @@ export default function MenuTheme5({ menuId, data }: Props) {
               <Image src={logoUrl} alt={data.name} width={80} height={80} style={{ objectFit: "cover", width: "100%", height: "100%" }} />
             </div>
           ) : (
-            <div style={{ width: 80, height: 80, borderRadius: "50%", border: "2px solid rgba(255,255,255,0.4)", background: SURFACE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, color: MUTED }}>
-              🍽
+            <div style={{ width: 80, height: 80, borderRadius: "50%", border: "2px solid rgba(255,255,255,0.4)", background: SURFACE, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <ProductImagePlaceholder size={28} color={MUTED} />
             </div>
           )}
           <div style={{ textAlign: "center" }}>
@@ -197,10 +200,8 @@ export default function MenuTheme5({ menuId, data }: Props) {
             <div style={{ padding: "1rem 0.75rem" }}>
               {activeItems.map((p, idx) => {
                 const imgUrl = buildImgUrl(p.product_image?.[0]?.image_url);
-                const ep = p.extra_parameters;
 
                 if (idx === 0) {
-                  // Hero first product
                   return (
                     <button
                       key={p.id}
@@ -212,10 +213,16 @@ export default function MenuTheme5({ menuId, data }: Props) {
                         background: SURFACE, display: "block",
                       }}
                     >
-                      {imgUrl && <Image src={imgUrl} alt={p.name} fill style={{ objectFit: "cover" }} sizes="100vw" />}
-                      {!imgUrl && <div style={{ width: "100%", height: "100%", background: "#222", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, color: "#555" }}>🍽</div>}
+                      {imgUrl ? (
+                        <Image src={imgUrl} alt={p.name} fill style={{ objectFit: "cover" }} sizes="100vw" />
+                      ) : (
+                        <div style={{ width: "100%", height: "100%", background: "#222", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <ProductImagePlaceholder size={40} color="#555" />
+                        </div>
+                      )}
                       <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)" }} />
-                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "rgba(0,0,0,0.7)", padding: "0.9rem 1rem" }}>
+                      <ProductExtraLabels product={p} layout="overlay" />
+                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 6, background: "rgba(0,0,0,0.7)", padding: "0.9rem 1rem" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                           <span style={{ fontWeight: 700, fontSize: "1.05rem", color: "#fff" }}>{p.name}</span>
                           <span style={{ fontWeight: 700, fontSize: "1.05rem", color: "#fff", flexShrink: 0, marginLeft: 8 }}>{(p.price ?? 0).toFixed(2)} {currency}</span>
@@ -225,12 +232,12 @@ export default function MenuTheme5({ menuId, data }: Props) {
                             {p.description}
                           </p>
                         )}
+                        <ProductCardMeta product={p} variant="dark" showLabels={false} />
                       </div>
                     </button>
                   );
                 }
 
-                // Thumbnail list row
                 return (
                   <button
                     key={p.id}
@@ -247,8 +254,8 @@ export default function MenuTheme5({ menuId, data }: Props) {
                         <Image src={imgUrl} alt={p.name} width={64} height={64} style={{ objectFit: "cover", width: "100%", height: "100%" }} />
                       </div>
                     ) : (
-                      <div style={{ width: 64, height: 64, borderRadius: 8, background: SURFACE, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, color: "#555" }}>
-                        🍽
+                      <div style={{ width: 64, height: 64, borderRadius: 8, background: SURFACE, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <ProductImagePlaceholder size={22} color="#555" />
                       </div>
                     )}
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -258,12 +265,7 @@ export default function MenuTheme5({ menuId, data }: Props) {
                           {p.description}
                         </p>
                       )}
-                      {ep && (ep.is_new_item || ep.is_campaign) && (
-                        <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
-                          {ep.is_new_item && <span style={{ background: "#28a745", color: "#fff", borderRadius: 999, padding: "1px 7px", fontSize: "0.68rem", fontWeight: 700 }}>YENİ</span>}
-                          {ep.is_campaign && <span style={{ background: "#ffc107", color: "#222", borderRadius: 999, padding: "1px 7px", fontSize: "0.68rem", fontWeight: 700 }}>KAMPANYA</span>}
-                        </div>
-                      )}
+                      <ProductCardMeta product={p} variant="dark" />
                     </div>
                     <span style={{ flexShrink: 0, fontWeight: 700, fontSize: "0.95rem", color: TEXT, marginLeft: 6 }}>
                       {(p.price ?? 0).toFixed(2)}<br />

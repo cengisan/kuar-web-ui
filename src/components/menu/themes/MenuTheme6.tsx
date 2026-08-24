@@ -17,6 +17,9 @@ import {
   useCurrency,
   ProductDrawer,
   OrderWidget,
+  ProductImagePlaceholder,
+  ProductExtraLabels,
+  ProductCardMeta,
 } from "@/components/menu/MenuShared";
 
 const BG = "#f3efe6";
@@ -118,7 +121,6 @@ export default function MenuTheme6({ menuId, data }: Props) {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(155px,1fr))", gap: 14, paddingBottom: "5rem" }}>
             {activeItems.map((p) => {
               const imgUrl = buildImgUrl(p.product_image?.[0]?.image_url);
-              const ep = p.extra_parameters;
               return (
                 <div
                   key={p.id}
@@ -139,14 +141,11 @@ export default function MenuTheme6({ menuId, data }: Props) {
                     {imgUrl ? (
                       <Image src={imgUrl} alt={p.name} fill className="object-cover" sizes="(max-width:640px) 50vw, 25vw" />
                     ) : (
-                      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30, color: "#bbb" }}>🍽</div>
+                      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <ProductImagePlaceholder size={30} color="#bbb" />
+                      </div>
                     )}
-                    {ep?.is_new_item && (
-                      <span style={{ position: "absolute", top: 7, left: 7, background: "#28a745", color: "#fff", borderRadius: 999, padding: "2px 8px", fontSize: 10, fontWeight: 700 }}>YENİ</span>
-                    )}
-                    {ep?.is_campaign && (
-                      <span style={{ position: "absolute", top: ep.is_new_item ? 28 : 7, left: 7, background: "#ffc107", color: "#222", borderRadius: 999, padding: "2px 8px", fontSize: 10, fontWeight: 700 }}>KAMPANYA</span>
-                    )}
+                    <ProductExtraLabels product={p} layout="overlay" />
                   </div>
                   <div style={{ padding: "0.85rem 0.9rem", flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
                     <p style={{ margin: 0, fontWeight: 600, fontSize: "0.9rem", color: DARK, lineHeight: 1.3 }}>{p.name}</p>
@@ -155,6 +154,7 @@ export default function MenuTheme6({ menuId, data }: Props) {
                         {p.description}
                       </p>
                     )}
+                    <ProductCardMeta product={p} showLabels={false} />
                     <p style={{ margin: "4px 0 0", fontWeight: 700, fontSize: "0.95rem", color: ACCENT }}>{(p.price ?? 0).toFixed(2)} {currency}</p>
                   </div>
                 </div>
