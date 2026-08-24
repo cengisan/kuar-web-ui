@@ -16,15 +16,15 @@ export function PageHomeLink({
   className?: string;
 }) {
   const classes = cn(
-    "inline-flex size-10 shrink-0 items-center justify-center rounded-xl text-primary transition-colors hover:bg-muted/70 hover:text-primary",
+    "inline-flex min-h-10 items-center justify-center rounded-full px-3 py-2 text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground",
     className
   );
 
-  const icon = <Building2 className="size-5" aria-hidden />;
+  const icon = <Building2 className="size-4" aria-hidden />;
 
   if (href) {
     return (
-      <Link href={href} className={classes} aria-label={ariaLabel}>
+      <Link href={href} replace className={classes} aria-label={ariaLabel}>
         {icon}
       </Link>
     );

@@ -7,11 +7,13 @@ import { cn } from "@/lib/cn";
 export function PageBackLink({
   href,
   onClick,
+  replace,
   children,
   className,
 }: {
   href?: string;
   onClick?: () => void;
+  replace?: boolean;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -22,7 +24,7 @@ export function PageBackLink({
 
   if (href) {
     return (
-      <Link href={href} className={classes}>
+      <Link href={href} replace={replace} className={classes}>
         <ArrowLeft className="size-4" />
         {children}
       </Link>

@@ -289,7 +289,7 @@ export default function BusinessDashboardPage() {
   if (loading && !data) {
     return (
       <PageLayout
-        back={{ label: translations.back, onClick: () => router.back() }}
+        back={{ label: translations.back }}
       >
         <div className="flex min-h-[60vh] items-center justify-center">
           <Spinner size="lg" />
@@ -300,7 +300,7 @@ export default function BusinessDashboardPage() {
 
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: () => router.back() }}
+      back={{ label: translations.back }}
       contentClassName="space-y-6"
     >
       <div>

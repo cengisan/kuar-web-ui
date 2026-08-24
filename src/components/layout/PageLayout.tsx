@@ -1,16 +1,22 @@
 "use client";
 
 import { useMemo } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { PageBackLink } from "@/components/layout/PageBackLink";
 import { PageHomeLink } from "@/components/layout/PageHomeLink";
 import { useAppSelector } from "@/presentation/state/hooks";
+import {
+  businessHomePath,
+  businessesPagePath,
+  getBusinessBackHref,
+} from "@/utils/businessNavigation";
 
 export interface PageLayoutBackConfig {
   label: React.ReactNode;
   href?: string;
   onClick?: () => void;
+  replace?: boolean;
 }
 
 export interface PageLayoutHomeConfig {
@@ -34,7 +40,7 @@ function resolveBusinessHomeHref(pathname: string | null): string | null {
   const match = pathname.match(/^\/business\/(\d+)(\/.*)?$/);
   if (!match || !match[2]) return null;
 
-  return `/business/${match[1]}`;
+  return businessHomePath(match[1]);
 }
 
 export function PageLayout({
@@ -45,7 +51,13 @@ export function PageLayout({
   contentClassName,
 }: PageLayoutProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { translations } = useAppSelector((s) => s.user);
+
+  const hierarchicalBackHref = useMemo(
+    () => getBusinessBackHref(pathname, searchParams),
+    [pathname, searchParams]
+  );
 
   const autoHomeHref = useMemo(() => resolveBusinessHomeHref(pathname), [pathname]);
 
@@ -54,11 +66,14 @@ export function PageLayout({
       ? null
       : home ?? (autoHomeHref ? { href: autoHomeHref } : null);
 
+  const backHref =
+    back?.href ?? hierarchicalBackHref ?? businessesPagePath();
+
   return (
     <div className={cn("space-y-6", className)}>
       {back ? (
         <div className="flex w-full flex-wrap items-center gap-2">
-          <PageBackLink href={back.href} onClick={back.onClick}>
+          <PageBackLink href={backHref} replace={back.replace}>
             {back.label}
           </PageBackLink>
           {homeConfig ? (

@@ -24,6 +24,7 @@ export default function OrderProductsPage() {
   const businessId = Number(params.id);
   const tableId = Number(params.tableId);
   const initialOrderId = searchParams.get("orderId");
+  const areaId = searchParams.get("areaId");
   const { translations, accessToken, currency } = useAppSelector((s) => s.user);
 
   const [currentOrderId, setCurrentOrderId] = useState<number | null>(
@@ -122,15 +123,17 @@ export default function OrderProductsPage() {
       }
 
       toast.success(translations.orderSent);
-      router.replace(`/business/${businessId}/tables/${tableId}/order`);
+      router.replace(
+        `/business/${businessId}/tables/${tableId}/order${areaId ? `?areaId=${areaId}` : ""}`
+      );
     } finally {
       setSubmitting(false);
     }
-  }, [accessToken, businessId, cart, cartCount, currentOrderId, router, tableId, translations]);
+  }, [accessToken, areaId, businessId, cart, cartCount, currentOrderId, router, tableId, translations]);
 
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: () => router.back() }}
+      back={{ label: translations.back }}
       contentClassName="space-y-6"
     ><div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">{translations.selectProducts}</h1>

@@ -137,17 +137,9 @@ export default function TableAreasPage() {
     return `/business/${businessId}/areas/${areaId}/tables`;
   };
 
-  const handleBack = () => {
-    if (isReadOnlyMode) {
-      router.push(`/business/${businessId}`);
-      return;
-    }
-    router.back();
-  };
-
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: handleBack }}
+      back={{ label: translations.back }}
       contentClassName="space-y-6"
     ><div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">

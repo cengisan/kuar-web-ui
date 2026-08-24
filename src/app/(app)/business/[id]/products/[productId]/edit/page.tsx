@@ -137,7 +137,7 @@ export default function EditProductPage() {
   if (loading) {
     return (
       <PageLayout
-        back={{ label: translations.back, onClick: goBackToProducts }}
+        back={{ label: translations.back }}
       >
         <div className="flex min-h-[60vh] items-center justify-center">
           <Spinner size="lg" />
@@ -150,7 +150,7 @@ export default function EditProductPage() {
 
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: goBackToProducts }}
+      back={{ label: translations.back }}
       contentClassName="space-y-6"
     >
       <Card className="border-border/80 shadow-card">

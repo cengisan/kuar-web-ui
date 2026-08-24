@@ -262,7 +262,7 @@ export default function TablesPage() {
       return;
     }
 
-    router.push(`/business/${businessId}/tables/${table.id}/order`);
+    router.push(`/business/${businessId}/tables/${table.id}/order?areaId=${areaId}`);
   };
 
   const closeReservationDialog = () => {
@@ -319,21 +319,9 @@ export default function TablesPage() {
     }
   };
 
-  const handleBack = () => {
-    if (isCashierMode) {
-      router.push(`/business/${businessId}/areas?mode=cashier`);
-      return;
-    }
-    if (isReservationMode) {
-      router.push(`/business/${businessId}/areas?mode=reservation`);
-      return;
-    }
-    router.back();
-  };
-
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: handleBack }}
+      back={{ label: translations.back }}
       contentClassName="space-y-6"
     ><div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">

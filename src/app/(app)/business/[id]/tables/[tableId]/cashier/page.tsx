@@ -315,17 +315,6 @@ export default function TableCashierPage() {
 
   const tableNumber = order?.tableNumber || order?.table_number || String(tableId);
 
-  const handleBack = () => {
-    const areaId = searchParams.get("areaId");
-    if (areaId) {
-      router.push(
-        `/business/${businessId}/areas/${areaId}/tables?mode=cashier`
-      );
-      return;
-    }
-    router.push(`/business/${businessId}/areas?mode=cashier`);
-  };
-
   const paymentAmount = paymentMode === "partial" ? selectedTotal : remainingAmount;
   const paymentDescription =
     paymentMode === "partial"
@@ -335,7 +324,7 @@ export default function TableCashierPage() {
   if (loading) {
     return (
       <PageLayout
-        back={{ label: translations.back, onClick: handleBack }}
+        back={{ label: translations.back }}
       >
         <div className="flex min-h-[60vh] items-center justify-center">
           <Spinner size="lg" />
@@ -347,7 +336,7 @@ export default function TableCashierPage() {
   if (!order) {
     return (
       <PageLayout
-        back={{ label: translations.back, onClick: handleBack }}
+        back={{ label: translations.back }}
         contentClassName="space-y-6"
       >
         <Card>
@@ -364,7 +353,7 @@ export default function TableCashierPage() {
 
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: handleBack }}
+      back={{ label: translations.back }}
       contentClassName="space-y-4"
     >
       <div className="space-y-1">

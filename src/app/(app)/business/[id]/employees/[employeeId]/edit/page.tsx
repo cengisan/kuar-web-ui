@@ -71,7 +71,7 @@ export default function EditEmployeePage() {
   if (loading) {
     return (
       <PageLayout
-        back={{ label: translations.back, onClick: () => router.back() }}
+        back={{ label: translations.back }}
         contentClassName="space-y-6"
       >
         <div className="flex min-h-[40vh] items-center justify-center">
@@ -84,7 +84,7 @@ export default function EditEmployeePage() {
   if (!employee) {
     return (
       <PageLayout
-        back={{ label: translations.back, onClick: () => router.back() }}
+        back={{ label: translations.back }}
         contentClassName="space-y-6"
       >
         <p className="text-center text-muted-foreground">
@@ -96,7 +96,7 @@ export default function EditEmployeePage() {
 
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: () => router.back() }}
+      back={{ label: translations.back }}
       contentClassName="space-y-6"
     >
       <Card>

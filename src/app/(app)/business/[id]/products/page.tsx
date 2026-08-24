@@ -129,20 +129,6 @@ export default function ProductsPage() {
     return list;
   }, [products, query, selectedCategory]);
 
-  const handleBackToCategories = () => {
-    setSelectedCategory(null);
-    setQuery("");
-    router.replace(productsPagePath(businessId));
-  };
-
-  const handlePageBack = () => {
-    if (selectedCategory) {
-      handleBackToCategories();
-      return;
-    }
-    router.push(`/business/${businessId}`);
-  };
-
   const handleDelete = async () => {
     if (!deleteTarget || !accessToken) return;
     setDeleting(true);
@@ -169,7 +155,7 @@ export default function ProductsPage() {
 
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: handlePageBack }}
+      back={{ label: translations.back }}
       contentClassName="space-y-6"
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

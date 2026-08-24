@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Minus, Plus, CheckCheck, UtensilsCrossed } from "lucide-react";
 import { toast } from "sonner";
@@ -35,6 +35,7 @@ import {
 } from "@/utils/order";
 import { cn } from "@/lib/cn";
 import { useKitchenModuleAccess } from "@/hooks/useKitchenModuleAccess";
+import { useBusinessBackNavigation } from "@/hooks/useBusinessBackNavigation";
 
 const DELIVERABLE_WITH_KITCHEN = ["READY"];
 const DELIVERABLE_WITHOUT_KITCHEN = ["PENDING", "PREPARING", "READY"];
@@ -49,9 +50,12 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function TableOrderPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const params = useParams<{ id: string; tableId: string }>();
   const businessId = Number(params.id);
   const tableId = Number(params.tableId);
+  const areaId = searchParams.get("areaId");
+  const { goBack } = useBusinessBackNavigation();
   const { translations, accessToken, currency, subscriberId } = useAppSelector(
     (s) => s.user
   );
@@ -213,7 +217,7 @@ export default function TableOrderPage() {
       if (result.success) {
         toast.success(translations.orderCancelled);
         setCancelOpen(false);
-        router.back();
+        goBack();
       } else {
         toast.error(result.message);
       }
@@ -222,14 +226,15 @@ export default function TableOrderPage() {
     }
   };
 
+  const areaQuery = areaId ? `&areaId=${areaId}` : "";
   const productsHref = order
-    ? `/business/${businessId}/tables/${tableId}/order/products?orderId=${order.id}`
-    : `/business/${businessId}/tables/${tableId}/order/products`;
+    ? `/business/${businessId}/tables/${tableId}/order/products?orderId=${order.id}${areaQuery}`
+    : `/business/${businessId}/tables/${tableId}/order/products${areaId ? `?areaId=${areaId}` : ""}`;
 
   if (loading) {
     return (
       <PageLayout
-        back={{ label: translations.back, onClick: () => router.back() }}
+        back={{ label: translations.back }}
       >
         <div className="flex min-h-[60vh] items-center justify-center">
           <Spinner size="lg" />
@@ -240,7 +245,7 @@ export default function TableOrderPage() {
 
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: () => router.back() }}
+      back={{ label: translations.back }}
       contentClassName="space-y-4 pb-36"
     >
       <div className="flex items-start justify-between gap-3">

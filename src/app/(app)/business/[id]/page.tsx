@@ -40,6 +40,7 @@ import {
   fetchAvailableFeatures,
   hasPermissionAccess,
 } from "@/utils/featureAccess";
+import { businessesPagePath } from "@/utils/businessNavigation";
 import { useAppSelector } from "@/presentation/state/hooks";
 import type { Business } from "@/types";
 
@@ -279,7 +280,7 @@ export default function BusinessDetailPage() {
   if (loading) {
     return (
       <PageLayout
-        back={{ label: translations.back, onClick: () => router.back() }}
+        back={{ label: translations.back, href: businessesPagePath(), replace: true }}
       >
         <div className="flex min-h-[60vh] items-center justify-center">
           <Spinner size="lg" />
@@ -292,7 +293,7 @@ export default function BusinessDetailPage() {
 
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: () => router.back() }}
+      back={{ label: translations.back, href: businessesPagePath(), replace: true }}
       contentClassName="space-y-8"
     ><Card className="overflow-hidden border-border/80 bg-card/90 shadow-card backdrop-blur-sm">
         <div className="h-1 bg-gradient-to-r from-primary/80 via-primary to-primary/40" />

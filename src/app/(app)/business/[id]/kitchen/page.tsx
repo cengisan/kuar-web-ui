@@ -98,7 +98,7 @@ export default function KitchenPage() {
 
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: () => router.back() }}
+      back={{ label: translations.back }}
       contentClassName="space-y-4"
     >
       <div className="flex items-center justify-between">
