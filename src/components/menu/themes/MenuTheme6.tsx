@@ -20,10 +20,8 @@ import {
   ProductImagePlaceholder,
   ProductExtraLabels,
   ProductCardMeta,
-  MenuHeaderBanner,
   MenuLastUpdatedFooter,
 } from "@/components/menu/MenuShared";
-import { getMenuHeaderImage } from "@/config/menuHeaders";
 
 const BG = "#f3efe6";
 const SURFACE = "#fffdf8";
@@ -51,42 +49,34 @@ export default function MenuTheme6({ menuId, data }: Props) {
         .t6-pills::-webkit-scrollbar{display:none}
       `}</style>
 
-      <div style={{ minHeight: "100svh", fontFamily: "'Plus Jakarta Sans',sans-serif", color: DARK }}>
+      <div style={{ minHeight: "100svh", background: BG, fontFamily: "'Plus Jakarta Sans',sans-serif", color: DARK }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "1.25rem 1rem" }}>
 
-          <MenuHeaderBanner
-            background={getMenuHeaderImage("menu6")}
-            overlay="rgba(243,239,230,0.92)"
-            minHeight={160}
-            padding="0"
-            textAlign="left"
-          >
-            <div style={{
-              background: "rgba(255,253,248,0.82)",
-              backdropFilter: "blur(6px)",
-              border: `1px solid ${PANEL_BORDER}`,
-              borderRadius: 18,
-              padding: "1.75rem 1.5rem",
-              marginBottom: "1.5rem",
-              boxShadow: "0 4px 16px rgba(52,54,44,0.07)",
-            }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 18, flexWrap: "wrap" }}>
-                {logoUrl && (
-                  <div style={{ width: 80, height: 80, borderRadius: "50%", overflow: "hidden", border: `2px solid ${ACCENT}`, flexShrink: 0, boxShadow: "0 0 0 4px rgba(255,253,248,0.95)" }}>
-                    <Image src={logoUrl} alt={data.name} width={80} height={80} className="object-cover" />
-                  </div>
-                )}
-                <div style={{ flex: 1, minWidth: 160 }}>
-                  <h1 style={{ fontSize: "clamp(1.4rem,4vw,2rem)", fontWeight: 700, margin: "0 0 4px", color: DARK, textTransform: "uppercase", letterSpacing: "0.03em" }}>
-                    {data.name}
-                  </h1>
-                  {data.digitalMenu.business_name && data.digitalMenu.business_name !== data.name && (
-                    <p style={{ margin: 0, fontSize: "0.85rem", color: MUTED }}>{data.digitalMenu.business_name}</p>
-                  )}
+          {/* White panel header — logo + name side by side */}
+          <div style={{
+            background: SURFACE,
+            border: `1px solid ${PANEL_BORDER}`,
+            borderRadius: 18,
+            padding: "1.75rem 1.5rem",
+            marginBottom: "1.5rem",
+            boxShadow: "0 4px 16px rgba(52,54,44,0.07)",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 18, flexWrap: "wrap" }}>
+              {logoUrl && (
+                <div style={{ width: 76, height: 76, borderRadius: "50%", overflow: "hidden", border: `2px solid ${ACCENT}`, flexShrink: 0 }}>
+                  <Image src={logoUrl} alt={data.name} width={76} height={76} className="object-cover" />
                 </div>
+              )}
+              <div style={{ flex: 1, minWidth: 160 }}>
+                <h1 style={{ fontSize: "clamp(1.4rem,4vw,2rem)", fontWeight: 700, margin: "0 0 4px", color: DARK, textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                  {data.name}
+                </h1>
+                {data.digitalMenu.business_name && data.digitalMenu.business_name !== data.name && (
+                  <p style={{ margin: 0, fontSize: "0.85rem", color: MUTED }}>{data.digitalMenu.business_name}</p>
+                )}
               </div>
             </div>
-          </MenuHeaderBanner>
+          </div>
 
           {/* White pill-nav card */}
           <div style={{

@@ -51,6 +51,37 @@ export default function MenuTheme3({ menuId, data }: Props) {
 
       <div style={{ background: BG, color: DARK, minHeight: "100svh", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
 
+        {/* Fixed menu trigger — top left */}
+        {!sidebarOpen && (
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Kategorileri aç"
+            style={{
+              position: "fixed",
+              top: 12,
+              left: 12,
+              zIndex: 200,
+              width: 44,
+              height: 44,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 5,
+              background: BG,
+              border: `1px solid ${LINE}`,
+              borderRadius: 12,
+              cursor: "pointer",
+              boxShadow: "0 2px 8px rgba(32,30,27,0.10)",
+            }}
+          >
+            <span style={{ width: 20, height: 2, background: DARK, borderRadius: 2, display: "block" }} />
+            <span style={{ width: 20, height: 2, background: DARK, borderRadius: 2, display: "block" }} />
+            <span style={{ width: 20, height: 2, background: DARK, borderRadius: 2, display: "block" }} />
+          </button>
+        )}
+
         {/* Overlay */}
         {sidebarOpen && (
           <div
@@ -82,9 +113,27 @@ export default function MenuTheme3({ menuId, data }: Props) {
               <span style={{ fontFamily: "'Playfair Display',serif", fontWeight: 600, fontSize: "1rem", color: DARK }}>{data.name}</span>
             </div>
             <button
+              type="button"
               onClick={() => setSidebarOpen(false)}
-              style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: MUTED, padding: 4 }}
-            >✕</button>
+              aria-label="Menüyü kapat"
+              style={{
+                background: SIDEBAR_BG,
+                border: `1px solid ${LINE}`,
+                borderRadius: 10,
+                cursor: "pointer",
+                color: DARK,
+                fontSize: "1.1rem",
+                fontWeight: 600,
+                width: 36,
+                height: 36,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              ←
+            </button>
           </div>
 
           <p style={{ fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase", color: MUTED, fontWeight: 600, marginBottom: 10 }}>KATEGORİLER</p>
@@ -121,7 +170,7 @@ export default function MenuTheme3({ menuId, data }: Props) {
           background={getMenuHeaderImage("menu3")}
           overlay="rgba(255,255,255,0.90)"
           minHeight={170}
-          padding="2rem 1.25rem 1.25rem"
+          padding="2.75rem 1.25rem 1.25rem"
         >
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
             {logoUrl ? (
@@ -140,7 +189,7 @@ export default function MenuTheme3({ menuId, data }: Props) {
         </MenuHeaderBanner>
 
         <div style={{ paddingLeft: 0 }}>
-          {/* Sticky category bar — menu trigger + active category */}
+          {/* Sticky category bar */}
           <div
             style={{
               position: "sticky",
@@ -148,42 +197,11 @@ export default function MenuTheme3({ menuId, data }: Props) {
               zIndex: 100,
               background: BG,
               borderBottom: `1px solid ${LINE}`,
-              padding: "0.85rem 1rem",
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
+              padding: "0.85rem 1rem 0.85rem 3.75rem",
               boxShadow: "0 1px 0 rgba(32,30,27,0.04)",
             }}
           >
-            <button
-              type="button"
-              onClick={() => setSidebarOpen(true)}
-              aria-label="Kategorileri aç"
-              aria-expanded={sidebarOpen}
-              style={{
-                flexShrink: 0,
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                background: SIDEBAR_BG,
-                border: `1px solid ${LINE}`,
-                borderRadius: 12,
-                padding: "0.55rem 0.85rem",
-                cursor: "pointer",
-                color: DARK,
-                fontWeight: 600,
-                fontSize: "0.85rem",
-                boxShadow: "0 1px 4px rgba(32,30,27,0.06)",
-              }}
-            >
-              <span style={{ display: "flex", flexDirection: "column", gap: 4, width: 18 }}>
-                <span style={{ width: 18, height: 2, background: DARK, borderRadius: 2, display: "block" }} />
-                <span style={{ width: 18, height: 2, background: DARK, borderRadius: 2, display: "block" }} />
-                <span style={{ width: 18, height: 2, background: DARK, borderRadius: 2, display: "block" }} />
-              </span>
-              Kategoriler
-            </button>
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ minWidth: 0 }}>
               <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.25rem", fontWeight: 700, color: DARK, margin: 0, lineHeight: 1.2 }}>
                 {activeCat}
               </h2>
