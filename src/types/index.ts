@@ -64,6 +64,7 @@ export interface Product {
   name: string;
   description?: string;
   price: number;
+  calories?: number;
   currency?: string;
   category?: string;
   is_available?: boolean;
@@ -93,6 +94,7 @@ export interface DigitalMenu {
   subscriber_id?: number;
   business_name?: string | null;
   is_available?: boolean;
+  ordering_enabled?: boolean;
   theme?: string;
   currency?: string;
   social_media?: string | null;
@@ -134,6 +136,8 @@ export interface Order {
   table_id?: number;
   tableNumber?: string;
   table_number?: string;
+  areaName?: string;
+  waitTimeSeconds?: number;
   business_id?: number;
   status: string;
   totalAmount?: number;
@@ -151,6 +155,8 @@ export interface TableArea {
   id: number;
   name: string;
   business_id?: number;
+  table_count?: number;
+  tableCount?: number;
 }
 
 export interface CafeTable {
@@ -161,6 +167,11 @@ export interface CafeTable {
   areaId?: number;
   business_id?: number;
   reservationNote?: string;
+  currentOrderTotal?: number | null;
+  pendingCount?: number;
+  preparingCount?: number;
+  readyCount?: number;
+  deliveredCount?: number;
 }
 
 export interface Employee {
@@ -190,9 +201,42 @@ export interface Material {
   id: number;
   name: string;
   unit?: string;
-  quantity?: number;
-  threshold?: number;
+  current_stock?: number;
+  initial_stock?: number;
+  stock_percentage?: number;
+  created_date?: string;
+  last_modified_date?: string;
   business_id?: number;
+}
+
+export interface StockMovement {
+  id: number;
+  movement_type?: string;
+  quantity?: number;
+  unit?: string;
+  note?: string;
+  created_date?: string;
+}
+
+export interface ProductStockItem {
+  product_id: number;
+  product_name: string;
+  stock_quantity?: number;
+  track_stock?: boolean;
+  stock_percentage?: number;
+  materials?: Array<{
+    material_id: number;
+    material_name: string;
+    quantity: number;
+    unit: string;
+  }>;
+}
+
+export interface StockSummary {
+  total_materials: number;
+  low_stock_materials: number;
+  total_tracked_products: number;
+  low_stock_products: number;
 }
 
 export interface Feedback {

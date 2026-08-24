@@ -31,6 +31,7 @@ export interface ProductFormValues {
   isCustomCategory: boolean;
   price: string;
   discount: string;
+  calories: string;
   isAvailable: boolean;
   isNewItem: boolean;
   isCampaign: boolean;
@@ -318,7 +319,7 @@ export function ProductFormFields({
         </section>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 sm:items-stretch">
+      <div className="grid gap-4 sm:grid-cols-2 sm:items-stretch lg:grid-cols-3">
         <div className="flex h-full flex-col gap-2">
           <div className="flex-1 space-y-1">
             <Label htmlFor={`${idPrefix}-price`}>
@@ -358,6 +359,25 @@ export function ProductFormFields({
               className="pl-8"
             />
           </div>
+        </div>
+        <div className="flex h-full flex-col gap-2">
+          <div className="flex-1 space-y-1">
+            <Label htmlFor={`${idPrefix}-calories`}>
+              {translations.calories} (kcal)
+            </Label>
+            <FieldHint text={translations.caloriesTooltip} />
+          </div>
+          <Input
+            id={`${idPrefix}-calories`}
+            type="text"
+            inputMode="numeric"
+            value={values.calories}
+            onChange={(e) =>
+              onChange({ calories: e.target.value.replace(/\D/g, "") })
+            }
+            placeholder={translations.enterCalories}
+            className="shrink-0"
+          />
         </div>
       </div>
 

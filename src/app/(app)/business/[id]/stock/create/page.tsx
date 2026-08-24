@@ -33,9 +33,8 @@ export default function CreateMaterialPage() {
       const repo = new StockRepositoryImpl(translations, accessToken);
       await repo.createMaterial(subscriberId, businessId, {
         name: name.trim(),
-        unit: unit.trim() || null,
-        quantity: parseFloat(quantity.replace(",", ".")) || 0,
-        threshold: threshold ? parseFloat(threshold.replace(",", ".")) : null,
+        unit: unit.trim().toUpperCase() || "KILOGRAM",
+        current_stock: parseFloat(quantity.replace(",", ".")) || 0,
       });
       toast.success(translations.materialCreated);
       router.push(`/business/${businessId}/stock`);
@@ -50,7 +49,8 @@ export default function CreateMaterialPage() {
     <PageLayout
       back={{ label: translations.back, onClick: () => router.back() }}
       contentClassName="space-y-6"
-    ><Card>
+    >
+      <Card className="border-border/80 shadow-card">
         <CardHeader>
           <CardTitle>{translations.createMaterial}</CardTitle>
         </CardHeader>

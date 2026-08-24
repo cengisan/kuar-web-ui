@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, RefreshCw } from "lucide-react";
+import { Plus, RefreshCw, Gift } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { BusinessCard } from "@/components/business/BusinessCard";
 import BusinessRepositoryImpl from "@/data/repositories/BusinessRepositoryImpl";
@@ -13,6 +14,7 @@ import FeedbackRepositoryImpl from "@/data/repositories/FeedbackRepositoryImpl";
 import { useAppDispatch, useAppSelector } from "@/presentation/state/hooks";
 import { setUnreadFeedbackCount } from "@/presentation/state/userSlice";
 import { getResponseData } from "@/utils/apiResponse";
+import type { TrialStatus } from "@/utils/subscription";
 import type { Business } from "@/types";
 
 interface ExpiryInfo {
@@ -30,6 +32,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [expiryInfo, setExpiryInfo] = useState<ExpiryInfo | null>(null);
+  const [trialStatus, setTrialStatus] = useState<TrialStatus | null>(null);
 
   const businessId = (b: Business) => b.business_id ?? b.id ?? 0;
 
@@ -57,6 +60,17 @@ export default function DashboardPage() {
     }
   }, [subscriberId, accessToken, translations]);
 
+  const fetchTrialStatus = useCallback(async () => {
+    if (!subscriberId || !accessToken) return;
+    try {
+      const repo = new SubscriptionRepositoryImpl(translations, accessToken);
+      const response = await repo.getTrialStatus(subscriberId);
+      setTrialStatus(getResponseData<TrialStatus>(response));
+    } catch {
+      setTrialStatus(null);
+    }
+  }, [subscriberId, accessToken, translations]);
+
   const fetchUnreadFeedback = useCallback(async () => {
     if (!subscriberId || !accessToken) return;
     try {
@@ -78,14 +92,19 @@ export default function DashboardPage() {
     }
     (async () => {
       setLoading(true);
-      await Promise.all([fetchBusinesses(), fetchExpiry(), fetchUnreadFeedback()]);
+      await Promise.all([
+        fetchBusinesses(),
+        fetchExpiry(),
+        fetchTrialStatus(),
+        fetchUnreadFeedback(),
+      ]);
       setLoading(false);
     })();
-  }, [isEmployee, employeeData, router, fetchBusinesses, fetchExpiry, fetchUnreadFeedback]);
+  }, [isEmployee, employeeData, router, fetchBusinesses, fetchExpiry, fetchTrialStatus, fetchUnreadFeedback]);
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await Promise.all([fetchBusinesses(), fetchExpiry()]);
+    await Promise.all([fetchBusinesses(), fetchExpiry(), fetchTrialStatus()]);
     setRefreshing(false);
   };
 
@@ -119,7 +138,6 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm font-medium text-primary">Kuar</p>
           <h1 className="text-2xl font-bold tracking-tight md:text-3xl">{translations.home}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {translations.manageBusinesses}
@@ -136,6 +154,25 @@ export default function DashboardPage() {
           </Button>
         </div>
       </div>
+
+      {trialStatus?.is_trial_active && (
+        <Card className="border-primary/30 bg-primary/5">
+          <CardContent className="flex items-center gap-4 p-4">
+            <div className="flex size-10 items-center justify-center rounded-full bg-primary/15">
+              <Gift className="size-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-semibold">{translations.freeTrialActive}</p>
+              <p className="text-sm text-muted-foreground">
+                {trialStatus.days_remaining}{" "}
+                {trialStatus.days_remaining === 1
+                  ? translations.dayRemaining
+                  : translations.daysRemaining}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {expiryInfo?.show_banner && (
         <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-200">

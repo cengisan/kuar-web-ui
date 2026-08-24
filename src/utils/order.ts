@@ -57,6 +57,13 @@ export function normalizeKitchenOrder(raw: Record<string, unknown>): Order {
     orderNumber: raw.orderNumber ? String(raw.orderNumber) : undefined,
     tableNumber: raw.tableNumber ? String(raw.tableNumber) : undefined,
     table_number: raw.tableNumber ? String(raw.tableNumber) : undefined,
+    areaName: raw.areaName ? String(raw.areaName) : undefined,
+    waitTimeSeconds:
+      raw.waitTimeSeconds != null
+        ? Number(raw.waitTimeSeconds)
+        : raw.wait_time_seconds != null
+          ? Number(raw.wait_time_seconds)
+          : undefined,
     status: "ACTIVE",
     totalAmount: 0,
     total_amount: 0,

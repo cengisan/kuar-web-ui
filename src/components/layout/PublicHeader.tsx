@@ -14,7 +14,7 @@ export function PublicHeader() {
   const { t } = useTranslation();
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-[#111111]">
+    <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-[#111111]/75 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Logo href="/" size="lg" />
 
@@ -28,7 +28,10 @@ export function PublicHeader() {
             <Globe className="mr-1 h-4 w-4" />
             {language.toUpperCase()}
           </Button>
-          <Button asChild size="sm" className="hidden sm:inline-flex">
+          <Button asChild variant="ghost" size="sm" className="hidden text-muted-foreground sm:inline-flex">
+            <Link href="/login">{t("signIn")}</Link>
+          </Button>
+          <Button asChild size="sm" className="rounded-full px-5">
             <Link href="/register">{t("register")}</Link>
           </Button>
         </div>

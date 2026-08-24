@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Check, Minus, Plus, Receipt, X } from "lucide-react";
 import { toast } from "sonner";
@@ -82,6 +82,7 @@ function groupCashierItems(items: OrderItem[] = []): CashierGroup[] {
 
 export default function TableCashierPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const params = useParams<{ id: string; tableId: string }>();
   const businessId = Number(params.id);
   const tableId = Number(params.tableId);
@@ -313,6 +314,18 @@ export default function TableCashierPage() {
   };
 
   const tableNumber = order?.tableNumber || order?.table_number || String(tableId);
+
+  const handleBack = () => {
+    const areaId = searchParams.get("areaId");
+    if (areaId) {
+      router.push(
+        `/business/${businessId}/areas/${areaId}/tables?mode=cashier`
+      );
+      return;
+    }
+    router.push(`/business/${businessId}/areas?mode=cashier`);
+  };
+
   const paymentAmount = paymentMode === "partial" ? selectedTotal : remainingAmount;
   const paymentDescription =
     paymentMode === "partial"
@@ -322,7 +335,7 @@ export default function TableCashierPage() {
   if (loading) {
     return (
       <PageLayout
-        back={{ label: translations.back, onClick: () => router.back() }}
+        back={{ label: translations.back, onClick: handleBack }}
       >
         <div className="flex min-h-[60vh] items-center justify-center">
           <Spinner size="lg" />
@@ -334,7 +347,7 @@ export default function TableCashierPage() {
   if (!order) {
     return (
       <PageLayout
-        back={{ label: translations.back, onClick: () => router.back() }}
+        back={{ label: translations.back, onClick: handleBack }}
         contentClassName="space-y-6"
       >
         <Card>
@@ -351,7 +364,7 @@ export default function TableCashierPage() {
 
   return (
     <PageLayout
-      back={{ label: translations.back, onClick: () => router.back() }}
+      back={{ label: translations.back, onClick: handleBack }}
       contentClassName="space-y-4"
     >
       <div className="space-y-1">

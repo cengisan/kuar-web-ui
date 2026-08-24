@@ -24,6 +24,7 @@ import QrRepositoryImpl from "@/data/repositories/QrRepositoryImpl";
 import { parseInstagramUsername } from "@/config/menuFormOptions";
 import { useAppSelector } from "@/presentation/state/hooks";
 import { getResponseData, getActionMessage, isActionSuccess } from "@/utils/apiResponse";
+import { fetchAvailableFeatures, hasPermissionAccess } from "@/utils/featureAccess";
 import type { DigitalMenu } from "@/types";
 
 function getMenuLogo(menu: DigitalMenu) {
@@ -43,6 +44,7 @@ function menuToFormValues(menu: DigitalMenu): MenuFormValues {
     currency: menu.currency || "TRY",
     theme: menu.theme || "menu1",
     isAvailable: menu.is_available ?? true,
+    orderingEnabled: menu.ordering_enabled ?? false,
   };
 }
 
@@ -51,9 +53,10 @@ export default function EditMenuPage() {
   const params = useParams<{ id: string; menuId: string }>();
   const businessId = Number(params.id);
   const menuId = params.menuId;
-  const { translations, accessToken, subscriberId } = useAppSelector((s) => s.user);
+  const { translations, accessToken, subscriberId, isEmployee } = useAppSelector((s) => s.user);
 
   const [menu, setMenu] = useState<DigitalMenu | null>(null);
+  const [canUseOrdering, setCanUseOrdering] = useState(false);
   const [values, setValues] = useState<MenuFormValues>(() => menuToFormValues({ id: "", name: "" }));
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [logoImageId, setLogoImageId] = useState<number | null>(null);
@@ -90,9 +93,22 @@ export default function EditMenuPage() {
     }
   }, [accessToken, businessId, menuId, router, translations]);
 
+  const loadOrderingAccess = useCallback(async () => {
+    if (!accessToken || !subscriberId) return;
+    const features = await fetchAvailableFeatures({
+      subscriberId,
+      accessToken,
+      translations,
+    });
+    setCanUseOrdering(
+      hasPermissionAccess(features, "DIGITAL_MENU_ORDER", isEmployee)
+    );
+  }, [accessToken, subscriberId, translations, isEmployee]);
+
   useEffect(() => {
     loadMenu();
-  }, [loadMenu]);
+    loadOrderingAccess();
+  }, [loadMenu, loadOrderingAccess]);
 
   const displayTitle = useMemo(() => values.name || menu?.name || "", [menu?.name, values.name]);
 
@@ -114,6 +130,7 @@ export default function EditMenuPage() {
         theme: values.theme,
         currency: values.currency,
         social_media: values.instagramUsername.trim() || null,
+        ...(canUseOrdering ? { ordering_enabled: values.orderingEnabled } : {}),
       });
 
       if (!isActionSuccess(result)) {
@@ -199,6 +216,7 @@ export default function EditMenuPage() {
               onImageChange={handleImageChange}
               existingImageUrl={existingImageUrl}
               idPrefix="edit-menu"
+              canUseOrdering={canUseOrdering}
             />
 
             <div className="flex justify-end gap-3 border-t border-border/60 pt-4">

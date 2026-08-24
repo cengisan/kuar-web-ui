@@ -37,10 +37,10 @@ class DeleteAccountRepositoryImpl {
     }
   }
 
-  async cancelDeleteAccount(subscriberId: number) {
+  async cancelDeleteAccount(_subscriberId: number) {
     try {
-      const response = await apiClient.get<GenericResponse>(
-        `/delete/cancel-delete-account/${subscriberId}`
+      const response = await apiClient.post<GenericResponse>(
+        `/delete/cancel-delete-account`
       );
       if (response.data.business_code === 0) {
         return response.data;

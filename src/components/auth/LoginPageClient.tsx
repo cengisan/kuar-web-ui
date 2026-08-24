@@ -1,10 +1,12 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
+import type { CredentialResponse } from "@react-oauth/google";
 import { toast } from "sonner";
 
+import { AppleSignInButton } from "@/components/auth/AppleSignInButton";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import {
   LoginForm,
   type BusinessLoginValues,
@@ -12,6 +14,7 @@ import {
 } from "@/components/auth/LoginForm";
 import AuthRepositoryImpl from "@/data/repositories/AuthRepositoryImpl";
 import EmployeeRepositoryImpl from "@/data/repositories/EmployeeRepositoryImpl";
+import { isAppleAuthConfigured } from "@/config/appleAuth";
 import { googleClientId, isGoogleAuthConfigured } from "@/config/googleAuth";
 import { useAppDispatch, useAppSelector } from "@/presentation/state/hooks";
 import {
@@ -19,6 +22,7 @@ import {
   startEmployeeSession,
   startSession,
 } from "@/presentation/state/userSlice";
+import { getWebDeviceInfo } from "@/utils/deviceInfo";
 import type { RepositoryResult } from "@/types";
 
 export function LoginPageClient() {
@@ -26,7 +30,6 @@ export function LoginPageClient() {
   const dispatch = useAppDispatch();
   const { translations } = useAppSelector((s) => s.user);
   const [loading, setLoading] = useState(false);
-  const googleButtonRef = useRef<HTMLDivElement>(null);
 
   const handleAuthSuccess = useCallback(
     async (response: RepositoryResult) => {
@@ -50,7 +53,7 @@ export function LoginPageClient() {
     setLoading(true);
     try {
       const repo = new AuthRepositoryImpl(translations);
-      const result = await repo.loginWithEmail(values.email, values.password);
+      const result = await repo.loginWithEmail(values.email, values.password, getWebDeviceInfo());
 
       if (result.success) {
         await handleAuthSuccess(result);
@@ -114,7 +117,7 @@ export function LoginPageClient() {
     setLoading(true);
     try {
       const repo = new AuthRepositoryImpl(translations);
-      const result = await repo.loginWithGoogle(credentialResponse.credential);
+      const result = await repo.loginWithGoogle(credentialResponse.credential, getWebDeviceInfo());
 
       if (result.success) {
         await handleAuthSuccess(result);
@@ -128,39 +131,61 @@ export function LoginPageClient() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    if (!isGoogleAuthConfigured) {
-      toast.error("Google girişi yapılandırılmamış. NEXT_PUBLIC_GOOGLE_CLIENT_ID değerini ayarlayın.");
-      return;
-    }
+  const handleAppleCredential = async (idToken: string) => {
+    setLoading(true);
+    try {
+      const repo = new AuthRepositoryImpl(translations);
+      const result = await repo.loginWithApple(idToken, getWebDeviceInfo());
 
-    const googleBtn = googleButtonRef.current?.querySelector('[role="button"]') as
-      | HTMLElement
-      | null;
-    googleBtn?.click();
+      if (result.success) {
+        await handleAuthSuccess(result);
+      } else {
+        toast.error(result.message || translations.loginFailed);
+      }
+    } catch (error) {
+      toast.error((error as Error).message || translations.loginFailed);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <>
-      {isGoogleAuthConfigured && (
-        <div ref={googleButtonRef} className="absolute h-0 w-0 overflow-hidden" aria-hidden>
-          <GoogleLogin
+    <LoginForm
+      loading={loading}
+      onBusinessSubmit={handleBusinessSubmit}
+      onEmployeeSubmit={handleEmployeeSubmit}
+      googleSignIn={
+        isGoogleAuthConfigured ? (
+          <GoogleSignInButton
+            label={translations.loginWithGoogle}
+            disabled={loading}
             onSuccess={handleGoogleCredential}
             onError={() => toast.error(translations.loginFailed)}
-            useOneTap={false}
-            type="standard"
-            theme="outline"
-            size="large"
           />
-        </div>
-      )}
-
-      <LoginForm
-        loading={loading}
-        onBusinessSubmit={handleBusinessSubmit}
-        onEmployeeSubmit={handleEmployeeSubmit}
-        onGoogleLogin={handleGoogleLogin}
-      />
-    </>
+        ) : (
+          <button
+            type="button"
+            className="w-full rounded-md border border-border bg-background px-4 py-2 text-sm text-muted-foreground"
+            onClick={() =>
+              toast.error(
+                "Google girişi yapılandırılmamış. Vercel'de NEXT_PUBLIC_GOOGLE_CLIENT_ID değerini ayarlayın."
+              )
+            }
+          >
+            {translations.loginWithGoogle}
+          </button>
+        )
+      }
+      appleSignIn={
+        isAppleAuthConfigured ? (
+          <AppleSignInButton
+            label={translations.loginWithApple}
+            disabled={loading}
+            onSuccess={handleAppleCredential}
+            onError={() => toast.error(translations.loginFailed)}
+          />
+        ) : undefined
+      }
+    />
   );
 }

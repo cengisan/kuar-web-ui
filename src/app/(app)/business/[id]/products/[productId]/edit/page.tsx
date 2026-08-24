@@ -81,7 +81,7 @@ export default function EditProductPage() {
   }, [loadProduct, loadStockAccess]);
 
   const handleSubmit = async (values: ProductFormValues) => {
-    if (!accessToken || !product) return;
+    if (!accessToken || !subscriberId || !product) return;
     setSaving(true);
     try {
       const categoryLabel = resolveCategoryForApi(values, lang);
@@ -92,7 +92,12 @@ export default function EditProductPage() {
       });
 
       const repo = new ProductRepositoryImpl(translations, accessToken);
-      const result = await repo.updateProduct(productId, businessId, payload);
+      const result = await repo.updateProduct(
+        productId,
+        subscriberId,
+        businessId,
+        payload
+      );
 
       if (isActionSuccess(result)) {
         if (values.imageFile) {
