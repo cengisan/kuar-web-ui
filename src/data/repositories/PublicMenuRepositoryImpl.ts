@@ -11,7 +11,7 @@ export async function fetchPublicMenu(menuId: string): Promise<MenuApiData | nul
   const url = `${API_BASE}/menu/${menuId}/data`;
   try {
     const res = await fetch(url, {
-      next: { revalidate: 30 },
+      next: { revalidate: 5 },
     });
     if (res.status === 404) return null;
     if (!res.ok) return null;
