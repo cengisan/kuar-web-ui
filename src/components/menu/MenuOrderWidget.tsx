@@ -88,10 +88,10 @@ export function MenuOrderWidget({
     setSubmitting(true);
     try {
       const payload = {
-        orderToken,
-        tableId: Number(selectedTable),
-        note: note.trim() || null,
-        items: cart.map((i) => ({ productId: i.id, quantity: i.quantity })),
+        token: orderToken,
+        table_id: Number(selectedTable),
+        customer_note: note.trim() || null,
+        items: cart.map((i) => ({ product_id: i.id, quantity: i.quantity })),
       };
       const res = await fetch(`${apiBaseUrl}/menu/${menuId}/orders`, {
         method: "POST",
@@ -99,8 +99,15 @@ export function MenuOrderWidget({
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body?.message ?? "Sipariş oluşturulamadı.");
+        const body = (await res.json().catch(() => ({}))) as {
+          message?: string;
+          validation_error?: string[];
+          meta?: { message?: string };
+        };
+        const validationMsg = Array.isArray(body.validation_error)
+          ? body.validation_error.join(", ")
+          : null;
+        throw new Error(validationMsg ?? body.meta?.message ?? body.message ?? "Sipariş oluşturulamadı.");
       }
       setStep("success");
     } catch (err) {
