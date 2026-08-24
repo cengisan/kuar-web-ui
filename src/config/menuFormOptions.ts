@@ -24,22 +24,11 @@ export const menuThemeOptions = [
 ] as const;
 
 export function getMenuThemePreviewImage(theme: string): StaticImageData {
-  switch (theme) {
-    case "menu1":
-      return assets.menuThemePreviews.cafemode;
-    case "menu2":
-      return assets.menuThemePreviews.classic;
-    case "menu3":
-      return assets.menuThemePreviews.minimal;
-    case "menu4":
-      return assets.menuThemePreviews.elegant;
-    case "menu5":
-      return assets.menuThemePreviews.urban;
-    case "menu6":
-      return assets.menuThemePreviews.cafemode;
-    default:
-      return assets.menuThemePreviews.cafemode;
+  const previews = assets.menuThemePreviews;
+  if (theme in previews) {
+    return previews[theme as keyof typeof previews];
   }
+  return previews.menu1;
 }
 
 export type MenuCurrency = (typeof menuCurrencies)[number]["value"];
