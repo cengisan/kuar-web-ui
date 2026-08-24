@@ -5,13 +5,14 @@
  * Each theme file imports from here; no theme-specific logic here.
  */
 
-import { useState, useCallback, useEffect, type CSSProperties } from "react";
-import Image from "next/image";
+import { useState, useCallback, useEffect, useMemo, type CSSProperties, type ReactNode } from "react";
+import Image, { type StaticImageData } from "next/image";
 import type {
   MenuApiData,
   ProductData,
   OrderProductOption,
   TableOption,
+  DigitalMenuData,
 } from "@/types/menu";
 import {
   getCurrencySymbol,
@@ -26,6 +27,21 @@ export function getApiBase(): string {
     process.env.NEXT_PUBLIC_API_BASE_URL ??
     "https://kuar-test.up.railway.app/api/v1"
   );
+}
+
+/** Text color that reads on a solid accent/button background. */
+export function contrastTextOn(accentColor: string): string {
+  const hex = accentColor.trim().replace("#", "");
+  if (!/^[0-9a-fA-F]{3,8}$/.test(hex)) return "#fff";
+  const full =
+    hex.length === 3
+      ? hex.split("").map((c) => c + c).join("")
+      : hex.slice(0, 6);
+  const r = parseInt(full.slice(0, 2), 16);
+  const g = parseInt(full.slice(2, 4), 16);
+  const b = parseInt(full.slice(4, 6), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.62 ? "#111111" : "#ffffff";
 }
 
 export function buildImgUrl(raw: string | undefined | null): string | null {
@@ -58,8 +74,145 @@ export function groupCategories(products: ProductData[]): CategoryGroup[] {
   return Array.from(map.entries()).map(([name, items]) => ({ name, items }));
 }
 
+export type OrderCategoryGroup = { name: string; items: OrderProductOption[] };
+
+export function groupOrderProducts(products: OrderProductOption[]): OrderCategoryGroup[] {
+  const map = new Map<string, OrderProductOption[]>();
+  for (const p of products) {
+    const cat = p.category?.trim() || "Diğer";
+    if (!map.has(cat)) map.set(cat, []);
+    map.get(cat)!.push(p);
+  }
+  return Array.from(map.entries()).map(([name, items]) => ({ name, items }));
+}
+
 export function useCurrency(data: MenuApiData): string {
   return getCurrencySymbol(data.digitalMenu.currency);
+}
+
+export function formatMenuLastUpdated(iso?: string | null): string | null {
+  if (iso == null || String(iso).trim() === "") return null;
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toLocaleString("tr-TR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+/** Prefer last_modified_date; fall back to created_date when null/empty. */
+export function getMenuUpdatedIso(
+  digitalMenu: Pick<DigitalMenuData, "last_modified_date" | "created_date"> &
+    Partial<{ lastModifiedDate?: string | null; createdDate?: string | null }>,
+): string | null {
+  const lastModified = digitalMenu.last_modified_date ?? digitalMenu.lastModifiedDate ?? null;
+  const created = digitalMenu.created_date ?? digitalMenu.createdDate ?? null;
+  if (lastModified != null && String(lastModified).trim() !== "") return String(lastModified);
+  if (created != null && String(created).trim() !== "") return String(created);
+  return null;
+}
+
+/** Footer shown at the bottom of public menu pages. */
+export function MenuLastUpdatedFooter({
+  digitalMenu,
+  lastModified,
+  created,
+  color = "#8b867e",
+  background,
+  borderColor,
+  clearFloatingButton = true,
+}: {
+  digitalMenu?: Pick<DigitalMenuData, "last_modified_date" | "created_date"> &
+    Partial<{ lastModifiedDate?: string | null; createdDate?: string | null }>;
+  lastModified?: string | null;
+  created?: string | null;
+  color?: string;
+  background?: string;
+  borderColor?: string;
+  /** Extra bottom space for the fixed order button */
+  clearFloatingButton?: boolean;
+}) {
+  const iso = digitalMenu
+    ? getMenuUpdatedIso(digitalMenu)
+    : (lastModified != null && String(lastModified).trim() !== ""
+        ? String(lastModified)
+        : created != null && String(created).trim() !== ""
+          ? String(created)
+          : null);
+  const formatted = formatMenuLastUpdated(iso);
+  if (!formatted) return null;
+
+  return (
+    <footer
+      style={{
+        textAlign: "center",
+        padding: clearFloatingButton ? "1rem 1.25rem 5rem" : "1rem 1.25rem",
+        marginTop: "0.25rem",
+        fontSize: "0.85rem",
+        color,
+        background: background ?? "transparent",
+        borderTop: borderColor ? `1px solid ${borderColor}` : undefined,
+      }}
+    >
+      Son güncelleme: {formatted}
+    </footer>
+  );
+}
+
+/**
+ * Decorative header background — photo stays subdued behind a strong overlay
+ * so logo and title remain the visual focus.
+ */
+export function MenuHeaderBanner({
+  background,
+  overlay,
+  minHeight = 200,
+  padding = "2.5rem 1.5rem 2rem",
+  textAlign = "center",
+  children,
+}: {
+  background: StaticImageData;
+  /** Solid rgba overlay — use high opacity (0.82–0.94) to keep photo subtle */
+  overlay: string;
+  minHeight?: number;
+  padding?: string;
+  textAlign?: CSSProperties["textAlign"];
+  children: ReactNode;
+}) {
+  return (
+    <div
+      style={{
+        position: "relative",
+        overflow: "hidden",
+        minHeight,
+        padding,
+        textAlign,
+      }}
+    >
+      <Image
+        src={background}
+        alt=""
+        fill
+        priority
+        className="object-cover"
+        sizes="100vw"
+        aria-hidden
+        style={{ objectPosition: "center" }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: overlay,
+        }}
+        aria-hidden
+      />
+      <div style={{ position: "relative", zIndex: 2 }}>{children}</div>
+    </div>
+  );
 }
 
 // ─── Allergen helpers ──────────────────────────────────────────────────────────
@@ -372,6 +525,7 @@ export function OrderWidget({
 
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("cart");
+  const [activeOrderCategory, setActiveOrderCategory] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [table, setTable] = useState("");
   const [note, setNote] = useState("");
@@ -406,6 +560,23 @@ export function OrderWidget({
 
   const qty = (id: number) => cart.find((i) => i.id === id)?.quantity ?? 0;
 
+  const orderCategories = useMemo(() => groupOrderProducts(orderProducts), [orderProducts]);
+
+  const activeCategoryProducts = useMemo(() => {
+    if (!activeOrderCategory) return [];
+    return orderCategories.find((c) => c.name === activeOrderCategory)?.items ?? [];
+  }, [activeOrderCategory, orderCategories]);
+
+  const cartQtyInCategory = useCallback(
+    (categoryName: string) => {
+      const ids = new Set(
+        orderCategories.find((c) => c.name === categoryName)?.items.map((p) => p.id) ?? []
+      );
+      return cart.reduce((sum, item) => (ids.has(item.id) ? sum + item.quantity : sum), 0);
+    },
+    [cart, orderCategories]
+  );
+
   const submit = async () => {
     if (!table) { setErr("Lütfen bir masa seçin."); return; }
     setErr(null);
@@ -436,18 +607,26 @@ export function OrderWidget({
   const reset = () => {
     setOpen(false);
     setStep("cart");
+    setActiveOrderCategory(null);
     setCart([]);
     setTable("");
     setNote("");
     setErr(null);
   };
 
+  const openWidget = () => {
+    setActiveOrderCategory(null);
+    setOpen(true);
+  };
+
+  const onAccentText = contrastTextOn(accentColor);
+
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-5 z-40 flex items-center gap-2 rounded-full px-5 py-3 font-bold text-white shadow-xl active:scale-95 transition-transform"
-        style={{ background: accentColor }}
+        onClick={openWidget}
+        className="fixed bottom-6 right-5 z-40 flex items-center gap-2 rounded-full px-5 py-3 font-bold shadow-xl active:scale-95 transition-transform"
+        style={{ background: accentColor, color: onAccentText }}
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
           <circle cx="8" cy="21" r="1" />
@@ -477,18 +656,23 @@ export function OrderWidget({
               <div className="flex flex-col items-center gap-4 px-6 py-10 text-center">
                 <div
                   className="h-16 w-16 flex items-center justify-center rounded-full text-3xl"
-                  style={{ background: accentColor }}
+                  style={{ background: accentColor, color: onAccentText }}
                 >✓</div>
                 <h2 className="text-xl font-bold">Siparişiniz Alındı!</h2>
                 <p className="text-sm opacity-70">Mutfağa iletildi. Afiyet olsun 🍽</p>
-                <button onClick={reset} className="mt-2 rounded-full px-8 py-3 font-bold" style={{ background: accentColor }}>
+                <button onClick={reset} className="mt-2 rounded-full px-8 py-3 font-bold" style={{ background: accentColor, color: onAccentText }}>
                   Kapat
                 </button>
               </div>
             ) : step === "table" ? (
               <div className="flex flex-col gap-4 px-5 pb-8 pt-3">
                 <div className="flex items-center gap-3">
-                  <button onClick={() => setStep("cart")} className="opacity-60 hover:opacity-100 text-lg">←</button>
+                  <button
+                    onClick={() => { setStep("cart"); setActiveOrderCategory(null); }}
+                    className="opacity-60 hover:opacity-100 text-lg"
+                  >
+                    ←
+                  </button>
                   <h2 className="text-lg font-bold">Masa Seç</h2>
                 </div>
                 <select
@@ -512,8 +696,8 @@ export function OrderWidget({
                 <button
                   onClick={submit}
                   disabled={sending}
-                  className="w-full rounded-full py-3.5 font-bold text-white disabled:opacity-50"
-                  style={{ background: accentColor }}
+                  className="w-full rounded-full py-3.5 font-bold disabled:opacity-50"
+                  style={{ background: accentColor, color: onAccentText }}
                 >
                   {sending ? "Gönderiliyor..." : `Siparişi Onayla · ${total.toFixed(2)}`}
                 </button>
@@ -521,29 +705,82 @@ export function OrderWidget({
             ) : (
               <div className="flex flex-col gap-3 px-4 pb-8 pt-3">
                 <div className="flex items-center justify-between px-1">
-                  <h2 className="text-lg font-bold">Sipariş</h2>
-                  <button onClick={reset} className="opacity-50 hover:opacity-100 text-xl">✕</button>
+                  <div className="flex items-center gap-2 min-w-0">
+                    {activeOrderCategory && (
+                      <button
+                        type="button"
+                        onClick={() => setActiveOrderCategory(null)}
+                        className="opacity-60 hover:opacity-100 text-lg shrink-0"
+                        aria-label="Kategorilere dön"
+                      >
+                        ←
+                      </button>
+                    )}
+                    <h2 className="text-lg font-bold truncate">
+                      {activeOrderCategory ?? "Kategori Seçin"}
+                    </h2>
+                  </div>
+                  <button onClick={reset} className="opacity-50 hover:opacity-100 text-xl shrink-0">✕</button>
                 </div>
+
                 <div className="flex flex-col gap-1.5 overflow-y-auto" style={{ maxHeight: "42svh" }}>
-                  {orderProducts.map((p) => {
-                    const q = qty(p.id);
-                    return (
-                      <div key={p.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-white/10">
-                        <div className="flex-1 min-w-0">
-                          <p className="truncate text-sm font-semibold">{p.name}</p>
-                          <p className="text-xs opacity-50">{p.price.toFixed(2)}</p>
+                  {!activeOrderCategory ? (
+                    orderCategories.map((cat) => {
+                      const inCart = cartQtyInCategory(cat.name);
+                      return (
+                        <button
+                          key={cat.name}
+                          type="button"
+                          onClick={() => setActiveOrderCategory(cat.name)}
+                          className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-white/10 text-left w-full"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="truncate text-sm font-semibold">{cat.name}</p>
+                            <p className="text-xs opacity-50">{cat.items.length} ürün</p>
+                          </div>
+                          {inCart > 0 && (
+                            <span
+                              className="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold"
+                              style={{ background: accentColor, color: onAccentText }}
+                            >
+                              {inCart}
+                            </span>
+                          )}
+                          <span className="opacity-40 text-sm shrink-0">→</span>
+                        </button>
+                      );
+                    })
+                  ) : (
+                    activeCategoryProducts.map((p) => {
+                      const q = qty(p.id);
+                      return (
+                        <div key={p.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-white/10">
+                          <div className="flex-1 min-w-0">
+                            <p className="truncate text-sm font-semibold">{p.name}</p>
+                            <p className="text-xs opacity-50">{p.price.toFixed(2)}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button onClick={() => remove(p.id)} disabled={q === 0} className="h-7 w-7 flex items-center justify-center rounded-full bg-white/15 text-sm font-bold disabled:opacity-25">−</button>
+                            <span className="w-5 text-center text-sm font-bold">{q}</span>
+                            <button onClick={() => add(p)} className="h-7 w-7 flex items-center justify-center rounded-full text-sm font-bold" style={{ background: accentColor, color: onAccentText }}>+</button>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <button onClick={() => remove(p.id)} disabled={q === 0} className="h-7 w-7 flex items-center justify-center rounded-full bg-white/15 text-sm font-bold disabled:opacity-25">−</button>
-                          <span className="w-5 text-center text-sm font-bold">{q}</span>
-                          <button onClick={() => add(p)} className="h-7 w-7 flex items-center justify-center rounded-full text-sm font-bold" style={{ background: accentColor }}>+</button>
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })
+                  )}
                 </div>
+
+                {!activeOrderCategory && orderCategories.length === 0 && (
+                  <p className="text-center text-sm opacity-40 py-3">Sipariş verilebilir ürün bulunamadı.</p>
+                )}
+
+                {activeOrderCategory && activeCategoryProducts.length === 0 && (
+                  <p className="text-center text-sm opacity-40 py-3">Bu kategoride ürün yok.</p>
+                )}
+
                 {cart.length > 0 && (
                   <div className="rounded-2xl px-4 py-3 bg-white/8">
+                    <p className="text-xs font-semibold opacity-60 mb-1.5">Sepetiniz</p>
                     {cart.map((i) => (
                       <div key={i.id} className="flex justify-between text-sm py-0.5">
                         <span className="opacity-80">{i.quantity}× {i.name}</span>
@@ -555,12 +792,30 @@ export function OrderWidget({
                     </div>
                   </div>
                 )}
-                {cart.length === 0 && <p className="text-center text-sm opacity-40 py-3">Henüz ürün eklemediniz.</p>}
+
+                {cart.length === 0 && (
+                  <p className="text-center text-sm opacity-40 py-3">
+                    {activeOrderCategory
+                      ? "Ürün eklemek için + butonuna dokunun."
+                      : "Başlamak için bir kategori seçin."}
+                  </p>
+                )}
+
+                {activeOrderCategory && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveOrderCategory(null)}
+                    className="w-full rounded-full py-2.5 text-sm font-semibold bg-white/10"
+                  >
+                    Başka Kategori Seç
+                  </button>
+                )}
+
                 <button
                   onClick={() => cart.length > 0 && setStep("table")}
                   disabled={cart.length === 0}
-                  className="w-full rounded-full py-3.5 font-bold text-white disabled:opacity-35"
-                  style={{ background: accentColor }}
+                  className="w-full rounded-full py-3.5 font-bold disabled:opacity-35"
+                  style={{ background: accentColor, color: onAccentText }}
                 >
                   Devam Et ({count} ürün)
                 </button>

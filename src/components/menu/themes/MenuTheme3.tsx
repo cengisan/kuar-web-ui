@@ -19,7 +19,10 @@ import {
   OrderWidget,
   ProductImagePlaceholder,
   ProductCardMeta,
+  MenuHeaderBanner,
+  MenuLastUpdatedFooter,
 } from "@/components/menu/MenuShared";
+import { getMenuHeaderImage } from "@/config/menuHeaders";
 
 const BG = "#ffffff";
 const SIDEBAR_BG = "#f4f1ea";
@@ -47,23 +50,6 @@ export default function MenuTheme3({ menuId, data }: Props) {
       `}</style>
 
       <div style={{ background: BG, color: DARK, minHeight: "100svh", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
-
-        {/* Hamburger button */}
-        <button
-          onClick={() => setSidebarOpen(true)}
-          aria-label="Menüyü aç"
-          style={{
-            position: "fixed", top: 14, left: 14, zIndex: 3001,
-            background: BG, border: `1px solid ${LINE}`, borderRadius: 12,
-            padding: "10px 12px", cursor: "pointer",
-            boxShadow: "0 1px 4px rgba(32,30,27,0.08)",
-            display: "flex", flexDirection: "column", gap: 5,
-          }}
-        >
-          <span style={{ width: 22, height: 2, background: DARK, borderRadius: 2, display: "block" }} />
-          <span style={{ width: 22, height: 2, background: DARK, borderRadius: 2, display: "block" }} />
-          <span style={{ width: 22, height: 2, background: DARK, borderRadius: 2, display: "block" }} />
-        </button>
 
         {/* Overlay */}
         {sidebarOpen && (
@@ -131,47 +117,138 @@ export default function MenuTheme3({ menuId, data }: Props) {
         </aside>
 
         {/* Main content */}
-        <div style={{ paddingLeft: 0, paddingTop: 60 }}>
-          {/* Category header */}
-          <div style={{ padding: "1rem 1.25rem 0.75rem", borderBottom: `1px solid ${LINE}` }}>
-            <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.6rem", fontWeight: 700, color: DARK, margin: 0 }}>
-              {activeCat}
+        <MenuHeaderBanner
+          background={getMenuHeaderImage("menu3")}
+          overlay="rgba(255,255,255,0.90)"
+          minHeight={170}
+          padding="2rem 1.25rem 1.25rem"
+        >
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+            {logoUrl ? (
+              <div style={{ width: 88, height: 88, borderRadius: "50%", overflow: "hidden", border: `2px solid ${ACCENT}`, boxShadow: "0 0 0 4px rgba(255,255,255,0.9), 0 4px 16px rgba(32,30,27,0.12)" }}>
+                <Image src={logoUrl} alt={data.name} width={88} height={88} className="object-cover" />
+              </div>
+            ) : (
+              <div style={{ width: 88, height: 88, borderRadius: "50%", border: `2px solid ${ACCENT}`, background: SIDEBAR_BG, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 0 4px rgba(255,255,255,0.9)" }}>
+                <ProductImagePlaceholder size={32} color={MUTED} />
+              </div>
+            )}
+            <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(1.3rem,4vw,1.75rem)", fontWeight: 700, color: DARK, margin: 0 }}>
+              {data.name}
             </h1>
-            <p style={{ margin: "4px 0 0", fontSize: "0.8rem", color: MUTED }}>{activeItems.length} ürün</p>
+          </div>
+        </MenuHeaderBanner>
+
+        <div style={{ paddingLeft: 0 }}>
+          {/* Sticky category bar — menu trigger + active category */}
+          <div
+            style={{
+              position: "sticky",
+              top: 0,
+              zIndex: 100,
+              background: BG,
+              borderBottom: `1px solid ${LINE}`,
+              padding: "0.85rem 1rem",
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              boxShadow: "0 1px 0 rgba(32,30,27,0.04)",
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Kategorileri aç"
+              aria-expanded={sidebarOpen}
+              style={{
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                background: SIDEBAR_BG,
+                border: `1px solid ${LINE}`,
+                borderRadius: 12,
+                padding: "0.55rem 0.85rem",
+                cursor: "pointer",
+                color: DARK,
+                fontWeight: 600,
+                fontSize: "0.85rem",
+                boxShadow: "0 1px 4px rgba(32,30,27,0.06)",
+              }}
+            >
+              <span style={{ display: "flex", flexDirection: "column", gap: 4, width: 18 }}>
+                <span style={{ width: 18, height: 2, background: DARK, borderRadius: 2, display: "block" }} />
+                <span style={{ width: 18, height: 2, background: DARK, borderRadius: 2, display: "block" }} />
+                <span style={{ width: 18, height: 2, background: DARK, borderRadius: 2, display: "block" }} />
+              </span>
+              Kategoriler
+            </button>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.25rem", fontWeight: 700, color: DARK, margin: 0, lineHeight: 1.2 }}>
+                {activeCat}
+              </h2>
+              <p style={{ margin: "3px 0 0", fontSize: "0.78rem", color: MUTED }}>{activeItems.length} ürün</p>
+            </div>
           </div>
 
-          {/* Horizontal list items */}
-          <div style={{ padding: "0.5rem 0 6rem" }}>
-            {activeItems.map((p, idx) => {
+          {/* Product list */}
+          <div style={{ padding: "1rem 1rem 0", display: "flex", flexDirection: "column", gap: 12 }}>
+            {activeItems.map((p) => {
               const imgUrl = buildImgUrl(p.product_image?.[0]?.image_url);
               return (
                 <button
                   key={p.id}
+                  type="button"
                   onClick={() => setDrawer(p)}
                   style={{
-                    width: "100%", display: "flex", alignItems: "flex-start", gap: 14,
-                    padding: "1rem 1.25rem", textAlign: "left",
-                    background: "none", border: "none", cursor: "pointer",
-                    borderBottom: idx < activeItems.length - 1 ? `1px solid ${LINE}` : "none",
-                    transition: "background 0.15s",
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "stretch",
+                    textAlign: "left",
+                    background: BG,
+                    border: `1px solid ${LINE}`,
+                    borderRadius: 14,
+                    cursor: "pointer",
+                    overflow: "hidden",
+                    boxShadow: "0 2px 10px rgba(32,30,27,0.05)",
+                    transition: "box-shadow 0.15s, transform 0.15s",
                   }}
                 >
                   {imgUrl ? (
-                    <div style={{ width: 70, height: 70, borderRadius: 10, overflow: "hidden", flexShrink: 0, border: `1px solid ${LINE}` }}>
-                      <Image src={imgUrl} alt={p.name} width={70} height={70} className="object-cover" />
+                    <div
+                      style={{
+                        position: "relative",
+                        width: 112,
+                        minHeight: 112,
+                        flexShrink: 0,
+                        background: SIDEBAR_BG,
+                      }}
+                    >
+                      <Image src={imgUrl} alt={p.name} fill sizes="112px" className="object-cover" style={{ objectPosition: "center" }} />
                     </div>
                   ) : (
-                    <div style={{ width: 70, height: 70, borderRadius: 10, background: SIDEBAR_BG, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${LINE}` }}>
-                      <ProductImagePlaceholder size={24} color="#ccc" />
+                    <div
+                      style={{
+                        width: 112,
+                        minHeight: 112,
+                        flexShrink: 0,
+                        background: SIDEBAR_BG,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRight: `1px solid ${LINE}`,
+                      }}
+                    >
+                      <ProductImagePlaceholder size={28} color="#ccc" />
                     </div>
                   )}
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ flex: 1, minWidth: 0, padding: "1rem 1rem 1rem 0.95rem", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
-                      <p style={{ margin: 0, fontWeight: 600, fontSize: "0.95rem", color: DARK, lineHeight: 1.3 }}>{p.name}</p>
+                      <p style={{ margin: 0, fontWeight: 600, fontSize: "0.98rem", color: DARK, lineHeight: 1.3 }}>{p.name}</p>
                       <p style={{ margin: 0, fontWeight: 700, fontSize: "0.95rem", color: ACCENT, flexShrink: 0 }}>{(p.price ?? 0).toFixed(2)} {currency}</p>
                     </div>
                     {p.description && (
-                      <p style={{ margin: "4px 0 0", fontSize: "0.8rem", color: MUTED, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                      <p style={{ margin: "5px 0 0", fontSize: "0.82rem", color: MUTED, lineHeight: 1.45, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                         {p.description}
                       </p>
                     )}
@@ -182,6 +259,8 @@ export default function MenuTheme3({ menuId, data }: Props) {
             })}
           </div>
         </div>
+
+        <MenuLastUpdatedFooter digitalMenu={data.digitalMenu} color={MUTED} borderColor={LINE} />
 
         {drawer && (
           <ProductDrawer product={drawer} currency={currency} accentColor={ACCENT} onClose={() => setDrawer(null)} />

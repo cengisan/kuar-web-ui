@@ -21,7 +21,10 @@ import {
   ProductImagePlaceholder,
   ProductExtraLabels,
   ProductCardMeta,
+  MenuHeaderBanner,
+  MenuLastUpdatedFooter,
 } from "@/components/menu/MenuShared";
+import { getMenuHeaderImage } from "@/config/menuHeaders";
 
 const BG = "#0b0a09";
 const SURFACE = "#17120e";
@@ -49,17 +52,19 @@ export default function MenuTheme2({ menuId, data }: Props) {
 
       <div style={{ background: BG, color: TEXT, minHeight: "100svh", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
 
-        {/* Wooden-texture header */}
-        <div style={{ position: "relative", padding: "4rem 1.5rem 3rem", textAlign: "center", overflow: "hidden", background: "#1a1008" }}>
-          {/* Solid wood-like dark overlay instead of image */}
-          <div style={{ position: "absolute", inset: 0, background: "#1a1008", opacity: 1 }} />
-          <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
+        <MenuHeaderBanner
+          background={getMenuHeaderImage("menu2")}
+          overlay="rgba(11,10,9,0.84)"
+          minHeight={240}
+          padding="4rem 1.5rem 3rem"
+        >
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
             {logoUrl ? (
-              <div style={{ width: 100, height: 100, borderRadius: "50%", overflow: "hidden", border: `2px solid ${GOLD}`, boxShadow: `0 0 28px rgba(201,168,106,0.3)` }}>
-                <Image src={logoUrl} alt={data.name} width={100} height={100} className="object-cover" />
+              <div style={{ width: 108, height: 108, borderRadius: "50%", overflow: "hidden", border: `3px solid ${GOLD}`, boxShadow: `0 0 0 5px rgba(11,10,9,0.6), 0 0 32px rgba(201,168,106,0.35)` }}>
+                <Image src={logoUrl} alt={data.name} width={108} height={108} className="object-cover" />
               </div>
             ) : (
-              <div style={{ width: 100, height: 100, borderRadius: "50%", border: `2px solid ${GOLD}`, background: SURFACE, display: "flex", alignItems: "center", justifyContent: "center", color: MUTED }}>
+              <div style={{ width: 108, height: 108, borderRadius: "50%", border: `3px solid ${GOLD}`, background: SURFACE, display: "flex", alignItems: "center", justifyContent: "center", color: MUTED, boxShadow: `0 0 0 5px rgba(11,10,9,0.6)` }}>
                 <ProductImagePlaceholder size={36} color={MUTED} />
               </div>
             )}
@@ -70,7 +75,7 @@ export default function MenuTheme2({ menuId, data }: Props) {
               <div style={{ width: 60, height: 1, background: GOLD, margin: "10px auto 0" }} />
             </div>
           </div>
-        </div>
+        </MenuHeaderBanner>
 
         {/* Sticky back bar (shown when a category is active) */}
         {activeCat && (
@@ -138,7 +143,7 @@ export default function MenuTheme2({ menuId, data }: Props) {
 
         {/* Product card grid */}
         {activeCat && (
-          <div style={{ padding: "2rem 1rem 6rem" }}>
+          <div style={{ padding: "2rem 1rem 0" }}>
             <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "1.8rem", fontWeight: 600, color: GOLD, marginBottom: "1.25rem", paddingBottom: "0.5rem", borderBottom: `1px solid rgba(201,168,106,0.25)` }}>
               {activeCat}
             </h2>
@@ -177,6 +182,8 @@ export default function MenuTheme2({ menuId, data }: Props) {
             </div>
           </div>
         )}
+
+        <MenuLastUpdatedFooter digitalMenu={data.digitalMenu} color={MUTED} borderColor="rgba(255,255,255,0.08)" />
 
         {drawer && (
           <ProductDrawer product={drawer} currency={currency} accentColor={GOLD} onClose={() => setDrawer(null)} />

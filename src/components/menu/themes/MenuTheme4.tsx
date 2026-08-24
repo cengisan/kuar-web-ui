@@ -20,7 +20,10 @@ import {
   OrderWidget,
   ProductImagePlaceholder,
   ProductCardMeta,
+  MenuHeaderBanner,
+  MenuLastUpdatedFooter,
 } from "@/components/menu/MenuShared";
+import { getMenuHeaderImage } from "@/config/menuHeaders";
 
 const BG = "#f7f3ea";
 const SURFACE = "#fffdf8";
@@ -45,29 +48,29 @@ export default function MenuTheme4({ menuId, data }: Props) {
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
         html,body{margin:0;padding:0;box-sizing:border-box}
         body{background:${BG};min-height:100vh}
+        .t4-shell{max-width:900px;margin:0 auto;background:${SURFACE};overflow:hidden}
+        .t4-content{padding:1rem 1rem 0}
+        @media (min-width:769px){
+          .t4-shell{margin:0.75rem auto;border-radius:18px;box-shadow:0 6px 22px rgba(47,51,36,0.08);border:1px solid rgba(111,125,74,0.14)}
+          .t4-content{padding:1.25rem 1.25rem 0}
+        }
       `}</style>
 
-      <div style={{ padding: "1.25rem 1rem 2rem", maxWidth: 900, margin: "0 auto", fontFamily: "'Plus Jakarta Sans',sans-serif", color: DARK }}>
+      <div className="t4-shell" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", color: DARK }}>
 
-        {/* Container card */}
-        <div style={{ background: SURFACE, borderRadius: 18, overflow: "hidden", boxShadow: "0 6px 22px rgba(47,51,36,0.08)", border: `1px solid rgba(111,125,74,0.14)` }}>
-
-          {/* Header with dark wood overlay */}
-          <div style={{
-            position: "relative",
-            padding: "3rem 1.5rem",
-            textAlign: "center",
-            background: DARK,
-            overflow: "hidden",
-          }}>
-            <div style={{ position: "absolute", inset: 0, background: "rgba(47,51,36,0.82)" }} />
-            <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+          <MenuHeaderBanner
+            background={getMenuHeaderImage("menu4")}
+            overlay="rgba(47,51,36,0.86)"
+            minHeight={180}
+            padding="2rem 1rem"
+          >
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
               {logoUrl ? (
-                <div style={{ width: 96, height: 96, borderRadius: "50%", overflow: "hidden", border: "3px solid rgba(255,255,255,0.9)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)" }}>
-                  <Image src={logoUrl} alt={data.name} width={96} height={96} className="object-cover" />
+                <div style={{ width: 100, height: 100, borderRadius: "50%", overflow: "hidden", border: "3px solid rgba(255,255,255,0.95)", boxShadow: "0 0 0 5px rgba(47,51,36,0.5), 0 8px 24px rgba(0,0,0,0.25)" }}>
+                  <Image src={logoUrl} alt={data.name} width={100} height={100} className="object-cover" />
                 </div>
               ) : (
-                <div style={{ width: 96, height: 96, borderRadius: "50%", border: "3px solid rgba(255,255,255,0.7)", background: MAIN, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ width: 100, height: 100, borderRadius: "50%", border: "3px solid rgba(255,255,255,0.7)", background: MAIN, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 0 5px rgba(47,51,36,0.5)" }}>
                   <ProductImagePlaceholder size={36} color="rgba(255,255,255,0.7)" />
                 </div>
               )}
@@ -75,12 +78,12 @@ export default function MenuTheme4({ menuId, data }: Props) {
                 {data.name}
               </h1>
             </div>
-          </div>
+          </MenuHeaderBanner>
 
           {/* All categories */}
-          <div style={{ padding: "1.5rem 1.5rem 4rem" }}>
+          <div className="t4-content">
             {categories.map((cat) => (
-              <section key={cat.name} id={`cat-${cat.name}`} style={{ marginBottom: "2.25rem" }}>
+              <section key={cat.name} id={`cat-${cat.name}`} style={{ marginBottom: "1.75rem" }}>
                 {/* Category title */}
                 <div style={{
                   display: "flex", alignItems: "center", gap: 8,
@@ -101,8 +104,8 @@ export default function MenuTheme4({ menuId, data }: Props) {
                       key={p.id}
                       onClick={() => setDrawer(p)}
                       style={{
-                        width: "100%", display: "flex", alignItems: "flex-start", gap: 14,
-                        padding: "1.1rem 0.25rem", textAlign: "left",
+                        width: "100%", display: "flex", alignItems: "flex-start", gap: 12,
+                        padding: "0.85rem 0", textAlign: "left",
                         background: "none", border: "none", cursor: "pointer",
                         borderBottom: idx < cat.items.length - 1 ? `1.5px dashed ${LINE}` : "none",
                         transition: "background 0.15s",
@@ -133,7 +136,8 @@ export default function MenuTheme4({ menuId, data }: Props) {
               </section>
             ))}
           </div>
-        </div>
+
+          <MenuLastUpdatedFooter digitalMenu={data.digitalMenu} color={MUTED} borderColor={LINE} />
       </div>
 
       {drawer && (

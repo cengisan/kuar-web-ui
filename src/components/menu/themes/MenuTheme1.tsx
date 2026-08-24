@@ -20,7 +20,10 @@ import {
   ProductImagePlaceholder,
   ProductExtraLabels,
   ProductCardMeta,
+  MenuHeaderBanner,
+  MenuLastUpdatedFooter,
 } from "@/components/menu/MenuShared";
+import { getMenuHeaderImage } from "@/config/menuHeaders";
 
 const BG = "#e9e0d2";
 const SURFACE = "#ece3d5";
@@ -44,20 +47,25 @@ export default function MenuTheme1({ menuId, data }: Props) {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-        html,body{margin:0;padding:0;box-sizing:border-box}
+        html,body{margin:0;padding:0;box-sizing:border-box;background:${BG}}
         .t1-tabs::-webkit-scrollbar{display:none}
       `}</style>
 
       <div style={{ background: BG, fontFamily: "'Plus Jakarta Sans',sans-serif", color: DARK, minHeight: "100svh" }}>
 
-        {/* Header */}
-        <div style={{ background: SURFACE, padding: "2.5rem 1.5rem 2rem", textAlign: "center", boxShadow: NEU_SHADOW }}>
+        {/* Header — subtle photo, logo forward */}
+        <MenuHeaderBanner
+          background={getMenuHeaderImage("menu1")}
+          overlay="rgba(233,224,210,0.93)"
+          minHeight={210}
+          padding="2.5rem 1.5rem 2rem"
+        >
           {logoUrl ? (
-            <div style={{ display: "inline-block", width: 100, height: 100, borderRadius: "50%", overflow: "hidden", boxShadow: NEU_SHADOW, marginBottom: 14 }}>
-              <Image src={logoUrl} alt={data.name} width={100} height={100} className="object-cover" />
+            <div style={{ display: "inline-block", width: 104, height: 104, borderRadius: "50%", overflow: "hidden", boxShadow: `${NEU_SHADOW}, 0 0 0 4px rgba(255,255,255,0.85)`, marginBottom: 14 }}>
+              <Image src={logoUrl} alt={data.name} width={104} height={104} className="object-cover" />
             </div>
           ) : (
-            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 100, height: 100, borderRadius: "50%", background: SURFACE, boxShadow: NEU_SHADOW, marginBottom: 14, color: MUTED }}>
+            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 104, height: 104, borderRadius: "50%", background: SURFACE, boxShadow: `${NEU_SHADOW}, 0 0 0 4px rgba(255,255,255,0.85)`, marginBottom: 14, color: MUTED }}>
               <ProductImagePlaceholder size={36} color={MUTED} />
             </div>
           )}
@@ -65,10 +73,10 @@ export default function MenuTheme1({ menuId, data }: Props) {
           {data.digitalMenu.business_name && data.digitalMenu.business_name !== data.name && (
             <p style={{ margin: "4px 0 0", fontSize: "0.9rem", color: MUTED }}>{data.digitalMenu.business_name}</p>
           )}
-        </div>
+        </MenuHeaderBanner>
 
         {/* Sticky tab nav */}
-        <div style={{ position: "sticky", top: 0, zIndex: 100, background: BG, padding: "0.9rem 1rem", borderBottom: `1px solid #d4c9b8` }}>
+        <div style={{ position: "sticky", top: 0, zIndex: 100, background: BG, padding: "0.9rem 1rem" }}>
           <div
             className="t1-tabs"
             style={{ display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
@@ -88,7 +96,7 @@ export default function MenuTheme1({ menuId, data }: Props) {
                     fontSize: "0.88rem",
                     cursor: "pointer",
                     transition: "all 0.2s",
-                    background: active ? ACCENT : SURFACE,
+                    background: active ? ACCENT : BG,
                     color: active ? "#fff" : DARK,
                     boxShadow: active ? "none" : "5px 5px 10px #c7bdac, -5px -5px 10px #fbf3e6",
                   }}
@@ -101,7 +109,7 @@ export default function MenuTheme1({ menuId, data }: Props) {
         </div>
 
         {/* Products grid */}
-        <div style={{ padding: "1.25rem 1rem 6rem" }}>
+        <div style={{ padding: "1.25rem 1rem 0" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 14 }}>
             {activeItems.map((p) => {
               const imgUrl = buildImgUrl(p.product_image?.[0]?.image_url);
@@ -147,6 +155,8 @@ export default function MenuTheme1({ menuId, data }: Props) {
             })}
           </div>
         </div>
+
+        <MenuLastUpdatedFooter digitalMenu={data.digitalMenu} color={MUTED} borderColor="#d4c9b8" />
 
         {drawer && (
           <ProductDrawer product={drawer} currency={currency} accentColor={ACCENT} onClose={() => setDrawer(null)} />

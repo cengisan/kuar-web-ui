@@ -12,7 +12,7 @@
  *
  * Kategori görünümü (tile'a tıklanınca):
  *   - Sticky back-bar
- *   - Büyük hero fotoğraf + kategori adı overlay
+ *   - Kategori adı (metin başlık)
  *   - İlk ürün: tam genişlik hero kart
  *   - Diğer ürünler: küçük kare thumbnail + isim + açıklama + fiyat satırları
  *
@@ -32,7 +32,10 @@ import {
   ProductImagePlaceholder,
   ProductExtraLabels,
   ProductCardMeta,
+  MenuHeaderBanner,
+  MenuLastUpdatedFooter,
 } from "@/components/menu/MenuShared";
+import { getMenuHeaderImage } from "@/config/menuHeaders";
 
 const BG = "#0d0d0d";
 const SURFACE = "#181818";
@@ -61,26 +64,33 @@ export default function MenuTheme5({ menuId, data }: Props) {
 
       <div style={{ background: BG, color: TEXT, minHeight: "100svh", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
 
-        {/* ── Compact header ── */}
-        <div style={{ padding: "1.5rem 1rem 1.25rem", display: "flex", flexDirection: "column", alignItems: "center", gap: 10, borderBottom: `1px solid ${BORDER}` }}>
-          {logoUrl ? (
-            <div style={{ width: 80, height: 80, borderRadius: "50%", overflow: "hidden", border: "2px solid rgba(255,255,255,0.7)", flexShrink: 0 }}>
-              <Image src={logoUrl} alt={data.name} width={80} height={80} style={{ objectFit: "cover", width: "100%", height: "100%" }} />
-            </div>
-          ) : (
-            <div style={{ width: 80, height: 80, borderRadius: "50%", border: "2px solid rgba(255,255,255,0.4)", background: SURFACE, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <ProductImagePlaceholder size={28} color={MUTED} />
-            </div>
-          )}
-          <div style={{ textAlign: "center" }}>
-            <h1 style={{ fontFamily: "'Oswald',sans-serif", fontSize: "1.6rem", fontWeight: 600, margin: 0, letterSpacing: "0.06em", color: TEXT }}>
-              {data.name}
-            </h1>
-            {data.digitalMenu.business_name && data.digitalMenu.business_name !== data.name && (
-              <p style={{ margin: "3px 0 0", fontSize: "0.8rem", color: MUTED }}>{data.digitalMenu.business_name}</p>
+        <MenuHeaderBanner
+          background={getMenuHeaderImage("menu5")}
+          overlay="rgba(13,13,13,0.88)"
+          minHeight={200}
+          padding="1.75rem 1rem 1.5rem"
+        >
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+            {logoUrl ? (
+              <div style={{ width: 88, height: 88, borderRadius: "50%", overflow: "hidden", border: "2px solid rgba(255,255,255,0.85)", boxShadow: "0 0 0 5px rgba(13,13,13,0.55), 0 0 28px rgba(255,255,255,0.08)", flexShrink: 0 }}>
+                <Image src={logoUrl} alt={data.name} width={88} height={88} style={{ objectFit: "cover", width: "100%", height: "100%" }} />
+              </div>
+            ) : (
+              <div style={{ width: 88, height: 88, borderRadius: "50%", border: "2px solid rgba(255,255,255,0.4)", background: SURFACE, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 0 5px rgba(13,13,13,0.55)" }}>
+                <ProductImagePlaceholder size={28} color={MUTED} />
+              </div>
             )}
+            <div style={{ textAlign: "center" }}>
+              <h1 style={{ fontFamily: "'Oswald',sans-serif", fontSize: "1.6rem", fontWeight: 600, margin: 0, letterSpacing: "0.06em", color: TEXT }}>
+                {data.name}
+              </h1>
+              {data.digitalMenu.business_name && data.digitalMenu.business_name !== data.name && (
+                <p style={{ margin: "3px 0 0", fontSize: "0.8rem", color: MUTED }}>{data.digitalMenu.business_name}</p>
+              )}
+            </div>
           </div>
-        </div>
+        </MenuHeaderBanner>
+        <div style={{ borderBottom: `1px solid ${BORDER}` }} />
 
         {/* ── Sticky back bar ── */}
         {activeCat && (
@@ -102,7 +112,7 @@ export default function MenuTheme5({ menuId, data }: Props) {
 
         {/* ── Category bento grid ── */}
         {!activeCat && (
-          <div style={{ padding: "1rem 0.75rem 6rem" }}>
+          <div style={{ padding: "1rem 0.75rem 0" }}>
             {(() => {
               const nodes: React.ReactNode[] = [];
               let i = 0;
@@ -176,26 +186,12 @@ export default function MenuTheme5({ menuId, data }: Props) {
 
         {/* ── Product view ── */}
         {activeCat && (
-          <div style={{ paddingBottom: "5rem" }}>
-            {/* Category hero image */}
-            {(() => {
-              const heroImg = firstProductImage(activeItems);
-              return heroImg ? (
-                <div style={{ position: "relative", width: "100%", paddingTop: "50%" }}>
-                  <Image src={heroImg} alt={activeCat} fill style={{ objectFit: "cover" }} sizes="100vw" />
-                  <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.52)" }} />
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "1.25rem 1rem" }}>
-                    <h2 style={{ fontFamily: "'Oswald',sans-serif", fontSize: "2rem", fontWeight: 700, color: "#fff", margin: 0, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                      {activeCat}
-                    </h2>
-                  </div>
-                </div>
-              ) : (
-                <div style={{ padding: "1.25rem 1rem" }}>
-                  <h2 style={{ fontFamily: "'Oswald',sans-serif", fontSize: "1.6rem", fontWeight: 700, color: TEXT, margin: 0 }}>{activeCat}</h2>
-                </div>
-              );
-            })()}
+          <div style={{ paddingBottom: 0 }}>
+            <div style={{ padding: "1.15rem 1rem", borderBottom: `1px solid ${BORDER}` }}>
+              <h2 style={{ fontFamily: "'Oswald',sans-serif", fontSize: "1.6rem", fontWeight: 700, color: TEXT, margin: 0, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                {activeCat}
+              </h2>
+            </div>
 
             <div style={{ padding: "1rem 0.75rem" }}>
               {activeItems.map((p, idx) => {
@@ -277,6 +273,8 @@ export default function MenuTheme5({ menuId, data }: Props) {
             </div>
           </div>
         )}
+
+        <MenuLastUpdatedFooter digitalMenu={data.digitalMenu} color={MUTED} borderColor={BORDER} />
 
         {drawer && (
           <ProductDrawer product={drawer} currency={currency} accentColor="#ffffff" onClose={() => setDrawer(null)} />
