@@ -586,15 +586,20 @@ export function OrderWidget({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          orderToken,
-          tableId: Number(table),
-          note: note.trim() || null,
-          items: cart.map((i) => ({ productId: i.id, quantity: i.quantity })),
+          token: orderToken,
+          table_id: Number(table),
+          customer_note: note.trim() || null,
+          items: cart.map((i) => ({ product_id: i.id, quantity: i.quantity })),
         }),
       });
       if (!res.ok) {
-        const b = await res.json().catch(() => ({}));
-        throw new Error(b?.message ?? "Sipariş oluşturulamadı.");
+        const b = await res.json().catch(() => ({})) as {
+          message?: string;
+          validation_error?: string[];
+          meta?: { message?: string };
+        };
+        const validationMsg = Array.isArray(b.validation_error) ? b.validation_error.join(", ") : null;
+        throw new Error(validationMsg ?? b.meta?.message ?? b.message ?? "Sipariş oluşturulamadı.");
       }
       setStep("success");
     } catch (e) {
