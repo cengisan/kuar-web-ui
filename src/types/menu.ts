@@ -103,34 +103,49 @@ export function getCurrencySymbol(code: string | null | undefined): string {
 }
 
 /** Resolve allergen names from API variants (snake_case, camelCase, or object list). */
-export function getProductAllergenNames(
-  product: Pick<ProductData, "allergenNames" | "allergen_names"> & {
-    allergens?: Array<string | { name?: string }> | null;
-  }
-): string[] {
-  if (product.allergen_names?.length) return product.allergen_names;
-  if (product.allergenNames?.length) return product.allergenNames;
-  if (Array.isArray(product.allergens)) {
-    return product.allergens
-      .map((item) => (typeof item === "string" ? item : item?.name))
+export function getProductAllergenNames(product: unknown): string[] {
+  if (!product || typeof product !== "object") return [];
+
+  const raw = product as Record<string, unknown>;
+
+  const fromList = (value: unknown): string[] => {
+    if (!Array.isArray(value) || value.length === 0) return [];
+    return value
+      .map((item) => {
+        if (typeof item === "string") return item.trim();
+        if (item && typeof item === "object" && "name" in item) {
+          const name = (item as { name?: unknown }).name;
+          return typeof name === "string" ? name.trim() : "";
+        }
+        return "";
+      })
       .filter((name): name is string => Boolean(name));
+  };
+
+  for (const key of ["allergen_names", "allergenNames", "allergens"]) {
+    const names = fromList(raw[key]);
+    if (names.length) return names;
   }
+
   return [];
 }
 
-export function normalizeMenuProduct(product: ProductData): ProductData {
+export function normalizeMenuProduct(product: ProductData | Record<string, unknown>): ProductData {
+  const base = product as ProductData;
   const allergenNames = getProductAllergenNames(product);
   return {
-    ...product,
+    ...base,
     allergen_names: allergenNames,
     allergenNames,
   };
 }
 
-export function normalizeMenuData(data: MenuApiData): MenuApiData {
+export function normalizeMenuData(data: MenuApiData | Record<string, unknown>): MenuApiData {
+  const raw = data as Record<string, unknown>;
+  const products = Array.isArray(raw.products) ? raw.products : [];
   return {
-    ...data,
-    products: data.products.map(normalizeMenuProduct),
+    ...(data as MenuApiData),
+    products: products.map((product) => normalizeMenuProduct(product as ProductData)),
   };
 }
 
