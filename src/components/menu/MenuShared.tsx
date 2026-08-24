@@ -15,8 +15,6 @@ import type {
 } from "@/types/menu";
 import {
   getCurrencySymbol,
-  normalizeCategory,
-  CATEGORY_IMAGE_MAP,
 } from "@/types/menu";
 
 // ─── Re-export types ───────────────────────────────────────────────────────────
@@ -47,17 +45,12 @@ export function firstProductImage(products: ProductData[]): string | null {
   return null;
 }
 
-export function categoryDefaultImage(catName: string): string | null {
-  const key = normalizeCategory(catName);
-  const rel = CATEGORY_IMAGE_MAP[key];
-  return rel ? buildImgUrl(rel) : null;
-}
-
 export type CategoryGroup = { name: string; items: ProductData[] };
 
 export function groupCategories(products: ProductData[]): CategoryGroup[] {
   const map = new Map<string, ProductData[]>();
   for (const p of products) {
+    if (!p.is_available) continue;
     const cat = p.category ?? "Diğer";
     if (!map.has(cat)) map.set(cat, []);
     map.get(cat)!.push(p);
@@ -67,22 +60,6 @@ export function groupCategories(products: ProductData[]): CategoryGroup[] {
 
 export function useCurrency(data: MenuApiData): string {
   return getCurrencySymbol(data.digitalMenu.currency);
-}
-
-// Flat solid fallback colors for category tiles (no gradients)
-export const TILE_COLORS = [
-  "#c9a86a",
-  "#8c9a86",
-  "#c06a45",
-  "#6b7b8d",
-  "#9b7b5e",
-  "#7a8f6a",
-  "#b06070",
-  "#5a6e8a",
-];
-
-export function tileColor(index: number): string {
-  return TILE_COLORS[index % TILE_COLORS.length];
 }
 
 // ─── Allergen label helper ─────────────────────────────────────────────────────
