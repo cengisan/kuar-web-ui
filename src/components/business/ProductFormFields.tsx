@@ -2,13 +2,15 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Upload, X } from "lucide-react";
+import { ImageIcon, X } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { ImageSelectionDialog } from "@/components/business/ImageSelectionDialog";
 import {
   Select,
   SelectContent,
@@ -94,6 +96,8 @@ export function ProductFormFields({
   idPrefix = "product",
 }: ProductFormFieldsProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [imageCleared, setImageCleared] = useState(false);
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const showDescription = values.name.trim().length > 0;
 
   useEffect(() => {
@@ -106,7 +110,13 @@ export function ProductFormFields({
     return () => URL.revokeObjectURL(url);
   }, [values.imageFile]);
 
-  const displayImage = previewUrl || existingImageUrl || null;
+  const displayImage =
+    !imageCleared && (previewUrl || existingImageUrl || null);
+
+  const handleSelectImageFile = (file: File) => {
+    setImageCleared(false);
+    onChange({ imageFile: file });
+  };
 
   const categoryOptions = useMemo(
     () =>
@@ -160,7 +170,10 @@ export function ProductFormFields({
                 />
                 <button
                   type="button"
-                  onClick={() => onChange({ imageFile: null })}
+                  onClick={() => {
+                    setImageCleared(true);
+                    onChange({ imageFile: null });
+                  }}
                   className="absolute right-2 top-2 rounded-full bg-destructive p-1.5 text-white shadow-sm"
                   aria-label={translations.remove}
                 >
@@ -168,16 +181,28 @@ export function ProductFormFields({
                 </button>
               </div>
             ) : (
-              <label
-                htmlFor={`${idPrefix}-image-input`}
-                className="flex flex-1 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border transition-colors hover:border-primary/50 hover:bg-muted/30"
-              >
-                <Upload className="size-6 text-muted-foreground" />
-                <span className="mt-2 text-sm text-muted-foreground">
-                  {translations.uploadImage}
-                </span>
-              </label>
+              <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border p-4">
+                <ImageIcon className="size-8 text-muted-foreground" />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setImageDialogOpen(true)}
+                >
+                  {translations.selectImage}
+                </Button>
+              </div>
             )}
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setImageDialogOpen(true)}
+            >
+              {displayImage ? translations.changeImage : translations.uploadImage}
+            </Button>
           </div>
 
           <input
@@ -187,19 +212,18 @@ export function ProductFormFields({
             className="sr-only"
             onChange={(e) => {
               const file = e.target.files?.[0] ?? null;
-              onChange({ imageFile: file });
+              if (file) handleSelectImageFile(file);
               e.target.value = "";
             }}
           />
 
-          {displayImage && (
-            <label
-              htmlFor={`${idPrefix}-image-input`}
-              className="inline-flex cursor-pointer text-sm font-medium text-primary hover:underline"
-            >
-              {translations.changeImage}
-            </label>
-          )}
+          <ImageSelectionDialog
+            open={imageDialogOpen}
+            onOpenChange={setImageDialogOpen}
+            onSelectFile={handleSelectImageFile}
+            initialSearchQuery={values.name.trim()}
+            translations={translations}
+          />
         </section>
 
         {/* Core details */}
