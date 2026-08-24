@@ -21,6 +21,7 @@ import {
   ProductImagePlaceholder,
   ProductExtraLabels,
   ProductCardMeta,
+  ProductPriceDisplay,
   MenuHeaderBanner,
   MenuLastUpdatedFooter,
 } from "@/components/menu/MenuShared";
@@ -174,7 +175,9 @@ export default function MenuTheme2({ menuId, data }: Props) {
                         </p>
                       )}
                       <ProductCardMeta product={p} variant="dark" showLabels={false} />
-                      <p style={{ margin: "4px 0 0", fontWeight: 700, fontSize: "1rem", color: GOLD }}>{(p.price ?? 0).toFixed(2)} {currency}</p>
+                      <p style={{ margin: "4px 0 0" }}>
+                        <ProductPriceDisplay product={p} currency={currency} accentColor={GOLD} fontSize="1rem" />
+                      </p>
                     </div>
                   </div>
                 );

@@ -32,6 +32,7 @@ import {
   ProductImagePlaceholder,
   ProductExtraLabels,
   ProductCardMeta,
+  ProductPriceDisplay,
   MenuHeaderBanner,
   MenuLastUpdatedFooter,
 } from "@/components/menu/MenuShared";
@@ -221,7 +222,14 @@ export default function MenuTheme5({ menuId, data }: Props) {
                       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 6, background: "rgba(0,0,0,0.7)", padding: "0.9rem 1rem" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                           <span style={{ fontWeight: 700, fontSize: "1.05rem", color: "#fff" }}>{p.name}</span>
-                          <span style={{ fontWeight: 700, fontSize: "1.05rem", color: "#fff", flexShrink: 0, marginLeft: 8 }}>{(p.price ?? 0).toFixed(2)} {currency}</span>
+                          <ProductPriceDisplay
+                            product={p}
+                            currency={currency}
+                            accentColor="#fff"
+                            originalColor="rgba(255,255,255,0.55)"
+                            fontSize="1.05rem"
+                            style={{ flexShrink: 0, marginLeft: 8 }}
+                          />
                         </div>
                         {p.description && (
                           <p style={{ margin: "3px 0 0", fontSize: "0.78rem", color: "rgba(255,255,255,0.65)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
@@ -263,10 +271,14 @@ export default function MenuTheme5({ menuId, data }: Props) {
                       )}
                       <ProductCardMeta product={p} variant="dark" />
                     </div>
-                    <span style={{ flexShrink: 0, fontWeight: 700, fontSize: "0.95rem", color: TEXT, marginLeft: 6 }}>
-                      {(p.price ?? 0).toFixed(2)}<br />
-                      <span style={{ fontSize: "0.75rem", fontWeight: 400, color: MUTED }}>{currency}</span>
-                    </span>
+                    <ProductPriceDisplay
+                      product={p}
+                      currency={currency}
+                      accentColor={TEXT}
+                      fontSize="0.95rem"
+                      style={{ flexShrink: 0, marginLeft: 6, textAlign: "right" }}
+                      currencyOnNewLine
+                    />
                   </button>
                 );
               })}

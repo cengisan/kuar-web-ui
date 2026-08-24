@@ -41,7 +41,9 @@ export function productToFormValues(product: Product): ProductFormValues {
     isNewItem: product.extra_parameters?.is_new_item ?? false,
     isCampaign: product.extra_parameters?.is_campaign ?? false,
     isFavorite: product.extra_parameters?.is_favorite ?? false,
-    allergenIds: allergenIdsFromNames(product.allergenNames || product.allergens),
+    allergenIds: allergenIdsFromNames(
+      product.allergen_names || product.allergenNames || product.allergens
+    ),
     stockQuantity:
       product.stock_quantity != null ? String(product.stock_quantity) : "",
     materials: (product.materials || []).map((item) => ({

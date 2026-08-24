@@ -37,7 +37,10 @@ export interface ProductData {
   name: string;
   description: string | null;
   category: string | null;
-  allergenNames: string[] | null;
+  /** API field (snake_case) */
+  allergen_names?: string[] | null;
+  /** Legacy / in-memory camelCase alias */
+  allergenNames?: string[] | null;
   price: number | null;
   calories: number | null;
   is_available: boolean;
@@ -97,6 +100,38 @@ export const CURRENCY_SYMBOLS: Record<string, string> = {
 export function getCurrencySymbol(code: string | null | undefined): string {
   if (!code) return "₺";
   return CURRENCY_SYMBOLS[code] ?? code;
+}
+
+/** Resolve allergen names from API variants (snake_case, camelCase, or object list). */
+export function getProductAllergenNames(
+  product: Pick<ProductData, "allergenNames" | "allergen_names"> & {
+    allergens?: Array<string | { name?: string }> | null;
+  }
+): string[] {
+  if (product.allergen_names?.length) return product.allergen_names;
+  if (product.allergenNames?.length) return product.allergenNames;
+  if (Array.isArray(product.allergens)) {
+    return product.allergens
+      .map((item) => (typeof item === "string" ? item : item?.name))
+      .filter((name): name is string => Boolean(name));
+  }
+  return [];
+}
+
+export function normalizeMenuProduct(product: ProductData): ProductData {
+  const allergenNames = getProductAllergenNames(product);
+  return {
+    ...product,
+    allergen_names: allergenNames,
+    allergenNames,
+  };
+}
+
+export function normalizeMenuData(data: MenuApiData): MenuApiData {
+  return {
+    ...data,
+    products: data.products.map(normalizeMenuProduct),
+  };
 }
 
 // Normalize category name to a CSS/map key (mirrors MenuController.normalizeCategory)
