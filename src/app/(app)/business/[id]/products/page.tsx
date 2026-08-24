@@ -10,10 +10,9 @@ import {
   Pencil,
   Trash2,
   Search,
-  Filter,
-  ChevronDown,
-  ChevronUp,
   X,
+  ChevronLeft,
+  FolderOpen,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -34,10 +33,7 @@ import ProductRepositoryImpl from "@/data/repositories/ProductRepositoryImpl";
 import { useAppSelector } from "@/presentation/state/hooks";
 import { getResponseData, isActionSuccess } from "@/utils/apiResponse";
 import { getProductCategoryDisplay } from "@/config/productCategories";
-import { cn } from "@/lib/cn";
 import type { Product } from "@/types";
-
-const ALL_CATEGORIES = "all";
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -51,8 +47,7 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORIES);
-  const [showFilters, setShowFilters] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -74,49 +69,38 @@ export default function ProductsPage() {
     fetchProducts();
   }, [fetchProducts]);
 
-  const categoryOptions = useMemo(() => {
-    const unique = new Set<string>();
-    products.forEach((p) => {
-      if (p.category) unique.add(p.category);
+  const categoriesWithCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    products.forEach((product) => {
+      if (!product.category) return;
+      counts.set(product.category, (counts.get(product.category) ?? 0) + 1);
     });
-    return Array.from(unique).sort((a, b) =>
-      getProductCategoryDisplay(a, lang).localeCompare(
-        getProductCategoryDisplay(b, lang),
-        lang === "tr" ? "tr" : "en"
-      )
-    );
+
+    return Array.from(counts.entries())
+      .map(([id, count]) => ({
+        id,
+        label: getProductCategoryDisplay(id, lang),
+        count,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label, lang === "tr" ? "tr" : "en"));
   }, [products, lang]);
 
-  const filtered = useMemo(() => {
-    let list = products;
+  const filteredProducts = useMemo(() => {
+    if (!selectedCategory) return [];
 
-    if (selectedCategory !== ALL_CATEGORIES) {
-      list = list.filter((p) => p.category === selectedCategory);
-    }
-
+    let list = products.filter((product) => product.category === selectedCategory);
     const q = query.trim().toLowerCase();
     if (q) {
-      list = list.filter((p) => {
-        const name = p.name?.toLowerCase() || "";
-        const categoryRaw = p.category?.toLowerCase() || "";
-        const categoryLabel = getProductCategoryDisplay(p.category, lang).toLowerCase();
-        return (
-          name.includes(q) ||
-          categoryRaw.includes(q) ||
-          categoryLabel.includes(q)
-        );
-      });
+      list = list.filter((product) =>
+        (product.name?.toLowerCase() || "").includes(q)
+      );
     }
-
     return list;
-  }, [products, query, selectedCategory, lang]);
+  }, [products, query, selectedCategory]);
 
-  const hasActiveFilters =
-    selectedCategory !== ALL_CATEGORIES || query.trim().length > 0;
-
-  const clearFilters = () => {
+  const handleBackToCategories = () => {
+    setSelectedCategory(null);
     setQuery("");
-    setSelectedCategory(ALL_CATEGORIES);
   };
 
   const handleDelete = async () => {
@@ -139,13 +123,31 @@ export default function ProductsPage() {
     }
   };
 
+  const selectedCategoryLabel = selectedCategory
+    ? getProductCategoryDisplay(selectedCategory, lang)
+    : "";
+
   return (
     <PageLayout
       back={{ label: translations.back, onClick: () => router.back() }}
       contentClassName="space-y-6"
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold">{translations.products}</h1>
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold">
+            {selectedCategory ? selectedCategoryLabel : translations.categories}
+          </h1>
+          {selectedCategory && (
+            <button
+              type="button"
+              onClick={handleBackToCategories}
+              className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ChevronLeft className="size-4" />
+              {translations.categories}
+            </button>
+          )}
+        </div>
         <Button asChild className="shrink-0">
           <Link href={`/business/${businessId}/products/create`}>
             <Plus />
@@ -154,120 +156,77 @@ export default function ProductsPage() {
         </Button>
       </div>
 
-      <Card className="border-border/80 shadow-card">
-        <button
-          type="button"
-          className="flex w-full items-center justify-between gap-3 p-4 text-left"
-          onClick={() => setShowFilters((open) => !open)}
-        >
-          <div className="flex items-center gap-2 font-medium">
-            <Filter className="size-4" />
-            {translations.filter}
-            {hasActiveFilters && (
-              <Badge variant="secondary" className="text-xs">
-                {filtered.length}
-              </Badge>
-            )}
-          </div>
-          {showFilters ? (
-            <ChevronUp className="size-5 text-muted-foreground" />
-          ) : (
-            <ChevronDown className="size-5 text-muted-foreground" />
+      {selectedCategory && (
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder={translations.searchByName}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="pl-9 pr-9"
+          />
+          {query.length > 0 && (
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              onClick={() => setQuery("")}
+              aria-label={translations.cancel}
+            >
+              <X className="size-4" />
+            </button>
           )}
-        </button>
-
-        {showFilters && (
-          <CardContent className="space-y-4 border-t border-border pt-4">
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder={translations.searchByName}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="pl-9 pr-9"
-              />
-              {query.length > 0 && (
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  onClick={() => setQuery("")}
-                  aria-label={translations.cancel}
-                >
-                  <X className="size-4" />
-                </button>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-sm font-medium">{translations.categories}</p>
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategory(ALL_CATEGORIES)}
-                  className={cn(
-                    "shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-colors",
-                    selectedCategory === ALL_CATEGORIES
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-card text-foreground hover:bg-muted/50"
-                  )}
-                >
-                  {translations.all}
-                </button>
-                {categoryOptions.map((category) => (
-                  <button
-                    key={category}
-                    type="button"
-                    onClick={() => setSelectedCategory(category)}
-                    className={cn(
-                      "shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-colors",
-                      selectedCategory === category
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-card text-foreground hover:bg-muted/50"
-                    )}
-                  >
-                    {getProductCategoryDisplay(category, lang)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {hasActiveFilters && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={clearFilters}
-              >
-                {translations.cancel}
-              </Button>
-            )}
-          </CardContent>
-        )}
-      </Card>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex min-h-[40vh] items-center justify-center">
           <Spinner size="lg" />
         </div>
-      ) : filtered.length === 0 ? (
+      ) : !selectedCategory ? (
+        categoriesWithCounts.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border p-12 text-center">
+            <Package className="mx-auto h-12 w-12 text-muted-foreground" />
+            <p className="mt-4 text-lg font-semibold">
+              {translations.pleaseAddProduct}
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {categoriesWithCounts.map((category) => (
+              <button
+                key={category.id}
+                type="button"
+                onClick={() => setSelectedCategory(category.id)}
+                className="text-left"
+              >
+                <Card className="h-full transition-colors hover:border-primary/40 hover:bg-muted/20">
+                  <CardContent className="flex items-center gap-4 p-5">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/15">
+                      <FolderOpen className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-semibold">{category.label}</p>
+                    </div>
+                    <Badge variant="secondary">{category.count}</Badge>
+                    <ChevronLeft className="size-5 rotate-180 text-muted-foreground" />
+                  </CardContent>
+                </Card>
+              </button>
+            ))}
+          </div>
+        )
+      ) : filteredProducts.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border p-12 text-center">
           <Package className="mx-auto h-12 w-12 text-muted-foreground" />
           <p className="mt-4 text-lg font-semibold">
-            {translations.noProductsFound}
+            {query.trim()
+              ? translations.noResultsFound
+              : translations.noProductsFound}
           </p>
-          {hasActiveFilters && products.length > 0 && (
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={clearFilters}
-            >
-              {translations.cancel}
-            </Button>
-          )}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((product) => {
+          {filteredProducts.map((product) => {
             const firstImage =
               product.images?.[0]?.image_url || product.images?.[0]?.url;
             return (
@@ -287,11 +246,6 @@ export default function ProductsPage() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="truncate font-semibold">{product.name}</p>
-                      {product.category && (
-                        <p className="truncate text-xs text-muted-foreground">
-                          {getProductCategoryDisplay(product.category, lang)}
-                        </p>
-                      )}
                     </div>
                     <Badge
                       variant={product.is_available ? "success" : "secondary"}
