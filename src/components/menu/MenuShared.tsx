@@ -18,6 +18,10 @@ import {
   getCurrencySymbol,
   getProductAllergenNames,
 } from "@/types/menu";
+import {
+  getAllergenDisplayName,
+  getAllergenEmoji,
+} from "@/config/allergens";
 
 // ─── Re-export types ───────────────────────────────────────────────────────────
 export type { MenuApiData, ProductData };
@@ -217,29 +221,16 @@ export function MenuHeaderBanner({
 }
 
 // ─── Allergen helpers ──────────────────────────────────────────────────────────
-export function allergenDisplayName(a: string): string {
-  const map: Record<string, string> = {
-    Gluten: "Gluten",
-    Shellfish: "Kabuklu Deniz Ürünleri",
-    Egg: "Yumurta",
-    Fish: "Balık",
-    Peanuts: "Yer Fıstığı",
-    Soy: "Soya",
-    Milk: "Süt",
-    "Tree Nuts": "Ağaç Yemişleri",
-    Celery: "Kereviz",
-    Mustard: "Hardal",
-    Sesame: "Susam",
-    Sulphites: "Sülfitler",
-    Legumes: "Baklagiller",
-    Molluscs: "Yumuşakçalar",
-    Nuts: "Sert Kabuklu Yemişler",
-  };
-  return map[a] ?? a;
+export function allergenDisplayName(name: string): string {
+  return getAllergenDisplayName(name, "tr");
 }
 
-export function allergenLabel(a: string): string {
-  return allergenDisplayName(a);
+export function allergenLabel(name: string): string {
+  return allergenDisplayName(name);
+}
+
+export function allergenEmoji(name: string): string {
+  return getAllergenEmoji(name);
 }
 
 // ─── Shared product card UI ────────────────────────────────────────────────────
@@ -476,8 +467,49 @@ export function ProductCalorieTag({
   );
 }
 
-/** Allergen tags for product cards */
+/** Allergen tags for product cards and detail drawer */
 export function ProductAllergenTags({
+  allergens,
+  variant = "light",
+  showEmoji = true,
+  size = "sm",
+}: {
+  allergens: string[];
+  variant?: "light" | "dark";
+  showEmoji?: boolean;
+  size?: "sm" | "md";
+}) {
+  if (!allergens.length) return null;
+  const isDark = variant === "dark";
+  const isMd = size === "md";
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: isMd ? 8 : 4, marginTop: isMd ? 0 : 4 }}>
+      {allergens.map((a) => (
+        <span
+          key={a}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: showEmoji ? 6 : 0,
+            background: isDark ? "rgba(220,53,69,0.12)" : "rgba(220,53,69,0.08)",
+            color: isDark ? "#ff8a80" : "#c0392b",
+            border: `1px solid ${isDark ? "rgba(220,53,69,0.25)" : "rgba(220,53,69,0.15)"}`,
+            borderRadius: 999,
+            padding: isMd ? "6px 12px" : "2px 8px",
+            fontSize: isMd ? "0.85rem" : "0.72rem",
+            fontWeight: 500,
+          }}
+        >
+          {showEmoji && <span aria-hidden>{getAllergenEmoji(a)}</span>}
+          <span>{getAllergenDisplayName(a, "tr")}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/** Allergen block for product detail drawer */
+export function ProductAllergenSection({
   allergens,
   variant = "light",
 }: {
@@ -487,25 +519,26 @@ export function ProductAllergenTags({
   if (!allergens.length) return null;
   const isDark = variant === "dark";
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 4 }}>
-      {allergens.map((a) => (
-        <span
-          key={a}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            background: isDark ? "rgba(220,53,69,0.12)" : "rgba(220,53,69,0.08)",
-            color: isDark ? "#ff8a80" : "#c0392b",
-            border: `1px solid ${isDark ? "rgba(220,53,69,0.25)" : "rgba(220,53,69,0.15)"}`,
-            borderRadius: 999,
-            padding: "2px 8px",
-            fontSize: "0.72rem",
-            fontWeight: 500,
-          }}
-        >
-          {allergenDisplayName(a)}
-        </span>
-      ))}
+    <div
+      style={{
+        borderRadius: 16,
+        background: isDark ? "rgba(220,53,69,0.08)" : "#fef2f2",
+        border: `1px solid ${isDark ? "rgba(220,53,69,0.2)" : "#fecaca"}`,
+        padding: "14px 16px",
+      }}
+    >
+      <p
+        style={{
+          margin: "0 0 10px",
+          fontSize: "0.8rem",
+          fontWeight: 700,
+          color: isDark ? "#ff8a80" : "#b91c1c",
+          letterSpacing: "0.02em",
+        }}
+      >
+        Alerjenler
+      </p>
+      <ProductAllergenTags allergens={allergens} variant={variant} showEmoji size="md" />
     </div>
   );
 }
@@ -613,9 +646,8 @@ export function ProductDrawer({ product, currency, accentColor, onClose }: Drawe
             )}
           </div>
           {drawerAllergens.length > 0 && (
-            <div className="rounded-xl bg-red-50 border border-red-100 px-4 py-3">
-              <p className="text-xs font-semibold text-red-700 mb-2">Alerjenler</p>
-              <ProductAllergenTags allergens={drawerAllergens} />
+            <div className="mt-4">
+              <ProductAllergenSection allergens={drawerAllergens} />
             </div>
           )}
         </div>
