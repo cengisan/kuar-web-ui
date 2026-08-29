@@ -105,9 +105,8 @@ export function buildProductPayload(
 
 export function validateProductFormValues(values: ProductFormValues) {
   const parsedPrice = parseFloat(values.price.replace(",", "."));
-  const hasCategory = values.isCustomCategory
-    ? values.customCategory.trim().length > 0
-    : values.categoryId.length > 0;
+  const hasCategory = values.categoryId.length > 0
+    || (values.isCustomCategory && values.customCategory.trim().length > 0);
 
   if (!values.name.trim() || !hasCategory || Number.isNaN(parsedPrice) || parsedPrice < 0) {
     return false;

@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { ImageSelectionDialog } from "@/components/business/ImageSelectionDialog";
 import { allergens, getAllergenLabel } from "@/config/allergens";
-import { type ProductLanguage } from "@/config/productCategories";
+import { findCategoryIdByLabel, type ProductLanguage } from "@/config/productCategories";
 import { CategorySelect } from "@/components/business/CategorySelect";
 import { ProductMaterialSelector } from "@/components/business/ProductMaterialSelector";
 import type { ProductMaterial, StockMaterial } from "@/types";
@@ -127,6 +127,9 @@ export function ProductFormFields({
       onChange({ discount: raw });
     }
   };
+
+  const showCustomCategoryInput =
+    values.isCustomCategory && !values.categoryId;
 
   return (
     <div className="space-y-6">
@@ -246,11 +249,17 @@ export function ProductFormFields({
               <FieldHint text={translations.categoryTooltip} />
             </div>
 
-            {values.isCustomCategory ? (
+            {showCustomCategoryInput ? (
               <Input
                 id={`${idPrefix}-custom-category`}
                 value={values.customCategory}
-                onChange={(e) => onChange({ customCategory: e.target.value })}
+                onChange={(e) =>
+                  onChange({
+                    customCategory: e.target.value,
+                    isCustomCategory: true,
+                    categoryId: "",
+                  })
+                }
                 placeholder={translations.enterCategoryName}
                 maxLength={50}
                 required
@@ -259,7 +268,13 @@ export function ProductFormFields({
               <CategorySelect
                 id={`${idPrefix}-category`}
                 value={values.categoryId}
-                onChange={(categoryId) => onChange({ categoryId })}
+                onChange={(categoryId) =>
+                  onChange({
+                    categoryId,
+                    isCustomCategory: false,
+                    customCategory: "",
+                  })
+                }
                 language={language}
                 placeholder={translations.selectCategory}
                 searchPlaceholder={translations.searchCategory}
@@ -269,14 +284,27 @@ export function ProductFormFields({
 
             <label className="flex cursor-pointer items-center gap-2 text-sm">
               <Checkbox
-                checked={values.isCustomCategory}
-                onCheckedChange={(checked) =>
+                checked={showCustomCategoryInput}
+                onCheckedChange={(checked) => {
+                  if (checked === true) {
+                    onChange({
+                      isCustomCategory: true,
+                      categoryId: "",
+                      customCategory: values.customCategory,
+                    });
+                    return;
+                  }
+
+                  const resolvedCategoryId =
+                    findCategoryIdByLabel(values.customCategory) ||
+                    values.categoryId;
+
                   onChange({
-                    isCustomCategory: checked === true,
-                    categoryId: checked ? "" : values.categoryId,
-                    customCategory: checked ? values.customCategory : "",
-                  })
-                }
+                    isCustomCategory: false,
+                    categoryId: resolvedCategoryId,
+                    customCategory: "",
+                  });
+                }}
               />
               <span>{translations.createCustomCategory}</span>
             </label>

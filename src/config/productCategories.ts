@@ -140,8 +140,11 @@ export function resolveCategoryForApi(
   },
   language: ProductLanguage
 ) {
+  if (values.categoryId) {
+    return getCategoryLabel(values.categoryId, language);
+  }
   if (values.isCustomCategory) {
     return values.customCategory.trim();
   }
-  return values.categoryId ? getCategoryLabel(values.categoryId, language) : "";
+  return "";
 }
