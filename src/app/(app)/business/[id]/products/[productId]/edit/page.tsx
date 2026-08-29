@@ -1,16 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { ProductForm } from "@/components/business/ProductForm";
+import { UnsavedChangesDialog } from "@/components/business/UnsavedChangesDialog";
 import type { ProductFormValues } from "@/components/business/ProductFormFields";
 import { PageLayout } from "@/components/layout/PageLayout";
 import ProductRepositoryImpl from "@/data/repositories/ProductRepositoryImpl";
 import StockRepositoryImpl from "@/data/repositories/StockRepositoryImpl";
+import { useBeforeUnload } from "@/hooks/useBeforeUnload";
 import { useAppSelector } from "@/presentation/state/hooks";
 import { getResponseData, isActionSuccess } from "@/utils/apiResponse";
 import {
@@ -40,6 +42,11 @@ export default function EditProductPage() {
   const [saving, setSaving] = useState(false);
   const [canUseStock, setCanUseStock] = useState(false);
   const [materials, setMaterials] = useState<StockMaterial[]>([]);
+  const [isDirty, setIsDirty] = useState(false);
+  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const pendingLeaveActionRef = useRef<(() => void) | null>(null);
+
+  useBeforeUnload(isDirty);
 
   const loadStockAccess = useCallback(async () => {
     if (!accessToken || !subscriberId) return;
@@ -88,8 +95,32 @@ export default function EditProductPage() {
   const returnCategory =
     categoryFromQuery || readCategoryParam(product?.category ?? null);
 
-  const goBackToProducts = () => {
+  const goBackToProducts = useCallback(() => {
     router.push(productsPagePath(businessId, returnCategory));
+  }, [businessId, returnCategory, router]);
+
+  const requestLeave = useCallback(
+    (action: () => void) => {
+      if (!isDirty) {
+        action();
+        return;
+      }
+      pendingLeaveActionRef.current = action;
+      setLeaveDialogOpen(true);
+    },
+    [isDirty]
+  );
+
+  const handleStayOnPage = () => {
+    setLeaveDialogOpen(false);
+    pendingLeaveActionRef.current = null;
+  };
+
+  const handleLeaveWithoutSaving = () => {
+    setLeaveDialogOpen(false);
+    const action = pendingLeaveActionRef.current;
+    pendingLeaveActionRef.current = null;
+    action?.();
   };
 
   const handleSubmit = async (
@@ -124,6 +155,7 @@ export default function EditProductPage() {
           }
         }
         toast.success(translations.productUpdated);
+        setIsDirty(false);
         router.push(productsPagePath(businessId, returnCategory));
       } else {
         toast.error((result as { message?: string }).message);
@@ -150,27 +182,46 @@ export default function EditProductPage() {
   if (!product) return null;
 
   return (
-    <PageLayout
-      back={{ label: translations.back }}
-      contentClassName="space-y-6"
-    >
-      <Card className="border-border/80 shadow-card">
-        <CardHeader>
-          <CardTitle>{translations.editProduct}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ProductForm
-            businessId={businessId}
-            initial={product}
-            canUseStock={canUseStock}
-            availableMaterials={materials}
-            submitting={saving}
-            submitLabel={translations.save}
-            onSubmit={handleSubmit}
-            onCancel={goBackToProducts}
-          />
-        </CardContent>
-      </Card>
-    </PageLayout>
+    <>
+      <PageLayout
+        back={{
+          label: translations.back,
+          onClick: () => requestLeave(goBackToProducts),
+        }}
+        contentClassName="space-y-6"
+      >
+        <Card className="border-border/80 shadow-card">
+          <CardHeader>
+            <CardTitle>{translations.editProduct}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ProductForm
+              businessId={businessId}
+              initial={product}
+              canUseStock={canUseStock}
+              availableMaterials={materials}
+              submitting={saving}
+              submitLabel={translations.save}
+              onSubmit={handleSubmit}
+              onCancel={() => requestLeave(goBackToProducts)}
+              onDirtyChange={setIsDirty}
+            />
+          </CardContent>
+        </Card>
+      </PageLayout>
+
+      <UnsavedChangesDialog
+        open={leaveDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) handleStayOnPage();
+        }}
+        title={translations.unsavedChangesTitle}
+        description={translations.unsavedChangesMessage}
+        stayLabel={translations.stayOnPage}
+        leaveLabel={translations.leaveWithoutSaving}
+        onStay={handleStayOnPage}
+        onLeave={handleLeaveWithoutSaving}
+      />
+    </>
   );
 }

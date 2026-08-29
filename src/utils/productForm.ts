@@ -21,6 +21,7 @@ export function createDefaultProductFormValues(): ProductFormValues {
     stockQuantity: "",
     materials: [],
     imageFile: null,
+    imageRemoved: false,
   };
 }
 
@@ -57,10 +58,9 @@ export function productToFormValues(
       unit: item.unit,
     })),
     imageFile: null,
+    imageRemoved: false,
   };
 }
-
-export function buildProductPayload(
   values: ProductFormValues,
   options: {
     language: "en" | "tr";
@@ -124,6 +124,52 @@ export function validateProductFormValues(values: ProductFormValues) {
   }
 
   return true;
+}
+
+function normalizePrice(value: string) {
+  return value.replace(",", ".").trim();
+}
+
+function normalizeMaterials(materials: ProductMaterial[]) {
+  return [...materials]
+    .map((item) => ({
+      material_id: item.material_id,
+      quantity: item.quantity,
+      unit: item.unit,
+    }))
+    .sort((a, b) => a.material_id - b.material_id);
+}
+
+function normalizeAllergenIds(ids: number[]) {
+  return [...ids].sort((a, b) => a - b);
+}
+
+export function hasProductFormChanges(
+  baseline: ProductFormValues,
+  current: ProductFormValues
+) {
+  if (current.imageFile !== null) return true;
+  if (current.imageRemoved !== baseline.imageRemoved) return true;
+
+  return (
+    baseline.name.trim() !== current.name.trim() ||
+    baseline.description.trim() !== current.description.trim() ||
+    baseline.categoryId !== current.categoryId ||
+    baseline.customCategory.trim() !== current.customCategory.trim() ||
+    baseline.isCustomCategory !== current.isCustomCategory ||
+    normalizePrice(baseline.price) !== normalizePrice(current.price) ||
+    normalizePrice(baseline.discount) !== normalizePrice(current.discount) ||
+    baseline.calories.trim() !== current.calories.trim() ||
+    baseline.isAvailable !== current.isAvailable ||
+    baseline.isNewItem !== current.isNewItem ||
+    baseline.isCampaign !== current.isCampaign ||
+    baseline.isFavorite !== current.isFavorite ||
+    baseline.stockQuantity.trim() !== current.stockQuantity.trim() ||
+    JSON.stringify(normalizeAllergenIds(baseline.allergenIds)) !==
+      JSON.stringify(normalizeAllergenIds(current.allergenIds)) ||
+    JSON.stringify(normalizeMaterials(baseline.materials)) !==
+      JSON.stringify(normalizeMaterials(current.materials))
+  );
 }
 
 export type { ProductMaterial };

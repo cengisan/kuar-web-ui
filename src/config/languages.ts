@@ -36,6 +36,11 @@ export const languages = {
     productAvailable: "Available",
     productCreated: "Product created successfully",
     productUpdated: "Product updated successfully",
+    unsavedChangesTitle: "Unsaved changes",
+    unsavedChangesMessage:
+      "You have unsaved changes. Are you sure you want to leave without saving?",
+    stayOnPage: "Stay on page",
+    leaveWithoutSaving: "Leave without saving",
     productImage: "Product Image",
     productName: "Product Name",
     productNotAvailable: "Not Available",
@@ -868,6 +873,11 @@ export const languages = {
     productAvailable: "Mevcut",
     productCreated: "Ürün başarıyla oluşturuldu",
     productUpdated: "Ürün başarıyla düzenlendi",
+    unsavedChangesTitle: "Kaydedilmemiş değişiklikler",
+    unsavedChangesMessage:
+      "Kaydedilmemiş değişiklikleriniz var. Kaydetmeden çıkmak istediğinize emin misiniz?",
+    stayOnPage: "Sayfada kal",
+    leaveWithoutSaving: "Kaydetmeden çık",
     productImage: "Ürün Resmi",
     productName: "Ürün Adı",
     productNotAvailable: "Mevcut Değil",

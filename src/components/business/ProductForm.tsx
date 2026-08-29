@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -12,6 +12,7 @@ import { useProductCategories } from "@/hooks/useProductCategories";
 import { useAppSelector } from "@/presentation/state/hooks";
 import {
   createDefaultProductFormValues,
+  hasProductFormChanges,
   productToFormValues,
   validateProductFormValues,
 } from "@/utils/productForm";
@@ -33,6 +34,7 @@ interface ProductFormProps {
     meta: { categoryLabel: string }
   ) => void | Promise<void>;
   onCancel?: () => void;
+  onDirtyChange?: (dirty: boolean) => void;
 }
 
 export function ProductForm({
@@ -44,6 +46,7 @@ export function ProductForm({
   submitLabel,
   onSubmit,
   onCancel,
+  onDirtyChange,
 }: ProductFormProps) {
   const { translations, language, currency } = useAppSelector((s) => s.user);
   const lang = (language === "en" ? "en" : "tr") as "en" | "tr";
@@ -57,13 +60,25 @@ export function ProductForm({
   const [values, setValues] = useState<ProductFormValues>(() =>
     initial ? productToFormValues(initial, []) : createDefaultProductFormValues()
   );
+  const baselineRef = useRef<ProductFormValues | null>(null);
   const initializedFromApi = useRef(false);
 
   useEffect(() => {
     if (!initial || categoriesLoading || initializedFromApi.current) return;
-    setValues(productToFormValues(initial, apiGroups));
+    const baseline = productToFormValues(initial, apiGroups);
+    baselineRef.current = baseline;
+    setValues(baseline);
     initializedFromApi.current = true;
   }, [initial, apiGroups, categoriesLoading]);
+
+  const isDirty = useMemo(() => {
+    if (!initial || !baselineRef.current) return false;
+    return hasProductFormChanges(baselineRef.current, values);
+  }, [initial, values]);
+
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
 
   const patchValues = (patch: Partial<ProductFormValues>) => {
     setValues((prev) => ({ ...prev, ...patch }));

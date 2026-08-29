@@ -38,6 +38,7 @@ export interface ProductFormValues {
   stockQuantity: string;
   materials: ProductMaterial[];
   imageFile: File | null;
+  imageRemoved: boolean;
 }
 
 export interface ProductFormFieldsProps {
@@ -117,7 +118,7 @@ export function ProductFormFields({
 
   const handleSelectImageFile = (file: File) => {
     setImageCleared(false);
-    onChange({ imageFile: file });
+    onChange({ imageFile: file, imageRemoved: false });
   };
 
   const toggleAllergen = (allergenId: number, checked: boolean) => {
@@ -165,7 +166,7 @@ export function ProductFormFields({
                   type="button"
                   onClick={() => {
                     setImageCleared(true);
-                    onChange({ imageFile: null });
+                    onChange({ imageFile: null, imageRemoved: true });
                   }}
                   className="absolute right-2 top-2 rounded-full bg-destructive p-1.5 text-white shadow-sm"
                   aria-label={translations.remove}
