@@ -1,7 +1,7 @@
 import { allergenIdsFromNames, allergens } from "@/config/allergens";
 import { findCategoryIdByLabel } from "@/config/productCategories";
 import type { ProductFormValues } from "@/components/business/ProductFormFields";
-import type { Product, ProductMaterial } from "@/types";
+import type { Product, ProductCategoryGroup, ProductMaterial } from "@/types";
 
 export function createDefaultProductFormValues(): ProductFormValues {
   return {
@@ -24,8 +24,12 @@ export function createDefaultProductFormValues(): ProductFormValues {
   };
 }
 
-export function productToFormValues(product: Product): ProductFormValues {
-  const categoryId = findCategoryIdByLabel(product.category || "") || "";
+export function productToFormValues(
+  product: Product,
+  apiGroups: ProductCategoryGroup[] = []
+): ProductFormValues {
+  const categoryId =
+    findCategoryIdByLabel(product.category || "", apiGroups) || "";
   const isCustomCategory = Boolean(product.category && !categoryId);
 
   return {

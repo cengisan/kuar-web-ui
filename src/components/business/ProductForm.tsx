@@ -1,19 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
 import {
   ProductFormFields,
   type ProductFormValues,
 } from "@/components/business/ProductFormFields";
+import { Button } from "@/components/ui/button";
+import { useProductCategories } from "@/hooks/useProductCategories";
 import { useAppSelector } from "@/presentation/state/hooks";
 import {
   createDefaultProductFormValues,
   productToFormValues,
   validateProductFormValues,
 } from "@/utils/productForm";
+import { resolveCategoryForApi } from "@/config/productCategories";
 import type { Product, StockMaterial } from "@/types";
 import { getProductDisplayImageUrl } from "@/utils/productImage";
 
@@ -26,7 +28,10 @@ interface ProductFormProps {
   availableMaterials?: StockMaterial[];
   submitting?: boolean;
   submitLabel: string;
-  onSubmit: (values: ProductFormValues) => void | Promise<void>;
+  onSubmit: (
+    values: ProductFormValues,
+    meta: { categoryLabel: string }
+  ) => void | Promise<void>;
   onCancel?: () => void;
 }
 
@@ -42,10 +47,23 @@ export function ProductForm({
 }: ProductFormProps) {
   const { translations, language, currency } = useAppSelector((s) => s.user);
   const lang = (language === "en" ? "en" : "tr") as "en" | "tr";
+  const {
+    groups,
+    apiGroups,
+    loading: categoriesLoading,
+    createCustomCategory,
+  } = useProductCategories(businessId, lang);
 
   const [values, setValues] = useState<ProductFormValues>(() =>
-    initial ? productToFormValues(initial) : createDefaultProductFormValues()
+    initial ? productToFormValues(initial, []) : createDefaultProductFormValues()
   );
+  const initializedFromApi = useRef(false);
+
+  useEffect(() => {
+    if (!initial || categoriesLoading || initializedFromApi.current) return;
+    setValues(productToFormValues(initial, apiGroups));
+    initializedFromApi.current = true;
+  }, [initial, apiGroups, categoriesLoading]);
 
   const patchValues = (patch: Partial<ProductFormValues>) => {
     setValues((prev) => ({ ...prev, ...patch }));
@@ -57,7 +75,18 @@ export function ProductForm({
       toast.error(translations.pleaseFillAllFields);
       return;
     }
-    await onSubmit(values);
+
+    if (values.isCustomCategory && values.customCategory.trim()) {
+      try {
+        await createCustomCategory(values.customCategory.trim());
+      } catch (err) {
+        toast.error((err as Error).message || translations.createFailed);
+        return;
+      }
+    }
+
+    const categoryLabel = resolveCategoryForApi(values, lang, apiGroups);
+    await onSubmit(values, { categoryLabel });
   };
 
   return (
@@ -73,6 +102,9 @@ export function ProductForm({
         availableMaterials={availableMaterials}
         existingImageUrl={getProductDisplayImageUrl(initial)}
         idPrefix={initial ? "edit-product" : "create-product"}
+        categoryGroups={groups}
+        apiGroups={apiGroups}
+        categoriesLoading={categoriesLoading}
       />
 
       <div className="flex justify-end gap-3 border-t border-border/60 pt-4">
@@ -81,7 +113,7 @@ export function ProductForm({
             {translations.cancel}
           </Button>
         )}
-        <Button type="submit" loading={submitting}>
+        <Button type="submit" loading={submitting} disabled={categoriesLoading}>
           {submitLabel}
         </Button>
       </div>

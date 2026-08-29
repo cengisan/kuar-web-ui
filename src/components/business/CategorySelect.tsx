@@ -8,9 +8,10 @@ import { cn } from "@/lib/cn";
 import {
   filterCategoryGroups,
   getCategoryLabel,
-  getSortedCategoryGroups,
   type ProductLanguage,
+  type UiCategoryGroup,
 } from "@/config/productCategories";
+import type { ProductCategoryGroup as ApiProductCategoryGroup } from "@/types";
 
 export interface CategorySelectProps {
   id?: string;
@@ -20,6 +21,9 @@ export interface CategorySelectProps {
   placeholder: string;
   searchPlaceholder: string;
   noResultsText: string;
+  groups: UiCategoryGroup[];
+  apiGroups?: ApiProductCategoryGroup[];
+  loading?: boolean;
 }
 
 export function CategorySelect({
@@ -30,23 +34,23 @@ export function CategorySelect({
   placeholder,
   searchPlaceholder,
   noResultsText,
+  groups,
+  apiGroups = [],
+  loading = false,
 }: CategorySelectProps) {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const allGroups = useMemo(
-    () => getSortedCategoryGroups(language),
-    [language]
-  );
-
   const filteredGroups = useMemo(
-    () => filterCategoryGroups(allGroups, searchQuery),
-    [allGroups, searchQuery]
+    () => filterCategoryGroups(groups, searchQuery),
+    [groups, searchQuery]
   );
 
-  const selectedLabel = value ? getCategoryLabel(value, language) : "";
+  const selectedLabel = value
+    ? getCategoryLabel(value, language, apiGroups)
+    : "";
 
   useEffect(() => {
     if (!open) return;
@@ -80,14 +84,16 @@ export function CategorySelect({
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
+        disabled={loading}
         onClick={() => setOpen((prev) => !prev)}
         className={cn(
           "flex h-10 w-full items-center justify-between rounded-lg border border-[var(--border)] bg-card px-3 py-2 text-sm text-foreground",
-          "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+          "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
+          loading && "opacity-60"
         )}
       >
         <span className={cn("line-clamp-1 text-left", !selectedLabel && "text-[var(--muted-foreground)]")}>
-          {selectedLabel || placeholder}
+          {loading ? "..." : selectedLabel || placeholder}
         </span>
         <ChevronDown className={cn("size-4 shrink-0 opacity-60 transition-transform", open && "rotate-180")} />
       </button>
@@ -108,10 +114,7 @@ export function CategorySelect({
             </div>
           </div>
 
-          <div
-            role="listbox"
-            className="max-h-64 overflow-y-auto p-1"
-          >
+          <div role="listbox" className="max-h-64 overflow-y-auto p-1">
             {filteredGroups.length === 0 ? (
               <p className="px-3 py-6 text-center text-sm text-muted-foreground">
                 {noResultsText}

@@ -32,6 +32,7 @@ import {
 import ProductRepositoryImpl from "@/data/repositories/ProductRepositoryImpl";
 import { useAppSelector } from "@/presentation/state/hooks";
 import { getResponseData, isActionSuccess } from "@/utils/apiResponse";
+import { useProductCategories } from "@/hooks/useProductCategories";
 import { getProductCategoryDisplay } from "@/config/productCategories";
 import { getProductDisplayImageUrl } from "@/utils/productImage";
 import {
@@ -51,6 +52,7 @@ export default function ProductsPage() {
     (s) => s.user
   );
   const lang = language === "en" ? "en" : "tr";
+  const { apiGroups } = useProductCategories(businessId, lang);
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -95,11 +97,11 @@ export default function ProductsPage() {
     return Array.from(counts.entries())
       .map(([id, count]) => ({
         id,
-        label: getProductCategoryDisplay(id, lang),
+        label: getProductCategoryDisplay(id, lang, apiGroups),
         count,
       }))
       .sort((a, b) => a.label.localeCompare(b.label, lang === "tr" ? "tr" : "en"));
-  }, [products, lang]);
+  }, [products, lang, apiGroups]);
 
   useEffect(() => {
     if (!categoryFromUrl) {
@@ -150,7 +152,7 @@ export default function ProductsPage() {
   };
 
   const selectedCategoryLabel = selectedCategory
-    ? getProductCategoryDisplay(selectedCategory, lang)
+    ? getProductCategoryDisplay(selectedCategory, lang, apiGroups)
     : "";
 
   return (

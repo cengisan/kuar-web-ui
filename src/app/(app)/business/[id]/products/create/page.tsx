@@ -21,7 +21,6 @@ import {
   productsPagePath,
   readCategoryParam,
 } from "@/utils/productNavigation";
-import { resolveCategoryForApi } from "@/config/productCategories";
 import type { StockMaterial } from "@/types";
 
 export default function CreateProductPage() {
@@ -67,15 +66,17 @@ export default function CreateProductPage() {
     router.push(productsPagePath(businessId, returnCategory));
   };
 
-  const handleSubmit = async (values: ProductFormValues) => {
+  const handleSubmit = async (
+    values: ProductFormValues,
+    meta: { categoryLabel: string }
+  ) => {
     if (!accessToken || !subscriberId) return;
     setSaving(true);
     try {
-      const categoryLabel = resolveCategoryForApi(values, lang);
       const payload = buildProductPayload(values, {
         language: lang,
         canUseStock,
-        categoryLabel,
+        categoryLabel: meta.categoryLabel,
       });
 
       const repo = new ProductRepositoryImpl(translations, accessToken);

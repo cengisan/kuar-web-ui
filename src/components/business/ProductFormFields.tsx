@@ -12,10 +12,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { ImageSelectionDialog } from "@/components/business/ImageSelectionDialog";
 import { allergens, getAllergenLabel } from "@/config/allergens";
-import { findCategoryIdByLabel, type ProductLanguage } from "@/config/productCategories";
+import {
+  findCategoryIdByLabel,
+  type ProductLanguage,
+  type UiCategoryGroup,
+} from "@/config/productCategories";
 import { CategorySelect } from "@/components/business/CategorySelect";
 import { ProductMaterialSelector } from "@/components/business/ProductMaterialSelector";
-import type { ProductMaterial, StockMaterial } from "@/types";
+import type { ProductCategoryGroup as ApiProductCategoryGroup, ProductMaterial, StockMaterial } from "@/types";
 
 export interface ProductFormValues {
   name: string;
@@ -47,6 +51,9 @@ export interface ProductFormFieldsProps {
   availableMaterials?: StockMaterial[];
   existingImageUrl?: string | null;
   idPrefix?: string;
+  categoryGroups?: UiCategoryGroup[];
+  apiGroups?: ApiProductCategoryGroup[];
+  categoriesLoading?: boolean;
 }
 
 function FieldHint({ text }: { text?: string }) {
@@ -86,6 +93,9 @@ export function ProductFormFields({
   availableMaterials = [],
   existingImageUrl,
   idPrefix = "product",
+  categoryGroups = [],
+  apiGroups = [],
+  categoriesLoading = false,
 }: ProductFormFieldsProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageCleared, setImageCleared] = useState(false);
@@ -279,6 +289,9 @@ export function ProductFormFields({
                 placeholder={translations.selectCategory}
                 searchPlaceholder={translations.searchCategory}
                 noResultsText={translations.noResultsFound}
+                groups={categoryGroups}
+                apiGroups={apiGroups}
+                loading={categoriesLoading}
               />
             )}
 
@@ -296,7 +309,7 @@ export function ProductFormFields({
                   }
 
                   const resolvedCategoryId =
-                    findCategoryIdByLabel(values.customCategory) ||
+                    findCategoryIdByLabel(values.customCategory, apiGroups) ||
                     values.categoryId;
 
                   onChange({

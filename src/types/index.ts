@@ -88,6 +88,24 @@ export interface ProductImage {
   image_url?: string;
 }
 
+export interface ProductCategory {
+  id: number;
+  code: string;
+  name_tr: string;
+  name_en: string;
+  group_code: string;
+  system_category?: boolean;
+  custom_category?: boolean;
+  display_order?: number;
+}
+
+export interface ProductCategoryGroup {
+  group_code: string;
+  group_title_tr: string;
+  group_title_en: string;
+  categories: ProductCategory[];
+}
+
 export interface DigitalMenu {
   id: string;
   name: string;
