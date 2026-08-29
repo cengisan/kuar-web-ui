@@ -61,6 +61,8 @@ export function productToFormValues(
     imageRemoved: false,
   };
 }
+
+export function buildProductPayload(
   values: ProductFormValues,
   options: {
     language: "en" | "tr";
