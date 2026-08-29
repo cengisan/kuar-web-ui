@@ -64,6 +64,43 @@ export const productCategoryGroups: CategoryGroup[] = [
   },
 ];
 
+function sortByLocaleLabel(
+  items: CategoryItem[],
+  language: ProductLanguage
+): CategoryItem[] {
+  const locale = language === "tr" ? "tr" : "en";
+  return [...items].sort((a, b) =>
+    a[language].localeCompare(b[language], locale, { sensitivity: "base" })
+  );
+}
+
+export function getSortedCategoryGroups(language: ProductLanguage) {
+  return productCategoryGroups.map((group) => ({
+    title: group.title[language],
+    items: sortByLocaleLabel(group.items, language).map((item) => ({
+      id: item.id,
+      label: item[language],
+    })),
+  }));
+}
+
+export function filterCategoryGroups(
+  groups: ReturnType<typeof getSortedCategoryGroups>,
+  query: string
+) {
+  const normalized = query.trim().toLocaleLowerCase();
+  if (!normalized) return groups;
+
+  return groups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) =>
+        item.label.toLocaleLowerCase().includes(normalized)
+      ),
+    }))
+    .filter((group) => group.items.length > 0);
+}
+
 export function getCategoryLabel(categoryId: string, language: ProductLanguage) {
   for (const group of productCategoryGroups) {
     const found = group.items.find((item) => item.id === categoryId);

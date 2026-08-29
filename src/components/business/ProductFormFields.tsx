@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ImageIcon, X } from "lucide-react";
 
@@ -11,17 +11,9 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { ImageSelectionDialog } from "@/components/business/ImageSelectionDialog";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { allergens, getAllergenLabel } from "@/config/allergens";
-import { productCategoryGroups, type ProductLanguage } from "@/config/productCategories";
+import { type ProductLanguage } from "@/config/productCategories";
+import { CategorySelect } from "@/components/business/CategorySelect";
 import { ProductMaterialSelector } from "@/components/business/ProductMaterialSelector";
 import type { ProductMaterial, StockMaterial } from "@/types";
 
@@ -117,18 +109,6 @@ export function ProductFormFields({
     setImageCleared(false);
     onChange({ imageFile: file });
   };
-
-  const categoryOptions = useMemo(
-    () =>
-      productCategoryGroups.map((group) => ({
-        title: group.title[language],
-        items: group.items.map((item) => ({
-          id: item.id,
-          label: item[language],
-        })),
-      })),
-    [language]
-  );
 
   const toggleAllergen = (allergenId: number, checked: boolean) => {
     const next = checked
@@ -276,26 +256,15 @@ export function ProductFormFields({
                 required
               />
             ) : (
-              <Select
-                value={values.categoryId || undefined}
-                onValueChange={(categoryId) => onChange({ categoryId })}
-              >
-                <SelectTrigger id={`${idPrefix}-category`}>
-                  <SelectValue placeholder={translations.selectCategory} />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoryOptions.map((group) => (
-                    <SelectGroup key={group.title}>
-                      <SelectLabel>{group.title}</SelectLabel>
-                      {group.items.map((item) => (
-                        <SelectItem key={item.id} value={item.id}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  ))}
-                </SelectContent>
-              </Select>
+              <CategorySelect
+                id={`${idPrefix}-category`}
+                value={values.categoryId}
+                onChange={(categoryId) => onChange({ categoryId })}
+                language={language}
+                placeholder={translations.selectCategory}
+                searchPlaceholder={translations.searchCategory}
+                noResultsText={translations.noResultsFound}
+              />
             )}
 
             <label className="flex cursor-pointer items-center gap-2 text-sm">
