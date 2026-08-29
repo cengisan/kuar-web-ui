@@ -61,6 +61,7 @@ export function ProductForm({
     initial ? productToFormValues(initial, []) : createDefaultProductFormValues()
   );
   const baselineRef = useRef<ProductFormValues | null>(null);
+  const createBaselineRef = useRef<ProductFormValues>(createDefaultProductFormValues());
   const initializedFromApi = useRef(false);
   const [baselineVersion, setBaselineVersion] = useState(0);
 
@@ -74,8 +75,11 @@ export function ProductForm({
   }, [initial, apiGroups, categoriesLoading]);
 
   const isDirty = useMemo(() => {
-    if (!initial || !baselineRef.current) return false;
-    return hasProductFormChanges(baselineRef.current, values);
+    if (initial) {
+      if (!baselineRef.current) return false;
+      return hasProductFormChanges(baselineRef.current, values);
+    }
+    return hasProductFormChanges(createBaselineRef.current, values);
   }, [initial, values, baselineVersion]);
 
   useEffect(() => {
