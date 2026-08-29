@@ -68,12 +68,17 @@ export function PageLayout({
 
   const backHref =
     back?.href ?? hierarchicalBackHref ?? businessesPagePath();
+  const resolvedBackHref = back?.onClick ? undefined : backHref;
 
   return (
     <div className={cn("space-y-6", className)}>
       {back ? (
         <div className="flex w-full flex-wrap items-center gap-2">
-          <PageBackLink href={backHref} replace={back.replace}>
+          <PageBackLink
+            href={resolvedBackHref}
+            onClick={back.onClick}
+            replace={back.replace}
+          >
             {back.label}
           </PageBackLink>
           {homeConfig ? (

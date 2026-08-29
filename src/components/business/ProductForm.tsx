@@ -62,6 +62,7 @@ export function ProductForm({
   );
   const baselineRef = useRef<ProductFormValues | null>(null);
   const initializedFromApi = useRef(false);
+  const [baselineVersion, setBaselineVersion] = useState(0);
 
   useEffect(() => {
     if (!initial || categoriesLoading || initializedFromApi.current) return;
@@ -69,12 +70,13 @@ export function ProductForm({
     baselineRef.current = baseline;
     setValues(baseline);
     initializedFromApi.current = true;
+    setBaselineVersion((version) => version + 1);
   }, [initial, apiGroups, categoriesLoading]);
 
   const isDirty = useMemo(() => {
     if (!initial || !baselineRef.current) return false;
     return hasProductFormChanges(baselineRef.current, values);
-  }, [initial, values]);
+  }, [initial, values, baselineVersion]);
 
   useEffect(() => {
     onDirtyChange?.(isDirty);
